@@ -17,7 +17,7 @@ jobs:
     services:
       zookeeper:
         image: zookeeper:3.4.9
-        hostname: zookeeper
+        options: --hostname :zookeeper
         ports:
           - "2181:2181"
         env:
@@ -30,7 +30,7 @@ jobs:
 
       kafka1:
         image: confluentinc/cp-kafka:5.3.0
-        hostname: kafka1
+        options: --hostname :kafka1
         ports:
           - "9091:9091"
         env:
@@ -42,8 +42,6 @@ jobs:
           KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
         volumes:
           - ./data/kafka1/data:/var/lib/kafka/data
-        depends_on:
-          - zookeeper
 
     steps:
     - uses: actions/checkout@v2
