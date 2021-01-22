@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class PageViewEventSource implements ApplicationRunner {
 
-  private MessageChannel pageViewsOut;
+  private final MessageChannel pageViewsOut;
 
   public PageViewEventSource(AnalyticsBinding binding) {
     this.pageViewsOut = binding.pageViewsOut();
@@ -29,7 +29,7 @@ public class PageViewEventSource implements ApplicationRunner {
 
   //Sending Messages
   @Override
-  public void run(ApplicationArguments args) throws Exception {
+  public void run(ApplicationArguments args) {
     List<String> names = Arrays.asList("Raja", "Dilip", "Chowdary", "Kolli");
     List<String> pages = Arrays.asList("blog", "sitemap", "initilizar", "news");
     Runnable runnable = () -> {
