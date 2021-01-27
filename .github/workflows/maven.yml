@@ -20,17 +20,15 @@ jobs:
         ports:
           - "9092:9092"
         env:
-          - KAFKA_ADVERTISED_HOST_NAME=127.0.0.1
-          - KAFKA_ADVERTISED_PORT=9092
-          - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-        depends_on:
-          - zookeeper
-        zookeeper:
-          image: wurstmeister/zookeeper
-          ports:
-            - "2181:2181"
-          env:
-            - KAFKA_ADVERTISED_HOST_NAME=zookeeper
+          KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
+          KAFKA_ADVERTISED_PORT: 9092
+          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      zookeeper:
+        image: wurstmeister/zookeeper
+        ports:
+          - "2181:2181"
+        env:
+          KAFKA_ADVERTISED_HOST_NAME: zookeeper
 
     steps:
     - uses: actions/checkout@v2
