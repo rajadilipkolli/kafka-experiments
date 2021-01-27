@@ -11,7 +11,6 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -30,8 +29,8 @@ public class PageViewEventSource implements ApplicationRunner {
   //Sending Messages
   @Override
   public void run(ApplicationArguments args) {
-    List<String> names = Arrays.asList("Raja", "Dilip", "Chowdary", "Kolli");
-    List<String> pages = Arrays.asList("blog", "sitemap", "initializer", "news");
+    List<String> names = List.of("Raja", "Dilip", "Chowdary", "Kolli");
+    List<String> pages = List.of("blog", "sitemap", "initializer", "news");
     Runnable runnable = () -> {
       String rPage = pages.get(new Random().nextInt(pages.size()));
       String rName = names.get(new Random().nextInt(names.size()));

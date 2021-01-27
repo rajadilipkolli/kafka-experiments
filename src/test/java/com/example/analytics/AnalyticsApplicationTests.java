@@ -4,10 +4,9 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -15,10 +14,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -32,36 +31,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Import(AnalyticsApplicationTests.KafkaTestContainersConfiguration.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @DirtiesContext
 @Testcontainers
+@AutoConfigureMockMvc
 public class AnalyticsApplicationTests {
 
-    private static final DockerImageName KAFKA_TEST_IMAGE = DockerImageName.parse("confluentinc/cp-kafka:5.4.3");
-
-    private static final DockerImageName ZOOKEEPER_TEST_IMAGE = DockerImageName.parse("confluentinc/cp-zookeeper:4.0.0");
+    private static final DockerImageName KAFKA_TEST_IMAGE = DockerImageName.parse("confluentinc/cp-kafka:5.3.0-1");
 
     @Container
-    public static KafkaContainer KAFKA = new KafkaContainer(KAFKA_TEST_IMAGE);
+    public static final KafkaContainer KAFKA = new KafkaContainer(KAFKA_TEST_IMAGE);
 
-    private Network network = Network.newNetwork();
-
-    @Container
-    GenericContainer<?> ZOOKEEPER = new GenericContainer<>(ZOOKEEPER_TEST_IMAGE)
-            .withNetwork(network)
-            .withNetworkAliases("zookeeper")
-            .withEnv("ZOOKEEPER_CLIENT_PORT", "2181");
-
-
-    @BeforeEach
-    public void startServer() {
-        ZOOKEEPER.start();
-        KAFKA.withNetwork(network).withExternalZookeeper("zookeeper:2181").start();
-    }
-
-    @AfterEach
-    void tearDown() {
-        KAFKA.stop();
+    @DynamicPropertySource
+    static void registerPgProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.kafka.bootstrap-servers",
+                () -> KAFKA.getBootstrapServers().substring(12));
     }
 
     @Autowired
@@ -72,9 +56,8 @@ public class AnalyticsApplicationTests {
 
     @Test
     void contextLoads() throws Exception {
-        assertThat(ZOOKEEPER.isRunning()).isTrue();
         assertThat(KAFKA.isRunning()).isTrue();
-        TimeUnit.MINUTES.sleep(1);
+        TimeUnit.SECONDS.sleep(10);
         this.mockMvc.perform(get("/counts"))
                 .andExpect(status().isOk());
     }

@@ -3,7 +3,7 @@ package com.example.analytics.processor;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KeyValue;
-import org.apache.kafka.streams.kstream.Serialized;
+import org.apache.kafka.streams.kstream.Grouped;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.KeyValueStore;
@@ -25,7 +25,7 @@ public class PageViewEventProcessor {
     return eventKStream
         .filter((key, value) -> value.getDuration() > 10)
         .map((key, value) -> new KeyValue<>(value.getPage(), "0"))
-        .groupByKey(Serialized.with(Serdes.String(), Serdes.String()))
+        .groupByKey(Grouped.with(Serdes.String(), Serdes.String()))
 //        .windowedBy(TimeWindows.of(1000 * 60))
         .count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as(AnalyticsBinding.PAGE_COUNT_MV)
             .withKeySerde(Serdes.String())
