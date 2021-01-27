@@ -34,7 +34,7 @@ public class PageViewEventSource implements ApplicationRunner {
     List<String> pages = Arrays.asList("blog", "sitemap", "initilizar", "news");
     Runnable runnable = () -> {
       String rPage = pages.get(new Random().nextInt(pages.size()));
-      String rName = pages.get(new Random().nextInt(names.size()));
+      String rName = names.get(new Random().nextInt(names.size()));
       PageViewEvent pageViewEvent = new PageViewEvent(rName, rPage, Math.random() > 5 ? 10 : 1000);
       Message<PageViewEvent> message = MessageBuilder.withPayload(pageViewEvent).setHeader(KafkaHeaders.MESSAGE_KEY, pageViewEvent.getUserId().getBytes()).build();
       try {
