@@ -1,5 +1,7 @@
 package com.example.analytics.processor;
 
+import com.example.analytics.binding.AnalyticsBinding;
+import com.example.analytics.model.PageViewEvent;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KeyValue;
@@ -7,20 +9,16 @@ import org.apache.kafka.streams.kstream.Grouped;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.KeyValueStore;
-import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
-import com.example.analytics.binding.AnalyticsBinding;
-import com.example.analytics.model.PageViewEvent;
-
 @Component
 public class PageViewEventProcessor {
 
-  @StreamListener
+  @StreamListener(AnalyticsBinding.PAGE_VIEW_IN)
   @SendTo(AnalyticsBinding.PAGE_COUNT_OUT)
-  public KStream<String, Long> processInput(@Input(AnalyticsBinding.PAGE_VIEW_IN) KStream<String, PageViewEvent> eventKStream) {
+  public KStream<String, Long> processInput(KStream<String, PageViewEvent> eventKStream) {
 
     return eventKStream
         .filter((key, value) -> value.getDuration() > 10)
