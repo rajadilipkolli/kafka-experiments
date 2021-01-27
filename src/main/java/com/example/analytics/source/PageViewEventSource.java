@@ -31,7 +31,7 @@ public class PageViewEventSource implements ApplicationRunner {
   @Override
   public void run(ApplicationArguments args) {
     List<String> names = Arrays.asList("Raja", "Dilip", "Chowdary", "Kolli");
-    List<String> pages = Arrays.asList("blog", "sitemap", "initilizar", "news");
+    List<String> pages = Arrays.asList("blog", "sitemap", "initializer", "news");
     Runnable runnable = () -> {
       String rPage = pages.get(new Random().nextInt(pages.size()));
       String rName = names.get(new Random().nextInt(names.size()));
