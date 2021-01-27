@@ -57,7 +57,7 @@ public class AnalyticsApplicationTests {
     @Test
     void contextLoads() throws Exception {
         assertThat(KAFKA.isRunning()).isTrue();
-        TimeUnit.SECONDS.sleep(10);
+        TimeUnit.MINUTES.sleep(1);
         this.mockMvc.perform(get("/counts"))
                 .andExpect(status().isOk());
     }
