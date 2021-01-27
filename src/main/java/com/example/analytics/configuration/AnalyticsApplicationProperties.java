@@ -16,9 +16,21 @@ import javax.validation.constraints.Positive;
 public class AnalyticsApplicationProperties {
 
     @NotBlank
-    private final String topicNamePvs, topicNamePcs, topicNameChangelog, topicNameRePartition;
+    private final String topicNamePvs;
+    
+    @NotBlank
+    private final String topicNamePcs;
+    
+    @NotBlank
+    private final String topicNameChangelog;
+    
+    @NotBlank
+    private final String topicNameRePartition;
 
     @Positive
-    private final short replication, partitions;
+    private final short replication;
+    
+    @Positive
+    private final short partitions;
 
 }
