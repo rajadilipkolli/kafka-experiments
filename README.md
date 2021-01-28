@@ -15,4 +15,7 @@ docker exec -it analytics-spring-cloud-streams-kafka_kafka1_1 kafka-topics --zoo
 
 
 ## To access Kafdrop 
- use url localhost:9000
+ > localhost:9000
+
+## command to remove docker
+ > docker system prune -a -f --volumes
