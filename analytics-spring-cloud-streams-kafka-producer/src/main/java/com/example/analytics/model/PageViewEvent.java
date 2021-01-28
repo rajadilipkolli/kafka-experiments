@@ -8,7 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PageViewEvent {
+
 	private String userId;
+
 	private String page;
+
 	private long duration;
 }

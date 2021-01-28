@@ -1,20 +1,18 @@
 package com.example.analytics;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import com.example.analytics.model.PageViewEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -28,6 +26,12 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Import(AnalyticsProducerApplicationTests.KafkaTestContainersConfiguration.class)
 @SpringBootTest
@@ -45,13 +49,19 @@ public class AnalyticsProducerApplicationTests {
 		registry.add("spring.kafka.bootstrap-servers", () -> KAFKA.getBootstrapServers().substring(12));
 	}
 
-	@Autowired
-	public KafkaTemplate<String, String> template;
-
 	@Test
-	void contextLoads() throws Exception {
+	void contextLoads() {
 		assertThat(KAFKA.isRunning()).isTrue();
-		// check the messages are sent
+	}
+
+	@KafkaListener(topics = "pvs")
+	public void listenMessages(String message) throws JsonProcessingException {
+		final ObjectMapper objectMapper = new ObjectMapper();
+		PageViewEvent value = objectMapper.readValue(message, PageViewEvent.class);
+		assertThat(value).isNotNull();
+		assertThat(value.getDuration()).isIn(List.of(10,1000));
+		assertThat(value.getPage()).isNotBlank().isIn(List.of("blog", "sitemap", "initializer", "news"));
+		assertThat(value.getUserId()).isNotBlank().isIn(List.of("Raja", "Dilip", "Chowdary", "Kolli"));
 	}
 
 	@TestConfiguration

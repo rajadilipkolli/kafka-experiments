@@ -1,7 +1,7 @@
 package com.example.analytics.processor;
 
-import java.util.function.Function;
-
+import com.example.analytics.configuration.AnalyticsConsumerConstants;
+import com.example.analytics.model.PageViewEvent;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KeyValue;
@@ -12,8 +12,7 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import com.example.analytics.configuration.AnalyticsConsumerConstants;
-import com.example.analytics.model.PageViewEvent;
+import java.util.function.Function;
 
 @Component
 public class PageViewEventProcessor {
