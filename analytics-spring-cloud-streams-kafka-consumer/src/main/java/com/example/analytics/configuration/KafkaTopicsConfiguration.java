@@ -13,29 +13,29 @@ public class KafkaTopicsConfiguration {
 
 	@Bean
 	public NewTopic kafkaStreamspcmvRePartitionTopic() {
-		return new NewTopic(analyticsApplicationProperties.getTopicNameRePartition(),
-				analyticsApplicationProperties.getPartitions(), analyticsApplicationProperties.getReplication());
+		return new NewTopic(analyticsApplicationProperties.topicNameRePartition(),
+				analyticsApplicationProperties.partitions(), analyticsApplicationProperties.replication());
 	}
 
 	@Bean
 	public NewTopic kafkaStreamspcmvChangeLogTopic() {
-		return new NewTopic(analyticsApplicationProperties.getTopicNameChangelog(),
-				analyticsApplicationProperties.getPartitions(), analyticsApplicationProperties.getReplication());
+		return new NewTopic(analyticsApplicationProperties.topicNameChangelog(),
+				analyticsApplicationProperties.partitions(), analyticsApplicationProperties.replication());
 	}
 
 	@Bean
 	public NewTopic pcsTopic() {
 
-		return new NewTopic(analyticsApplicationProperties.getTopicNamePcs(),
-				analyticsApplicationProperties.getPartitions(), analyticsApplicationProperties.getReplication());
+		return new NewTopic(analyticsApplicationProperties.topicNamePcs(),
+				analyticsApplicationProperties.partitions(), analyticsApplicationProperties.replication());
 
 	}
 	
 	@Bean
 	public NewTopic pvsTopic() {
 
-		return new NewTopic(analyticsApplicationProperties.getTopicNamePvs(),
-				analyticsApplicationProperties.getPartitions(), analyticsApplicationProperties.getReplication());
+		return new NewTopic(analyticsApplicationProperties.topicNamePvs(),
+				analyticsApplicationProperties.partitions(), analyticsApplicationProperties.replication());
 
 	}
 }

@@ -1,7 +1,6 @@
 package com.example.analytics.configuration;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
@@ -11,26 +10,10 @@ import javax.validation.constraints.Positive;
 //to use the constructor binding, we need to explicitly enable our configuration class either with @EnableConfigurationProperties or with @ConfigurationPropertiesScan.
 @ConstructorBinding
 @ConfigurationProperties(prefix = "io.confluent.developer.topic")
-@Getter
-@RequiredArgsConstructor
-public class AnalyticsApplicationProperties {
-
-	@NotBlank
-    private final String topicNamePvs;
-    
-    @NotBlank
-    private final String topicNamePcs;
-    
-    @NotBlank
-    private final String topicNameChangelog;
-    
-    @NotBlank
-    private final String topicNameRePartition;
-
-    @Positive
-    private final short replication;
-    
-    @Positive
-    private final short partitions;
+public record AnalyticsApplicationProperties(@NotBlank String topicNamePvs,
+                                             @NotBlank String topicNamePcs,
+                                             @NotBlank String topicNameChangelog,
+                                             @NotBlank String topicNameRePartition,
+                                             @Positive short replication, @Positive short partitions) {
 
 }

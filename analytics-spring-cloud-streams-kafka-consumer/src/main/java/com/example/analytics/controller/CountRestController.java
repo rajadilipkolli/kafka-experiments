@@ -1,7 +1,6 @@
 package com.example.analytics.controller;
 
 import com.example.analytics.configuration.AnalyticsConsumerConstants;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
@@ -14,17 +13,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequiredArgsConstructor
-public class CountRestController {
-
-	private final InteractiveQueryService interactiveQueryService;
+public record CountRestController(
+		InteractiveQueryService interactiveQueryService) {
 
 	@GetMapping("/counts")
 	public Map<String, Long> counts() {
 		Map<String, Long> counts = new HashMap<>();
-		ReadOnlyKeyValueStore<String, Long> querableStoryType = this.interactiveQueryService
+		ReadOnlyKeyValueStore<String, Long> queryableStoreType = this.interactiveQueryService
 				.getQueryableStore(AnalyticsConsumerConstants.PAGE_COUNT_MV, QueryableStoreTypes.keyValueStore());
-		KeyValueIterator<String, Long> all = querableStoryType.all();
+		KeyValueIterator<String, Long> all = queryableStoreType.all();
 		while (all.hasNext()) {
 			KeyValue<String, Long> value = all.next();
 			counts.put(value.key, value.value);

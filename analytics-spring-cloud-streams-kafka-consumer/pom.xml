@@ -17,7 +17,7 @@
 	<description>Demo project for Spring Boot and Kafka Consumer StreamCapabilities</description>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>15</java.version>
 		<spring-cloud.version>2020.0.1</spring-cloud.version>
 		<testcontainers.version>1.15.1</testcontainers.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -118,6 +118,22 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<compilerArgs>--enable-preview</compilerArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>--enable-preview</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
