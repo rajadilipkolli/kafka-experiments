@@ -1,5 +1,9 @@
 package com.example.analytics.config;
 
+import static com.example.analytics.AnalyticsConsumerApplicationTests.KAFKA_CONTAINER;
+
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -12,11 +16,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.example.analytics.AnalyticsConsumerApplicationTests.KAFKA_CONTAINER;
 
 @TestConfiguration
 public class KafkaTestContainersConfiguration {
