@@ -1,6 +1,7 @@
 package com.example.analytics.controller;
 
 import com.example.analytics.configuration.AnalyticsConsumerConstants;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
@@ -13,19 +14,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-public record CountRestController(
-		InteractiveQueryService interactiveQueryService) {
+@RequiredArgsConstructor
+public class CountRestController {
 
-	@GetMapping("/counts")
-	public Map<String, Long> counts() {
-		Map<String, Long> counts = new HashMap<>();
-		ReadOnlyKeyValueStore<String, Long> queryableStoreType = this.interactiveQueryService
-				.getQueryableStore(AnalyticsConsumerConstants.PAGE_COUNT_MV, QueryableStoreTypes.keyValueStore());
-		KeyValueIterator<String, Long> all = queryableStoreType.all();
-		while (all.hasNext()) {
-			KeyValue<String, Long> value = all.next();
-			counts.put(value.key, value.value);
-		}
-		return counts;
-	}
+  private final InteractiveQueryService interactiveQueryService;
+
+  @GetMapping("/counts")
+  public Map<String, Long> counts() {
+    Map<String, Long> counts = new HashMap<>();
+    ReadOnlyKeyValueStore<String, Long> queryableStoreType =
+        this.interactiveQueryService.getQueryableStore(
+            AnalyticsConsumerConstants.PAGE_COUNT_MV, QueryableStoreTypes.keyValueStore());
+    KeyValueIterator<String, Long> all = queryableStoreType.all();
+    while (all.hasNext()) {
+      KeyValue<String, Long> value = all.next();
+      counts.put(value.key, value.value);
+    }
+    return counts;
+  }
 }

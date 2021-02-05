@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PageViewEvent {
 
-	private String userId;
+  private String userId;
 
-	private String page;
+  private String page;
 
-	private long duration;
+  private long duration;
 }

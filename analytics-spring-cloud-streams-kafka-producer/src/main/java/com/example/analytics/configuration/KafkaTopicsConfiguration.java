@@ -9,12 +9,13 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class KafkaTopicsConfiguration {
 
-	private final AnalyticsApplicationProperties analyticsApplicationProperties;
+  private final AnalyticsApplicationProperties analyticsApplicationProperties;
 
-	@Bean
-	public NewTopic pvsTopic() {
-		return new NewTopic(analyticsApplicationProperties.getTopicNamePvs(),
-				analyticsApplicationProperties.getPartitions(), analyticsApplicationProperties.getReplication());
-	}
-
+  @Bean
+  public NewTopic pvsTopic() {
+    return new NewTopic(
+        analyticsApplicationProperties.getTopicNamePvs(),
+        analyticsApplicationProperties.getPartitions(),
+        analyticsApplicationProperties.getReplication());
+  }
 }

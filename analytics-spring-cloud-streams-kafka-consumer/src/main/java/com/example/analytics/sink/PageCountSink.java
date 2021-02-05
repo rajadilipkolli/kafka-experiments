@@ -11,9 +11,11 @@ import java.util.function.Consumer;
 @Slf4j
 public class PageCountSink {
 
-	@Bean
-	public Consumer<KTable<String, Long>> processStreamFromPcsTopic() {
-		return kTableCounts -> kTableCounts.toStream()
-				.foreach((key, value) -> log.info("Key = {}, value = {}", key, value));
-	}
+  @Bean
+  public Consumer<KTable<String, Long>> processStreamFromPcsTopic() {
+    return kTableCounts ->
+        kTableCounts
+            .toStream()
+            .foreach((key, value) -> log.info("Key = {}, value = {}", key, value));
+  }
 }

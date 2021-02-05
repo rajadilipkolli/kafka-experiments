@@ -11,8 +11,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 @ConfigurationPropertiesScan("com.example.analytics")
 public class AnalyticsProducerApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(AnalyticsProducerApplication.class, args);
-    }
-
+  public static void main(String[] args) {
+    SpringApplication.run(AnalyticsProducerApplication.class, args);
+  }
 }

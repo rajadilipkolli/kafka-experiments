@@ -7,7 +7,7 @@ public interface AnalyticsBinding {
 
   String PAGE_VIEW_OUT = "pvout";
 
-  //Page Views
+  // Page Views
   @Output(PAGE_VIEW_OUT)
   MessageChannel pageViewsOut();
 }
