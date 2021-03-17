@@ -2,8 +2,6 @@ package com.example.analytics.configuration;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
@@ -11,8 +9,6 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 // @EnableConfigurationProperties or with @ConfigurationPropertiesScan.
 @ConstructorBinding
 @ConfigurationProperties(prefix = "io.confluent.developer.topic")
-@Getter
-@RequiredArgsConstructor
 public class AnalyticsApplicationProperties {
 
   @NotBlank private final String topicNamePvs;
@@ -20,4 +16,23 @@ public class AnalyticsApplicationProperties {
   @Positive private final short replication;
 
   @Positive private final short partitions;
+
+  public AnalyticsApplicationProperties(
+      @NotBlank String topicNamePvs, @Positive short replication, @Positive short partitions) {
+    this.topicNamePvs = topicNamePvs;
+    this.replication = replication;
+    this.partitions = partitions;
+  }
+
+  public String getTopicNamePvs() {
+    return topicNamePvs;
+  }
+
+  public short getReplication() {
+    return replication;
+  }
+
+  public short getPartitions() {
+    return partitions;
+  }
 }

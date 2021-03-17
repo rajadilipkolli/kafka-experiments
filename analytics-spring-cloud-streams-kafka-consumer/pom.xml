@@ -20,6 +20,7 @@
 		<java.version>15</java.version>
 		<spring-cloud.version>2020.0.1</spring-cloud.version>
 		<testcontainers.version>1.15.2</testcontainers.version>
+		<spotless.version>2.9.0</spotless.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
@@ -50,20 +51,9 @@
 			<artifactId>spring-cloud-stream-binder-kafka-streams</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.junit.vintage</groupId>
-					<artifactId>junit-vintage-engine</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -88,6 +78,7 @@
 			<optional>true</optional>
 		</dependency>
 	</dependencies>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -106,19 +97,12 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -137,20 +121,22 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>com.coveo</groupId>
-				<artifactId>fmt-maven-plugin</artifactId>
-				<version>2.10</version>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>${spotless.version}</version>
 				<configuration>
-					<verbose>true</verbose>
-					<filesNamePattern>.*\.java</filesNamePattern>
-					<skip>false</skip>
-					<skipSortingImports>false</skipSortingImports>
-					<style>google</style>
+					<java>
+						<googleJavaFormat>
+							<version>1.9</version>
+							<style>AOSP</style>
+						</googleJavaFormat>
+					</java>
 				</configuration>
 				<executions>
 					<execution>
+						<phase>compile</phase>
 						<goals>
-							<goal>format</goal>
+							<goal>check</goal>
 						</goals>
 					</execution>
 				</executions>

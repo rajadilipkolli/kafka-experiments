@@ -10,9 +10,9 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @ConstructorBinding
 @ConfigurationProperties(prefix = "io.confluent.developer.topic")
 public record AnalyticsApplicationProperties(
-    @NotBlank String topicNamePvs,
-    @NotBlank String topicNamePcs,
-    @NotBlank String topicNameChangelog,
-    @NotBlank String topicNameRePartition,
-    @Positive short replication,
-    @Positive short partitions) {}
+        @NotBlank String topicNamePvs,
+        @NotBlank String topicNamePcs,
+        @NotBlank String topicNameChangelog,
+        @NotBlank String topicNameRePartition,
+        @Positive short replication,
+        @Positive short partitions) {}

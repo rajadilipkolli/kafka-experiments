@@ -33,40 +33,40 @@ import org.testcontainers.utility.DockerImageName;
 @AutoConfigureMockMvc
 public class AnalyticsConsumerApplicationTests {
 
-  private static final DockerImageName KAFKA_TEST_IMAGE =
-      DockerImageName.parse("confluentinc/cp-kafka:5.3.0-1");
+    private static final DockerImageName KAFKA_TEST_IMAGE =
+            DockerImageName.parse("confluentinc/cp-kafka:5.3.0-1");
 
-  @Container
-  public static final KafkaContainer KAFKA_CONTAINER = new KafkaContainer(KAFKA_TEST_IMAGE);
+    @Container
+    public static final KafkaContainer KAFKA_CONTAINER = new KafkaContainer(KAFKA_TEST_IMAGE);
 
-  @DynamicPropertySource
-  static void registerPgProperties(DynamicPropertyRegistry registry) {
-    registry.add(
-        "spring.kafka.bootstrap-servers",
-        () -> KAFKA_CONTAINER.getBootstrapServers().substring(12));
-  }
+    @DynamicPropertySource
+    static void registerPgProperties(DynamicPropertyRegistry registry) {
+        registry.add(
+                "spring.kafka.bootstrap-servers",
+                () -> KAFKA_CONTAINER.getBootstrapServers().substring(12));
+    }
 
-  @Autowired public KafkaTemplate<String, String> kafkaTemplate;
+    @Autowired public KafkaTemplate<String, String> kafkaTemplate;
 
-  @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
 
-  @Autowired private ObjectMapper objectMapper;
+    @Autowired private ObjectMapper objectMapper;
 
-  @Test
-  void contextLoads() throws Exception {
-    assertThat(KAFKA_CONTAINER.isRunning()).isTrue();
-    // send message
-    PageViewEvent pageViewEvent =
-        new PageViewEvent("rName", "rPage", Math.random() > 5 ? 10 : 1000);
-    String messageAsString = objectMapper.writeValueAsString(pageViewEvent);
-    Message<String> message =
-        MessageBuilder.withPayload(messageAsString)
-            .setHeaderIfAbsent(KafkaHeaders.TOPIC, "pvs")
-            .setHeader(KafkaHeaders.MESSAGE_KEY, pageViewEvent.getUserId())
-            .build();
+    @Test
+    void contextLoads() throws Exception {
+        assertThat(KAFKA_CONTAINER.isRunning()).isTrue();
+        // send message
+        PageViewEvent pageViewEvent =
+                new PageViewEvent("rName", "rPage", Math.random() > 5 ? 10 : 1000);
+        String messageAsString = objectMapper.writeValueAsString(pageViewEvent);
+        Message<String> message =
+                MessageBuilder.withPayload(messageAsString)
+                        .setHeaderIfAbsent(KafkaHeaders.TOPIC, "pvs")
+                        .setHeader(KafkaHeaders.MESSAGE_KEY, pageViewEvent.getUserId())
+                        .build();
 
-    this.kafkaTemplate.send(message);
-    TimeUnit.SECONDS.sleep(30);
-    this.mockMvc.perform(get("/counts")).andExpect(status().isOk());
-  }
+        this.kafkaTemplate.send(message);
+        TimeUnit.SECONDS.sleep(30);
+        this.mockMvc.perform(get("/counts")).andExpect(status().isOk());
+    }
 }

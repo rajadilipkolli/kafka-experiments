@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @ConfigurationPropertiesScan("com.example.analytics")
 public class AnalyticsConsumerApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(AnalyticsConsumerApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(AnalyticsConsumerApplication.class, args);
+    }
 }
