@@ -1,5 +1,7 @@
 package com.example.analytics.model;
 
+import java.util.StringJoiner;
+
 public class PageViewEvent {
 
   private String userId;
@@ -38,5 +40,14 @@ public class PageViewEvent {
 
   public void setDuration(long duration) {
     this.duration = duration;
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", PageViewEvent.class.getSimpleName() + "[", "]")
+            .add("userId='" + userId + "'")
+            .add("page='" + page + "'")
+            .add("duration=" + duration)
+            .toString();
   }
 }

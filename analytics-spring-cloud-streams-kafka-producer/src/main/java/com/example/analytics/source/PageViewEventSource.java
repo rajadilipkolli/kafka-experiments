@@ -2,8 +2,9 @@ package com.example.analytics.source;
 
 import com.example.analytics.binding.AnalyticsBinding;
 import com.example.analytics.model.PageViewEvent;
+
+import java.security.SecureRandom;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
@@ -34,8 +35,8 @@ public class PageViewEventSource implements ApplicationRunner {
     List<String> pages = List.of("blog", "sitemap", "initializer", "news");
     Runnable runnable =
         () -> {
-          String rPage = pages.get(new Random().nextInt(pages.size()));
-          String rName = names.get(new Random().nextInt(names.size()));
+          String rPage = pages.get(new SecureRandom().nextInt(pages.size()));
+          String rName = names.get(new SecureRandom().nextInt(names.size()));
           PageViewEvent pageViewEvent =
               new PageViewEvent(rName, rPage, Math.random() > 5 ? 10 : 1000);
           Message<PageViewEvent> message =
