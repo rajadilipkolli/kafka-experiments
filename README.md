@@ -1,3 +1,5 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=rajadileepkolli_analytics-spring-cloud-streams-kafka&metric=alert_status)](https://sonarcloud.io/dashboard?id=rajadileepkolli_analytics-spring-cloud-streams-kafka)
+
 # analytics-spring-cloud-streams-kafka
 
 Code base of https://youtu.be/YPDzcmqwCNo
