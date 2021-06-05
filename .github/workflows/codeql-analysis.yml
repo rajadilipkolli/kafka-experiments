@@ -18,7 +18,7 @@ on:
     # The branches below must be a subset of the branches above
     branches: [ master ]
   schedule:
-    - cron: '30 17 * * 1'
+    - cron: '26 14 * * 4'
 
 jobs:
   analyze:
@@ -32,16 +32,17 @@ jobs:
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
         # Learn more:
         # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
-
+        java: [ '15' ]
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-    - name: Set up JDK 15
-      uses: actions/setup-java@v1
+    - name: Set up JDK ${{ matrix.Java }}
+      uses: actions/setup-java@v2.1.0
       with:
-        java-version: 15
+        java-version: ${{ matrix.java }}
+        distribution: 'adopt'
     - name: Cache
-      uses: actions/cache@v2.1.0
+      uses: actions/cache@v2.1.6
       with:
         # A directory to store and save the cache
         path: ~/.m2/repository
