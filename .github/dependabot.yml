@@ -5,7 +5,7 @@ updates:
   schedule:
     interval: daily
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: com.diffplug.spotless:spotless-maven-plugin
-    versions:
-    - 2.10.0
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: "daily"
