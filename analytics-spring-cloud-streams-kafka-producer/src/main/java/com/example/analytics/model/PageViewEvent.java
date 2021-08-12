@@ -45,9 +45,9 @@ public class PageViewEvent {
   @Override
   public String toString() {
     return new StringJoiner(", ", PageViewEvent.class.getSimpleName() + "[", "]")
-            .add("userId='" + userId + "'")
-            .add("page='" + page + "'")
-            .add("duration=" + duration)
-            .toString();
+        .add("userId='" + userId + "'")
+        .add("page='" + page + "'")
+        .add("duration=" + duration)
+        .toString();
   }
 }

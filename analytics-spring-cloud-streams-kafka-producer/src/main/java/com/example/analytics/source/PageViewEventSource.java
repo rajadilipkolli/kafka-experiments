@@ -2,7 +2,6 @@ package com.example.analytics.source;
 
 import com.example.analytics.binding.AnalyticsBinding;
 import com.example.analytics.model.PageViewEvent;
-
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.Executors;
