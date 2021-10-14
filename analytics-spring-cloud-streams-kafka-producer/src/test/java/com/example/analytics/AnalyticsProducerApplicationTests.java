@@ -36,7 +36,7 @@ import org.testcontainers.utility.DockerImageName;
 @SpringBootTest
 @DirtiesContext
 @Testcontainers
-public class AnalyticsProducerApplicationTests {
+class AnalyticsProducerApplicationTests {
 
   private static final DockerImageName KAFKA_TEST_IMAGE =
       DockerImageName.parse("confluentinc/cp-kafka:5.3.0-1");

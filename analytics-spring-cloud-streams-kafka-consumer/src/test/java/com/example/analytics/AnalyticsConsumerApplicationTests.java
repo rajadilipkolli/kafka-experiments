@@ -31,7 +31,7 @@ import org.testcontainers.utility.DockerImageName;
 @DirtiesContext
 @Testcontainers
 @AutoConfigureMockMvc
-public class AnalyticsConsumerApplicationTests {
+class AnalyticsConsumerApplicationTests {
 
     private static final DockerImageName KAFKA_TEST_IMAGE =
             DockerImageName.parse("confluentinc/cp-kafka:5.3.0-1");
