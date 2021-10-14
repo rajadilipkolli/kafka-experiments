@@ -16,8 +16,8 @@ public class KafkaTopicsConfiguration {
   @Bean
   public NewTopic pvsTopic() {
     return new NewTopic(
-        analyticsApplicationProperties.getTopicNamePvs(),
-        analyticsApplicationProperties.getPartitions(),
-        analyticsApplicationProperties.getReplication());
+        analyticsApplicationProperties.topicNamePvs(),
+        analyticsApplicationProperties.partitions(),
+        analyticsApplicationProperties.replication());
   }
 }
