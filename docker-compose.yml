@@ -14,7 +14,7 @@ services:
       - ./data/zookeeper/datalog:/datalog
 
   kafka1:
-    image: confluentinc/cp-kafka:5.3.0-1
+    image: confluentinc/cp-kafka:5.3.6-1
     hostname: kafka1
     ports:
       - "9091:9091"
@@ -31,7 +31,7 @@ services:
       - zookeeper
 
   kafka2:
-    image: confluentinc/cp-kafka:5.3.0-1
+    image: confluentinc/cp-kafka:5.3.6-1
     hostname: kafka2
     ports:
       - "9092:9092"
@@ -48,7 +48,7 @@ services:
       - zookeeper 
 
   kafka3:
-    image: confluentinc/cp-kafka:5.3.0-1
+    image: confluentinc/cp-kafka:5.3.6-1
     hostname: kafka3
     ports:
       - "9093:9093"
