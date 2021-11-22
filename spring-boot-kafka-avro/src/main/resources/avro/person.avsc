@@ -1,0 +1,11 @@
+{
+     "namespace": "com.sivalabs.springbootkafkaavro.model",
+     "type": "record",
+     "name": "Person",
+     "version": "1",
+     "fields": [
+       { "name": "id", "type": "int" },
+       { "name": "name", "type": "string" },
+       { "name": "age", "type": "int" }
+     ]
+}
