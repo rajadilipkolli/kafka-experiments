@@ -48,7 +48,7 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
 
   rest-proxy:
-    image: confluentinc/cp-kafka-rest:5.5.7
+    image: confluentinc/cp-kafka-rest:7.0.1
     depends_on:
       - zookeeper
       - broker
