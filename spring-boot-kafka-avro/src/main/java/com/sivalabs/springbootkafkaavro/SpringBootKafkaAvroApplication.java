@@ -37,7 +37,7 @@ public class SpringBootKafkaAvroApplication implements CommandLineRunner {
     Person person = personConsumerRecord.value();
     log.info(" {} : {} ", person.getName(), person.getAge());
     PersonEntity personEntity =
-        new PersonEntity(person.getId(), (String) person.getName(), person.getAge());
+        new PersonEntity(person.getId(), person.getName().toString(), person.getAge());
     this.personRepository.save(personEntity);
   }
 }
