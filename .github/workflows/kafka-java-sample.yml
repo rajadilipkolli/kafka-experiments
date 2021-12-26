@@ -1,13 +1,13 @@
-name: spring-kafka-sample
+name: kafka-java-sample
 
 on:
   push:
     paths:
-      - "spring-kafka-sample/**"
+      - "kafka-java-sample/**"
     branches: [ master ]
   pull_request:
     paths:
-      - "spring-kafka-sample/**"
+      - "kafka-java-sample/**"
     types:
       - opened
       - synchronize
@@ -30,5 +30,5 @@ jobs:
         cache: 'maven'
     - name: Build with Maven
       run: |
-        cd spring-kafka-sample
+        cd kafka-java-sample
         mvn -B package --file pom.xml

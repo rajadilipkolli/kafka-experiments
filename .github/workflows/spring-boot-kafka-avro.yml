@@ -1,13 +1,13 @@
-name: spring-kafka-sample
+name: spring-boot-kafka-avro
 
 on:
   push:
     paths:
-      - "spring-kafka-sample/**"
+      - "spring-boot-kafka-avro/**"
     branches: [ master ]
   pull_request:
     paths:
-      - "spring-kafka-sample/**"
+      - "spring-boot-kafka-avro/**"
     types:
       - opened
       - synchronize
@@ -26,9 +26,9 @@ jobs:
       uses: actions/setup-java@v2.3.1
       with:
         java-version: '17'
-        distribution: 'microsoft'
+        distribution: 'adopt'
         cache: 'maven'
     - name: Build with Maven
       run: |
-        cd spring-kafka-sample
+        cd spring-boot-kafka-avro
         mvn -B package --file pom.xml
