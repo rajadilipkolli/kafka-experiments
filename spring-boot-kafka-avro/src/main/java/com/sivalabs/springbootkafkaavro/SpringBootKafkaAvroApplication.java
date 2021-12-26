@@ -12,22 +12,21 @@ import org.springframework.kafka.core.KafkaTemplate;
 @SpringBootApplication
 public class SpringBootKafkaAvroApplication implements CommandLineRunner {
 
-    public static void main(String[] args) {
-        SpringApplication.run(SpringBootKafkaAvroApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(SpringBootKafkaAvroApplication.class, args);
+  }
 
-    @Autowired
-    KafkaTemplate<String, Person> kafkaTemplate;
+  @Autowired KafkaTemplate<String, Person> kafkaTemplate;
 
-    @Override
-    public void run(String... args) throws Exception {
-        Person  person = Person.newBuilder().setId(1).setName("Siva").setAge(33).build();
-        kafkaTemplate.send("persons", person);
-    }
+  @Override
+  public void run(String... args) {
+    Person person = Person.newBuilder().setId(1).setName("Siva").setAge(33).build();
+    kafkaTemplate.send("persons", person);
+  }
 
-    @KafkaListener(topics = "persons")
-    public void handler(ConsumerRecord<String,Person> cr) {
-        Person person = cr.value();
-        System.out.println(person.getName()+":"+person.getAge());
-    }
+  @KafkaListener(topics = "persons")
+  public void handler(ConsumerRecord<String, Person> cr) {
+    Person person = cr.value();
+    System.out.println(person.getName() + ":" + person.getAge());
+  }
 }

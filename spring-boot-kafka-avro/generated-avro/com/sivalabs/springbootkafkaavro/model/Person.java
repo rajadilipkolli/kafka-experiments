@@ -5,12 +5,13 @@
  */
 package com.sivalabs.springbootkafkaavro.model;
 
+import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
+import org.apache.avro.util.Utf8;
 import org.apache.avro.message.BinaryMessageEncoder;
 import org.apache.avro.message.BinaryMessageDecoder;
 import org.apache.avro.message.SchemaStore;
 
-@SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class Person extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
   private static final long serialVersionUID = 2833184250831685670L;
@@ -26,7 +27,16 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       new BinaryMessageDecoder<Person>(MODEL$, SCHEMA$);
 
   /**
+   * Return the BinaryMessageEncoder instance used by this class.
+   * @return the message encoder used by this class
+   */
+  public static BinaryMessageEncoder<Person> getEncoder() {
+    return ENCODER;
+  }
+
+  /**
    * Return the BinaryMessageDecoder instance used by this class.
+   * @return the message decoder used by this class
    */
   public static BinaryMessageDecoder<Person> getDecoder() {
     return DECODER;
@@ -35,25 +45,35 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   /**
    * Create a new BinaryMessageDecoder instance for this class that uses the specified {@link SchemaStore}.
    * @param resolver a {@link SchemaStore} used to find schemas by fingerprint
+   * @return a BinaryMessageDecoder instance for this class backed by the given SchemaStore
    */
   public static BinaryMessageDecoder<Person> createDecoder(SchemaStore resolver) {
     return new BinaryMessageDecoder<Person>(MODEL$, SCHEMA$, resolver);
   }
 
-  /** Serializes this Person to a ByteBuffer. */
+  /**
+   * Serializes this Person to a ByteBuffer.
+   * @return a buffer holding the serialized data for this instance
+   * @throws java.io.IOException if this instance could not be serialized
+   */
   public java.nio.ByteBuffer toByteBuffer() throws java.io.IOException {
     return ENCODER.encode(this);
   }
 
-  /** Deserializes a Person from a ByteBuffer. */
+  /**
+   * Deserializes a Person from a ByteBuffer.
+   * @param b a byte buffer holding serialized data for an instance of this class
+   * @return a Person instance decoded from the given buffer
+   * @throws java.io.IOException if the given bytes could not be deserialized into an instance of this class
+   */
   public static Person fromByteBuffer(
       java.nio.ByteBuffer b) throws java.io.IOException {
     return DECODER.decode(b);
   }
 
-  @Deprecated public int id;
-  @Deprecated public java.lang.CharSequence name;
-  @Deprecated public int age;
+   private int id;
+   private java.lang.CharSequence name;
+   private int age;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -74,6 +94,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     this.age = age;
   }
 
+  public org.apache.avro.specific.SpecificData getSpecificData() { return MODEL$; }
   public org.apache.avro.Schema getSchema() { return SCHEMA$; }
   // Used by DatumWriter.  Applications should not call.
   public java.lang.Object get(int field$) {
@@ -81,7 +102,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     case 0: return id;
     case 1: return name;
     case 2: return age;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
+    default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
 
@@ -92,7 +113,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     case 0: id = (java.lang.Integer)value$; break;
     case 1: name = (java.lang.CharSequence)value$; break;
     case 2: age = (java.lang.Integer)value$; break;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
+    default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
 
@@ -100,15 +121,16 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
    * Gets the value of the 'id' field.
    * @return The value of the 'id' field.
    */
-  public java.lang.Integer getId() {
+  public int getId() {
     return id;
   }
+
 
   /**
    * Sets the value of the 'id' field.
    * @param value the value to set.
    */
-  public void setId(java.lang.Integer value) {
+  public void setId(int value) {
     this.id = value;
   }
 
@@ -119,6 +141,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   public java.lang.CharSequence getName() {
     return name;
   }
+
 
   /**
    * Sets the value of the 'name' field.
@@ -132,15 +155,16 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
    * Gets the value of the 'age' field.
    * @return The value of the 'age' field.
    */
-  public java.lang.Integer getAge() {
+  public int getAge() {
     return age;
   }
+
 
   /**
    * Sets the value of the 'age' field.
    * @param value the value to set.
    */
-  public void setAge(java.lang.Integer value) {
+  public void setAge(int value) {
     this.age = value;
   }
 
@@ -158,7 +182,11 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
    * @return A new Person RecordBuilder
    */
   public static com.sivalabs.springbootkafkaavro.model.Person.Builder newBuilder(com.sivalabs.springbootkafkaavro.model.Person.Builder other) {
-    return new com.sivalabs.springbootkafkaavro.model.Person.Builder(other);
+    if (other == null) {
+      return new com.sivalabs.springbootkafkaavro.model.Person.Builder();
+    } else {
+      return new com.sivalabs.springbootkafkaavro.model.Person.Builder(other);
+    }
   }
 
   /**
@@ -167,12 +195,17 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
    * @return A new Person RecordBuilder
    */
   public static com.sivalabs.springbootkafkaavro.model.Person.Builder newBuilder(com.sivalabs.springbootkafkaavro.model.Person other) {
-    return new com.sivalabs.springbootkafkaavro.model.Person.Builder(other);
+    if (other == null) {
+      return new com.sivalabs.springbootkafkaavro.model.Person.Builder();
+    } else {
+      return new com.sivalabs.springbootkafkaavro.model.Person.Builder(other);
+    }
   }
 
   /**
    * RecordBuilder for Person instances.
    */
+  @org.apache.avro.specific.AvroGenerated
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<Person>
     implements org.apache.avro.data.RecordBuilder<Person> {
 
@@ -193,15 +226,15 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       super(other);
       if (isValidValue(fields()[0], other.id)) {
         this.id = data().deepCopy(fields()[0].schema(), other.id);
-        fieldSetFlags()[0] = true;
+        fieldSetFlags()[0] = other.fieldSetFlags()[0];
       }
       if (isValidValue(fields()[1], other.name)) {
         this.name = data().deepCopy(fields()[1].schema(), other.name);
-        fieldSetFlags()[1] = true;
+        fieldSetFlags()[1] = other.fieldSetFlags()[1];
       }
       if (isValidValue(fields()[2], other.age)) {
         this.age = data().deepCopy(fields()[2].schema(), other.age);
-        fieldSetFlags()[2] = true;
+        fieldSetFlags()[2] = other.fieldSetFlags()[2];
       }
     }
 
@@ -210,7 +243,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
      * @param other The existing instance to copy.
      */
     private Builder(com.sivalabs.springbootkafkaavro.model.Person other) {
-            super(SCHEMA$);
+      super(SCHEMA$);
       if (isValidValue(fields()[0], other.id)) {
         this.id = data().deepCopy(fields()[0].schema(), other.id);
         fieldSetFlags()[0] = true;
@@ -229,9 +262,10 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       * Gets the value of the 'id' field.
       * @return The value.
       */
-    public java.lang.Integer getId() {
+    public int getId() {
       return id;
     }
+
 
     /**
       * Sets the value of the 'id' field.
@@ -271,6 +305,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       return name;
     }
 
+
     /**
       * Sets the value of the 'name' field.
       * @param value The value of 'name'.
@@ -306,9 +341,10 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       * Gets the value of the 'age' field.
       * @return The value.
       */
-    public java.lang.Integer getAge() {
+    public int getAge() {
       return age;
     }
+
 
     /**
       * Sets the value of the 'age' field.
@@ -349,6 +385,8 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
         record.name = fieldSetFlags()[1] ? this.name : (java.lang.CharSequence) defaultValue(fields()[1]);
         record.age = fieldSetFlags()[2] ? this.age : (java.lang.Integer) defaultValue(fields()[2]);
         return record;
+      } catch (org.apache.avro.AvroMissingFieldException e) {
+        throw e;
       } catch (java.lang.Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);
       }
@@ -373,4 +411,59 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     READER$.read(this, SpecificData.getDecoder(in));
   }
 
+  @Override protected boolean hasCustomCoders() { return true; }
+
+  @Override public void customEncode(org.apache.avro.io.Encoder out)
+    throws java.io.IOException
+  {
+    out.writeInt(this.id);
+
+    out.writeString(this.name);
+
+    out.writeInt(this.age);
+
+  }
+
+  @Override public void customDecode(org.apache.avro.io.ResolvingDecoder in)
+    throws java.io.IOException
+  {
+    org.apache.avro.Schema.Field[] fieldOrder = in.readFieldOrderIfDiff();
+    if (fieldOrder == null) {
+      this.id = in.readInt();
+
+      this.name = in.readString(this.name instanceof Utf8 ? (Utf8)this.name : null);
+
+      this.age = in.readInt();
+
+    } else {
+      for (int i = 0; i < 3; i++) {
+        switch (fieldOrder[i].pos()) {
+        case 0:
+          this.id = in.readInt();
+          break;
+
+        case 1:
+          this.name = in.readString(this.name instanceof Utf8 ? (Utf8)this.name : null);
+          break;
+
+        case 2:
+          this.age = in.readInt();
+          break;
+
+        default:
+          throw new java.io.IOException("Corrupt ResolvingDecoder.");
+        }
+      }
+    }
+  }
 }
+
+
+
+
+
+
+
+
+
+
