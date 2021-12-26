@@ -2,6 +2,8 @@ package com.sivalabs.springbootkafkaavro;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -16,9 +18,12 @@ import org.testcontainers.utility.DockerImageName;
 public class SpringBootKafkaAvroApplicationTests {
 
     private static final DockerImageName KAFKA_TEST_IMAGE =
-    DockerImageName.parse("confluentinc/cp-kafka:5.3.6-1");
+    DockerImageName.parse("confluentinc/cp-kafka:6.1.0");
 
-    @Container public static final KafkaContainer KAFKA = new KafkaContainer(KAFKA_TEST_IMAGE);
+    private static Duration startupTimeout = Duration.ofMinutes(5);
+
+    @Container 
+    public static final KafkaContainer KAFKA = new KafkaContainer(KAFKA_TEST_IMAGE).withStartupTimeout(startupTimeout);
 
     @DynamicPropertySource
     static void registerPgProperties(DynamicPropertyRegistry registry) {
