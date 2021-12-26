@@ -28,21 +28,22 @@ public class MessageProducer {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
-        Producer<String, String> producer = new KafkaProducer<>(props);
-        //Long count = 0L;
-        String[] names = {"Siva","Neha","Ramu","Suman"};
-        Random random = new Random();
-        while (true) {
+        try (Producer<String, String> producer = new KafkaProducer<>(props)) {
+            //Long count = 0L;
+            String[] names = {"Siva","Neha","Ramu","Suman"};
+            Random random = new Random();
+            while (true) {
 
-            String name = names[random.nextInt(names.length)];
-            producer.send(new ProducerRecord<>(TOPIC_NAME, name, name));
-            System.out.println("Sent Name="+ name);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                String name = names[random.nextInt(names.length)];
+                producer.send(new ProducerRecord<>(TOPIC_NAME, name, name));
+                System.out.println("Sent Name="+ name);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                //count++;
             }
-            //count++;
         }
 
         //System.out.println("Message sent successfully");

@@ -2,30 +2,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>kafka-tutorial</artifactId>
-        <groupId>com.sivalabs</groupId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
+    
     <modelVersion>4.0.0</modelVersion>
-
+    <groupId>com.sivalabs</groupId>
+    <version>1.0.0-SNAPSHOT</version>
     <artifactId>kafka-java-sample</artifactId>
 
     <properties>
-            <maven.compiler.source>1.8</maven.compiler.source>
-            <maven.compiler.target>1.8</maven.compiler.target>
+            <maven.compiler.source>11</maven.compiler.source>
+            <maven.compiler.target>11</maven.compiler.target>
+            <java.version>17</java.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>2.2.0</version>
+            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-            <version>2.2.0</version>
+            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
