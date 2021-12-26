@@ -1,5 +1,6 @@
 package com.sivalabs.springbootkafkaavro;
 
+import com.sivalabs.springbootkafkaavro.entity.PersonEntity;
 import com.sivalabs.springbootkafkaavro.model.Person;
 import com.sivalabs.springbootkafkaavro.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 @Slf4j
 public class SpringBootKafkaAvroApplication implements CommandLineRunner {
 
+  public static final String PERSONS_TOPIC = "persons";
+
   public static void main(String[] args) {
     SpringApplication.run(SpringBootKafkaAvroApplication.class, args);
   }
@@ -26,13 +29,15 @@ public class SpringBootKafkaAvroApplication implements CommandLineRunner {
   @Override
   public void run(String... args) {
     Person person = Person.newBuilder().setId(1).setName("Siva").setAge(33).build();
-    kafkaTemplate.send("persons", person);
+    kafkaTemplate.send(PERSONS_TOPIC, person);
   }
 
-  @KafkaListener(topics = "persons")
+  @KafkaListener(topics = PERSONS_TOPIC)
   public void handler(ConsumerRecord<String, Person> personConsumerRecord) {
     Person person = personConsumerRecord.value();
     log.info(" {} : {} ", person.getName(), person.getAge());
-    this.personRepository.save(person);
+    PersonEntity personEntity =
+        new PersonEntity(person.getId(), (String) person.getName(), person.getAge());
+    this.personRepository.save(personEntity);
   }
 }
