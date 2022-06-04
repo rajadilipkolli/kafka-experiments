@@ -31,4 +31,4 @@ jobs:
     - name: Build with Maven
       run: |
         cd kafka-java-sample
-        mvn -B package --file pom.xml
+        ./mvnw -B package --file pom.xml

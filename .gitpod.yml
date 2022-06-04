@@ -18,3 +18,8 @@ vscode:
     - vscjava.vscode-spring-boot-dashboard
     - vscjava.vscode-spring-initializr
 
+ports:
+  - port: 9092
+    visibility: public
+  - port: 8081
+    visibility: public
