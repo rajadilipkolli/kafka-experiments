@@ -23,3 +23,7 @@ ports:
     visibility: public
   - port: 8081
     visibility: public
+  - port: 2181
+    visibility: public
+  - port: 29092
+    visibility: public
