@@ -33,3 +33,4 @@ HELP.md
 /analytics-spring-cloud-streams-kafka-consumer/target/
 /analytics-spring-cloud-streams-kafka-producer/target/
 .class
+kafka-java-sample/target/
