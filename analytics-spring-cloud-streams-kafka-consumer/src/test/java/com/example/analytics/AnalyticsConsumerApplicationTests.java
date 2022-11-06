@@ -62,7 +62,7 @@ public class AnalyticsConsumerApplicationTests {
         Message<String> message =
                 MessageBuilder.withPayload(messageAsString)
                         .setHeaderIfAbsent(KafkaHeaders.TOPIC, "pvs")
-                        .setHeader(KafkaHeaders.MESSAGE_KEY, pageViewEvent.getUserId())
+                        .setHeader(KafkaHeaders.KEY, pageViewEvent.getUserId())
                         .build();
 
         this.kafkaTemplate.send(message);
