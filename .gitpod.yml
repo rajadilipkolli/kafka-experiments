@@ -19,11 +19,13 @@ vscode:
     - vscjava.vscode-spring-initializr
 
 ports:
-  - port: 9092
+  - port: 9091-9093
     visibility: public
   - port: 8081
     visibility: public
   - port: 2181
+    visibility: public
+  - port: 9000
     visibility: public
   - port: 29092
     visibility: public
