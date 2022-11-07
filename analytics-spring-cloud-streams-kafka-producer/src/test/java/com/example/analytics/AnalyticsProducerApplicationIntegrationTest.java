@@ -39,7 +39,7 @@ import org.testcontainers.utility.DockerImageName;
 class AnalyticsProducerApplicationIntegrationTest {
 
   private static final DockerImageName KAFKA_TEST_IMAGE =
-      DockerImageName.parse("confluentinc/cp-kafka:5.3.6-1");
+      DockerImageName.parse("confluentinc/cp-kafka:5.3.8-1");
 
   @Container public static final KafkaContainer KAFKA = new KafkaContainer(KAFKA_TEST_IMAGE);
 
