@@ -15,9 +15,10 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: "spring-boot-kafka-avro"
     steps:
     - uses: actions/checkout@v3
       with:
@@ -34,6 +35,4 @@ jobs:
         sleep 10
         docker ps -a
     - name: Build with Maven
-      run: |
-        cd spring-boot-kafka-avro
-        mvn -B package --file pom.xml
+      run: ./mvnw -B clean verify --file pom.xml
