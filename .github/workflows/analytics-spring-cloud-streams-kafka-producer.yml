@@ -15,9 +15,10 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: "analytics-spring-cloud-streams-kafka-producer"
     steps:
     - uses: actions/checkout@v3
       with:
@@ -29,6 +30,4 @@ jobs:
         distribution: 'adopt'
         cache: 'maven'
     - name: Build with Maven
-      run: |
-        cd analytics-spring-cloud-streams-kafka-producer
-        mvn -B package --file pom.xml
+      run: ./mvnw -B clean verify --file pom.xml
