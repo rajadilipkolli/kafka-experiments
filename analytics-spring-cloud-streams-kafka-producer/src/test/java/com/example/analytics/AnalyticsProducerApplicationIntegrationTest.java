@@ -32,14 +32,14 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-@Import(AnalyticsProducerApplicationTests.KafkaTestContainersConfiguration.class)
+@Import(AnalyticsProducerApplicationIntegrationTest.KafkaTestContainersConfiguration.class)
 @SpringBootTest
 @DirtiesContext
 @Testcontainers
-class AnalyticsProducerApplicationTests {
+class AnalyticsProducerApplicationIntegrationTest {
 
   private static final DockerImageName KAFKA_TEST_IMAGE =
-      DockerImageName.parse("confluentinc/cp-kafka:5.3.6-1");
+      DockerImageName.parse("confluentinc/cp-kafka:5.3.8-1");
 
   @Container public static final KafkaContainer KAFKA = new KafkaContainer(KAFKA_TEST_IMAGE);
 

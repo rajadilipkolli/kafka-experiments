@@ -34,7 +34,7 @@ import org.testcontainers.utility.DockerImageName;
 public class AnalyticsConsumerApplicationTests {
 
     private static final DockerImageName KAFKA_TEST_IMAGE =
-            DockerImageName.parse("confluentinc/cp-kafka:5.3.6-1");
+            DockerImageName.parse("confluentinc/cp-kafka:5.3.8-1");
 
     @Container
     public static final KafkaContainer KAFKA_CONTAINER = new KafkaContainer(KAFKA_TEST_IMAGE);
@@ -62,7 +62,7 @@ public class AnalyticsConsumerApplicationTests {
         Message<String> message =
                 MessageBuilder.withPayload(messageAsString)
                         .setHeaderIfAbsent(KafkaHeaders.TOPIC, "pvs")
-                        .setHeader(KafkaHeaders.MESSAGE_KEY, pageViewEvent.getUserId())
+                        .setHeader(KafkaHeaders.KEY, pageViewEvent.getUserId())
                         .build();
 
         this.kafkaTemplate.send(message);
