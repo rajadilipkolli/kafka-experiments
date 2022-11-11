@@ -3,11 +3,11 @@ name: analytics-spring-cloud-streams-kafka-consumer
 on:
   push:
     paths:
-      - "analytics-spring-cloud-streams-kafka-consumer/**"
+      - "spring-boot-kafka-streams/analytics-spring-cloud-streams-kafka-consumer/**"
     branches: [ master ]
   pull_request:
     paths:
-      - "analytics-spring-cloud-streams-kafka-consumer/**"
+      - "spring-boot-kafka-streams/analytics-spring-cloud-streams-kafka-consumer/**"
     types:
       - opened
       - synchronize
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "analytics-spring-cloud-streams-kafka-consumer"
+        working-directory: "spring-boot-kafka-streams/analytics-spring-cloud-streams-kafka-consumer"
     steps:
     - uses: actions/checkout@v3
       with:
