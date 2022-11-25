@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.5</version>
+        <version>2.7.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.sivalabs</groupId>
@@ -18,7 +18,7 @@
         <java.version>17</java.version>
         <avro.version>1.11.1</avro.version>
         <confluent.version>7.3.0</confluent.version>
-        <testcontainers.version>1.17.5</testcontainers.version>
+        <testcontainers.version>1.17.6</testcontainers.version>
     </properties>
 
     <repositories>
