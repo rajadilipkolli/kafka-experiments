@@ -3,11 +3,11 @@ name: analytics-spring-cloud-streams-kafka-producer
 on:
   push:
     paths:
-      - "spring-boot-kafka-streams/analytics-spring-cloud-streams-kafka-producer/**"
+      - "kafka-streams/analytics-spring-cloud-streams-kafka-producer/**"
     branches: [ master ]
   pull_request:
     paths:
-      - "spring-boot-kafka-streams/analytics-spring-cloud-streams-kafka-producer/**"
+      - "kafka-streams/analytics-spring-cloud-streams-kafka-producer/**"
     types:
       - opened
       - synchronize
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "spring-boot-kafka-streams/analytics-spring-cloud-streams-kafka-producer"
+        working-directory: "kafka-streams/analytics-spring-cloud-streams-kafka-producer"
     steps:
     - uses: actions/checkout@v3
       with:
