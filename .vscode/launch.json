@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringBootKafkaMultiApplication<spring-boot-multiple-producers-consumers>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.sivalabs.springbootkafka.multi.SpringBootKafkaMultiApplication",
+            "projectName": "spring-boot-multiple-producers-consumers",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

@@ -1,4 +1,4 @@
-package com.sivalabs.springbootkafka.multi;
+package com.sivalabs.springbootkafka.multi.sender;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import static com.sivalabs.springbootkafka.multi.SpringBootKafkaMultiApplication.TOPIC_TEST_1;
-import static com.sivalabs.springbootkafka.multi.SpringBootKafkaMultiApplication.TOPIC_TEST_2;
+import com.sivalabs.springbootkafka.multi.domain.SimpleMessage;
+
+import static com.sivalabs.springbootkafka.multi.util.AppConstants.TOPIC_TEST_1;
+import static com.sivalabs.springbootkafka.multi.util.AppConstants.TOPIC_TEST_2;
 
 @Component
 public class Sender {
@@ -20,14 +22,14 @@ public class Sender {
     @Autowired
     private KafkaTemplate<String, SimpleMessage> jsonKafkaTemplate;
 
-    void send(Integer key, String msg) {
+    public void send(Integer key, String msg) {
         this.simpleKafkaTemplate.send(TOPIC_TEST_1, key, msg);
-        logger.info("Sent key="+key+", msg="+msg+" to topic:"+TOPIC_TEST_1);
+        logger.info("Sent key= {}, msg= {} to topic: {}",key,msg,TOPIC_TEST_1);
     }
 
-    void send(SimpleMessage msg) {
-        String key = String.valueOf(msg.getKey());
+    public void send(SimpleMessage msg) {
+        String key = String.valueOf(msg.key());
         this.jsonKafkaTemplate.send(TOPIC_TEST_2, key, msg);
-        logger.info("Sent key="+key+", msg="+msg+" to topic:"+TOPIC_TEST_2);
+        logger.info("Sent key= {}, msg= {} to topic: {}",key,msg,TOPIC_TEST_2);
     }
 }

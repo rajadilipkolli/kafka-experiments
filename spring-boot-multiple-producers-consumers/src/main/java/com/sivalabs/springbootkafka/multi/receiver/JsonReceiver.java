@@ -1,4 +1,4 @@
-package com.sivalabs.springbootkafka.multi;
+package com.sivalabs.springbootkafka.multi.receiver;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -6,10 +6,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import com.sivalabs.springbootkafka.multi.domain.SimpleMessage;
+
 import java.util.concurrent.CountDownLatch;
 
-import static com.sivalabs.springbootkafka.multi.SpringBootKafkaMultiApplication.TOPIC_TEST_1;
-import static com.sivalabs.springbootkafka.multi.SpringBootKafkaMultiApplication.TOPIC_TEST_2;
+import static com.sivalabs.springbootkafka.multi.util.AppConstants.TOPIC_TEST_2;
 
 @Component
 public class JsonReceiver {

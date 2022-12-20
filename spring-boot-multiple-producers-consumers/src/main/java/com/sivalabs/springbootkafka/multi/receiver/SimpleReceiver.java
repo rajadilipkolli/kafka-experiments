@@ -1,4 +1,4 @@
-package com.sivalabs.springbootkafka.multi;
+package com.sivalabs.springbootkafka.multi.receiver;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CountDownLatch;
 
-import static com.sivalabs.springbootkafka.multi.SpringBootKafkaMultiApplication.TOPIC_TEST_1;
+import static com.sivalabs.springbootkafka.multi.util.AppConstants.TOPIC_TEST_1;
 
 @Component
 public class SimpleReceiver {

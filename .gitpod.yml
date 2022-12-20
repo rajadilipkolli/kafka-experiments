@@ -21,6 +21,8 @@ vscode:
 ports:
   - port: 9091-9093
     visibility: public
+  - port: 8080
+    visibility: public
   - port: 8081
     visibility: public
   - port: 2181

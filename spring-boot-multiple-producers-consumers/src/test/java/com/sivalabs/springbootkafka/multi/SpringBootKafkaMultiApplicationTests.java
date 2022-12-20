@@ -13,10 +13,15 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 
+import com.sivalabs.springbootkafka.multi.domain.SimpleMessage;
+import com.sivalabs.springbootkafka.multi.receiver.JsonReceiver;
+import com.sivalabs.springbootkafka.multi.receiver.SimpleReceiver;
+import com.sivalabs.springbootkafka.multi.sender.Sender;
+
 import java.util.concurrent.TimeUnit;
 
-import static com.sivalabs.springbootkafka.multi.SpringBootKafkaMultiApplication.TOPIC_TEST_1;
-import static com.sivalabs.springbootkafka.multi.SpringBootKafkaMultiApplication.TOPIC_TEST_2;
+import static com.sivalabs.springbootkafka.multi.util.AppConstants.TOPIC_TEST_1;
+import static com.sivalabs.springbootkafka.multi.util.AppConstants.TOPIC_TEST_2;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -62,9 +67,7 @@ public class SpringBootKafkaMultiApplicationTests {
 
   @Test
   void sendAndReceiveJsonData() throws Exception {
-    SimpleMessage simpleMessage = new SimpleMessage();
-    simpleMessage.setKey(110);
-    simpleMessage.setValue("My Json Message");
+    SimpleMessage simpleMessage = new SimpleMessage(110, "My Json Message");
     sender.send(simpleMessage);
     // jsonKafkaTemplate.send(TOPIC_TEST_2, "k1",simpleMessage);
     // TimeUnit.SECONDS.sleep(5);

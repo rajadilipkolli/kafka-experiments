@@ -1,4 +1,4 @@
-package com.sivalabs.springbootkafka.multi;
+package com.sivalabs.springbootkafka.multi.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -18,6 +18,8 @@ import org.springframework.kafka.core.*;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+
+import com.sivalabs.springbootkafka.multi.domain.SimpleMessage;
 
 import java.util.Map;
 
@@ -101,7 +103,7 @@ public class KafkaConfig {
         Map<String, Object> consumerProperties = this.properties.buildConsumerProperties();
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class.getName());
-        consumerProperties.put(JsonDeserializer.TRUSTED_PACKAGES,"com.sivalabs.springbootkafka.multi");
+        consumerProperties.put(JsonDeserializer.TRUSTED_PACKAGES,"com.sivalabs.springbootkafka.multi.domain");
         return new DefaultKafkaConsumerFactory<>(consumerProperties);
     }
 
