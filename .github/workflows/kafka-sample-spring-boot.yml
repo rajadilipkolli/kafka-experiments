@@ -1,13 +1,13 @@
-name: spring-kafka-sample
+name: spring-boot-kafka-sample
 
 on:
   push:
     paths:
-      - "spring-kafka-sample/**"
+      - "kafka-sample/spring-boot/**"
     branches: [ master ]
   pull_request:
     paths:
-      - "spring-kafka-sample/**"
+      - "kafka-sample/spring-boot/**"
     types:
       - opened
       - synchronize
@@ -15,9 +15,10 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: "kafka-sample/spring-boot"
     steps:
     - uses: actions/checkout@v3
       with:
@@ -26,9 +27,7 @@ jobs:
       uses: actions/setup-java@v3.9.0
       with:
         java-version: '17'
-        distribution: 'microsoft'
+        distribution: 'adopt'
         cache: 'maven'
     - name: Build with Maven
-      run: |
-        cd spring-kafka-sample
-        mvn -B package --file pom.xml
+      run: ./mvnw -B verify --file pom.xml
