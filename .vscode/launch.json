@@ -9,6 +9,16 @@
             "projectName": "spring-boot-multiple-producers-consumers",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringBootKafkaAvroApplication<spring-boot-kafka-avro>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.sivalabs.springbootkafkaavro.SpringBootKafkaAvroApplication",
+            "projectName": "spring-boot-kafka-avro",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

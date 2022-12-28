@@ -1,5 +1,4 @@
----
-version: '2'
+version: '3.9'
 
 services:
   zookeeper:
@@ -42,3 +41,13 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:9092'
     volumes:
       - ./schema:/opt/app/schema/
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    restart: "no"
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "broker:9092"
+    depends_on:
+      - broker
