@@ -3,7 +3,6 @@ package com.github.timtebeek;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -39,7 +38,7 @@ class KafkaDeadLetterPublishingApplicationTests {
 	private static final Logger log = LoggerFactory.getLogger(KafkaDeadLetterPublishingApplicationTests.class);
 
 	@Container // https://www.testcontainers.org/modules/kafka/
-	static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.0.1"));
+	static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.3.1"));
 
 	@DynamicPropertySource
 	static void setProperties(DynamicPropertyRegistry registry) {
@@ -77,7 +76,7 @@ class KafkaDeadLetterPublishingApplicationTests {
 		// Verify no message was produced onto Dead Letter Topic
 		assertThrows(
 				IllegalStateException.class,
-				() -> KafkaTestUtils.getSingleRecord(kafkaConsumer, ORDERS_DLT, Duration.ofMillis(5)),
+				() -> KafkaTestUtils.getSingleRecord(kafkaConsumer, ORDERS_DLT, Duration.ofSeconds(5)),
 				"No records found for topic");
 	}
 
@@ -85,14 +84,10 @@ class KafkaDeadLetterPublishingApplicationTests {
 	void should_produce_onto_dlt_for_bad_message() throws Exception {
 		// Amount can not be negative, validation will fail
 		Order order = new Order(randomUUID(), randomUUID(), -2);
-		ProducerRecord<String, Order> producerRecord = new ProducerRecord<>("orders", order.orderId().toString(), order);
-		operations.send("orders", order.orderId().toString(), order)
-				.addCallback(
-						success -> log.info("Success: {}", success),
-						failure -> log.info("Failure: {}", failure));
+		operations.send("orders", order.orderId().toString(), order);
 
 		// Verify message produced onto Dead Letter Topic
-		ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(kafkaConsumer, ORDERS_DLT, 2000);
+		ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(kafkaConsumer, ORDERS_DLT, Duration.ofSeconds(2));
 
 		// Verify headers present, and single header value
 		Headers headers = record.headers();
