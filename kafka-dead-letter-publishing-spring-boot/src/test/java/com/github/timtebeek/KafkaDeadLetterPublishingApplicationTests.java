@@ -54,7 +54,7 @@ class KafkaDeadLetterPublishingApplicationTests {
 	@BeforeAll
 	static void setup() {
 		// Create a test consumer that handles <String, String> records, listening to orders.DLT
-		// https://docs.spring.io/spring-kafka/docs/2.8.1/reference/html/#testing
+		// https://docs.spring.io/spring-kafka/docs/current/reference/html/#testing
 		var consumerProps = KafkaTestUtils.consumerProps(kafka.getBootstrapServers(), "test-consumer", "true");
 		consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		kafkaConsumer = new KafkaConsumer<>(consumerProps);
@@ -107,7 +107,7 @@ class KafkaDeadLetterPublishingApplicationTests {
 		assertThat(new String(headers.lastHeader("kafka_dlt-exception-cause-fqcn").value()))
 				.isEqualTo("org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException");
 		assertThat(new String(headers.lastHeader("kafka_dlt-exception-message").value()))
-				.contains("Field error in object 'order' on field 'amount': rejected value [-2]");
+				.contains("Listener method could not be invoked with the incoming message");
 
 		// Verify payload value matches sent in order
 		assertThat(record.value()).isEqualToIgnoringWhitespace("""
