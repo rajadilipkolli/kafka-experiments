@@ -22,7 +22,7 @@
 		<testcontainers.version>1.17.6</testcontainers.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven-surefire-plugin.version>3.0.0-M9</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
 		<maven-failsafe-plugin.version>3.0.0-M9</maven-failsafe-plugin.version>
 
 		<project.testresult.directory>${project.build.directory}/test-results</project.testresult.directory>
