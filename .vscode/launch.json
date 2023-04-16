@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "KafkaDeadLetterPublishingApplication",
+            "request": "launch",
+            "mainClass": "com.github.timtebeek.KafkaDeadLetterPublishingApplication",
+            "projectName": "kafka-dead-letter-publishing"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-SpringBootKafkaMultiApplication<spring-boot-multiple-producers-consumers>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
