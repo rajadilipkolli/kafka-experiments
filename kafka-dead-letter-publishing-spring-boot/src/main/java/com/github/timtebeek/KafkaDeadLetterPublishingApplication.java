@@ -2,6 +2,10 @@ package com.github.timtebeek;
 
 import com.github.timtebeek.config.AppKafkaProperties;
 import com.github.timtebeek.config.KafkaConfiguration;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -14,33 +18,24 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.UUID;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-
 @SpringBootApplication
 @EnableConfigurationProperties(AppKafkaProperties.class)
 public class KafkaDeadLetterPublishingApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(KafkaDeadLetterPublishingApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(KafkaDeadLetterPublishingApplication.class, args);
+    }
 }
 
 @Component
 class OrderListener {
 
-	private static final Logger log = LoggerFactory.getLogger(OrderListener.class);
+    private static final Logger log = LoggerFactory.getLogger(OrderListener.class);
 
-	@KafkaListener(topics = KafkaConfiguration.ORDERS)
-	void listen(@Payload @Validated Order order) {
-		log.info("Received: {}", order);
-	}
-
+    @KafkaListener(topics = KafkaConfiguration.ORDERS)
+    void listen(@Payload @Validated Order order) {
+        log.info("Received: {}", order);
+    }
 }
 
-record Order(
-		@NotNull UUID orderId,
-		@NotNull UUID articleId,
-		@Positive int amount) {
-}
+record Order(@NotNull UUID orderId, @NotNull UUID articleId, @Positive int amount) {}
