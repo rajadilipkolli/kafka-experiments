@@ -1,9 +1,9 @@
-package com.sivalabs.springbootkafkaavro.listener;
+package com.example.springbootkafkaavro.listener;
 
-import com.sivalabs.springbootkafkaavro.entity.PersonEntity;
-import com.sivalabs.springbootkafkaavro.model.Person;
-import com.sivalabs.springbootkafkaavro.repository.PersonRepository;
-import com.sivalabs.springbootkafkaavro.util.ApplicationConstants;
+import com.example.springbootkafkaavro.entity.PersonEntity;
+import com.example.springbootkafkaavro.model.Person;
+import com.example.springbootkafkaavro.repository.PersonRepository;
+import com.example.springbootkafkaavro.util.ApplicationConstants;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +19,12 @@ public class AvroKafkaListener {
 
     private final PersonRepository personRepository;
 
-    @KafkaListener(topics = ApplicationConstants.PERSONS_TOPIC)
+    @KafkaListener(topics = ApplicationConstants.PERSONS_TOPIC, groupId = "group_id")
     public void handler(ConsumerRecord<String, Person> personConsumerRecord) {
         Person person = personConsumerRecord.value();
-        log.info(" {} : {} ", person.getName(), person.getAge());
+        log.info("Person received : {} : {} ", person.getName(), person.getAge());
         PersonEntity personEntity =
-                new PersonEntity(person.getId(), person.getName().toString(), person.getAge());
+                new PersonEntity(null, person.getName().toString(), person.getAge());
         this.personRepository.save(personEntity);
     }
 }

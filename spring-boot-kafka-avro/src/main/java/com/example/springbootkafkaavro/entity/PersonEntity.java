@@ -1,4 +1,4 @@
-package com.sivalabs.springbootkafkaavro.entity;
+package com.example.springbootkafkaavro.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

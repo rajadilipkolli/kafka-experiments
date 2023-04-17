@@ -19,6 +19,7 @@
         <java.version>17</java.version>
         <avro.version>1.11.1</avro.version>
         <confluent.version>7.3.3</confluent.version>
+        <springdoc-openapi.version>2.1.0</springdoc-openapi.version>
 
         <testcontainers.version>1.18.0</testcontainers.version>
         <spotless.version>2.36.0</spotless.version>
@@ -33,11 +34,21 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc-openapi.version}</version>
         </dependency>
 
         <!--https://github.com/spring-projects/spring-boot/issues/14622-->

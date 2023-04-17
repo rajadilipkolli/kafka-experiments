@@ -1,17 +1,21 @@
-package com.sivalabs.springbootkafkaavro;
+package com.example.springbootkafkaavro;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-import com.sivalabs.springbootkafkaavro.repository.PersonRepository;
+import com.example.springbootkafkaavro.repository.PersonRepository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
@@ -21,8 +25,10 @@ import org.testcontainers.utility.DockerImageName;
 import java.time.Duration;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 class SpringBootKafkaAvroApplicationTests {
 
+    @Autowired MockMvc mockMvc;
     @Autowired PersonRepository personRepository;
 
     private static final Network KAFKA_NETWORK = Network.newNetwork();
@@ -92,7 +98,10 @@ class SpringBootKafkaAvroApplicationTests {
     }
 
     @Test
-    void contextLoads() {
+    void contextLoads() throws Exception {
+        this.mockMvc
+                .perform(post("/person/publish").param("name", "junit").param("age", "33"))
+                .andExpect(status().isOk());
         await().atMost(10, SECONDS)
                 .untilAsserted(() -> assertThat(personRepository.count()).isEqualTo(1));
     }

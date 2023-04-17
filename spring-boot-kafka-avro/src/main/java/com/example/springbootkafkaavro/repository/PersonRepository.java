@@ -1,6 +1,6 @@
-package com.sivalabs.springbootkafkaavro.repository;
+package com.example.springbootkafkaavro.repository;
 
-import com.sivalabs.springbootkafkaavro.entity.PersonEntity;
+import com.example.springbootkafkaavro.entity.PersonEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

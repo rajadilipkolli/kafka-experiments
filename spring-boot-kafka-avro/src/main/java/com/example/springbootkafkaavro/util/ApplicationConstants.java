@@ -1,4 +1,4 @@
-package com.sivalabs.springbootkafkaavro.util;
+package com.example.springbootkafkaavro.util;
 
 import lombok.experimental.UtilityClass;
 

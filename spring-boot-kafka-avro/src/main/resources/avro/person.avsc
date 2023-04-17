@@ -1,5 +1,5 @@
 {
-     "namespace": "com.sivalabs.springbootkafkaavro.model",
+     "namespace": "com.example.springbootkafkaavro.model",
      "type": "record",
      "name": "Person",
      "version": "1",

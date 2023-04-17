@@ -3,7 +3,7 @@
  *
  * DO NOT EDIT DIRECTLY
  */
-package com.sivalabs.springbootkafkaavro.model;
+package com.example.springbootkafkaavro.model;
 
 import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
@@ -14,10 +14,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class Person extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 1026404221001588001L;
+  private static final long serialVersionUID = 5166273048254553824L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.sivalabs.springbootkafkaavro.model\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"age\",\"type\":\"int\"}],\"version\":\"1\"}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.example.springbootkafkaavro.model\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"age\",\"type\":\"int\"}],\"version\":\"1\"}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -180,8 +180,8 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
    * Creates a new Person RecordBuilder.
    * @return A new Person RecordBuilder
    */
-  public static com.sivalabs.springbootkafkaavro.model.Person.Builder newBuilder() {
-    return new com.sivalabs.springbootkafkaavro.model.Person.Builder();
+  public static com.example.springbootkafkaavro.model.Person.Builder newBuilder() {
+    return new com.example.springbootkafkaavro.model.Person.Builder();
   }
 
   /**
@@ -189,11 +189,11 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
    * @param other The existing builder to copy.
    * @return A new Person RecordBuilder
    */
-  public static com.sivalabs.springbootkafkaavro.model.Person.Builder newBuilder(com.sivalabs.springbootkafkaavro.model.Person.Builder other) {
+  public static com.example.springbootkafkaavro.model.Person.Builder newBuilder(com.example.springbootkafkaavro.model.Person.Builder other) {
     if (other == null) {
-      return new com.sivalabs.springbootkafkaavro.model.Person.Builder();
+      return new com.example.springbootkafkaavro.model.Person.Builder();
     } else {
-      return new com.sivalabs.springbootkafkaavro.model.Person.Builder(other);
+      return new com.example.springbootkafkaavro.model.Person.Builder(other);
     }
   }
 
@@ -202,11 +202,11 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
    * @param other The existing instance to copy.
    * @return A new Person RecordBuilder
    */
-  public static com.sivalabs.springbootkafkaavro.model.Person.Builder newBuilder(com.sivalabs.springbootkafkaavro.model.Person other) {
+  public static com.example.springbootkafkaavro.model.Person.Builder newBuilder(com.example.springbootkafkaavro.model.Person other) {
     if (other == null) {
-      return new com.sivalabs.springbootkafkaavro.model.Person.Builder();
+      return new com.example.springbootkafkaavro.model.Person.Builder();
     } else {
-      return new com.sivalabs.springbootkafkaavro.model.Person.Builder(other);
+      return new com.example.springbootkafkaavro.model.Person.Builder(other);
     }
   }
 
@@ -230,7 +230,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(com.sivalabs.springbootkafkaavro.model.Person.Builder other) {
+    private Builder(com.example.springbootkafkaavro.model.Person.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.id)) {
         this.id = data().deepCopy(fields()[0].schema(), other.id);
@@ -250,7 +250,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
      * Creates a Builder by copying an existing Person instance
      * @param other The existing instance to copy.
      */
-    private Builder(com.sivalabs.springbootkafkaavro.model.Person other) {
+    private Builder(com.example.springbootkafkaavro.model.Person other) {
       super(SCHEMA$, MODEL$);
       if (isValidValue(fields()[0], other.id)) {
         this.id = data().deepCopy(fields()[0].schema(), other.id);
@@ -280,7 +280,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       * @param value The value of 'id'.
       * @return This builder.
       */
-    public com.sivalabs.springbootkafkaavro.model.Person.Builder setId(long value) {
+    public com.example.springbootkafkaavro.model.Person.Builder setId(long value) {
       validate(fields()[0], value);
       this.id = value;
       fieldSetFlags()[0] = true;
@@ -300,7 +300,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       * Clears the value of the 'id' field.
       * @return This builder.
       */
-    public com.sivalabs.springbootkafkaavro.model.Person.Builder clearId() {
+    public com.example.springbootkafkaavro.model.Person.Builder clearId() {
       fieldSetFlags()[0] = false;
       return this;
     }
@@ -319,7 +319,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       * @param value The value of 'name'.
       * @return This builder.
       */
-    public com.sivalabs.springbootkafkaavro.model.Person.Builder setName(java.lang.CharSequence value) {
+    public com.example.springbootkafkaavro.model.Person.Builder setName(java.lang.CharSequence value) {
       validate(fields()[1], value);
       this.name = value;
       fieldSetFlags()[1] = true;
@@ -339,7 +339,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       * Clears the value of the 'name' field.
       * @return This builder.
       */
-    public com.sivalabs.springbootkafkaavro.model.Person.Builder clearName() {
+    public com.example.springbootkafkaavro.model.Person.Builder clearName() {
       name = null;
       fieldSetFlags()[1] = false;
       return this;
@@ -359,7 +359,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       * @param value The value of 'age'.
       * @return This builder.
       */
-    public com.sivalabs.springbootkafkaavro.model.Person.Builder setAge(int value) {
+    public com.example.springbootkafkaavro.model.Person.Builder setAge(int value) {
       validate(fields()[2], value);
       this.age = value;
       fieldSetFlags()[2] = true;
@@ -379,7 +379,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       * Clears the value of the 'age' field.
       * @return This builder.
       */
-    public com.sivalabs.springbootkafkaavro.model.Person.Builder clearAge() {
+    public com.example.springbootkafkaavro.model.Person.Builder clearAge() {
       fieldSetFlags()[2] = false;
       return this;
     }
