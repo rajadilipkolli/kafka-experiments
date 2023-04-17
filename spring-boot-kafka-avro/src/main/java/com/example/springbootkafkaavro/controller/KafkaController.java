@@ -1,6 +1,7 @@
 package com.example.springbootkafkaavro.controller;
 
 import com.example.springbootkafkaavro.model.Person;
+import com.example.springbootkafkaavro.service.KafkaProducer;
 
 import lombok.RequiredArgsConstructor;
 

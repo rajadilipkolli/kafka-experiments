@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(title = "catalog-service", version = "v1"),
-        servers = @Server(url = "/${spring.application.name}"))
+        info = @Info(title = "spring-boot-kafka-avro", version = "v1"),
+        servers = @Server(url = "/"))
 public class SwaggerConfig {}

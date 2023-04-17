@@ -22,7 +22,7 @@
             "name": "Spring Boot-SpringBootKafkaAvroApplication<spring-boot-kafka-avro>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
-            "mainClass": "com.sivalabs.springbootkafkaavro.SpringBootKafkaAvroApplication",
+            "mainClass": "com.example.springbootkafkaavro.SpringBootKafkaAvroApplication",
             "projectName": "spring-boot-kafka-avro",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
