@@ -19,7 +19,9 @@
         <java.version>17</java.version>
         <avro.version>1.11.1</avro.version>
         <confluent.version>7.3.3</confluent.version>
+
         <testcontainers.version>1.18.0</testcontainers.version>
+        <spotless.version>2.36.0</spotless.version>
     </properties>
 
     <dependencies>
@@ -144,6 +146,27 @@
                                 <source>generated-avro</source>
                             </sources>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <configuration>
+                    <java>
+                        <googleJavaFormat>
+                            <version>1.16.0</version>
+                            <style>AOSP</style>
+                        </googleJavaFormat>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

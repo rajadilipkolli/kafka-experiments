@@ -4,7 +4,7 @@
      "name": "Person",
      "version": "1",
      "fields": [
-       { "name": "id", "type": "int" },
+       { "name": "id", "type": "long" },
        { "name": "name", "type": "string" },
        { "name": "age", "type": "int" }
      ]

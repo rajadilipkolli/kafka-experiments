@@ -1,11 +1,16 @@
 package com.sivalabs.springbootkafkaavro.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import jakarta.persistence.*;
 
 @Entity
 @Table(name = "person_entity")
@@ -14,13 +19,13 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PersonEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     private String name;
 
     private Integer age;
-
 }

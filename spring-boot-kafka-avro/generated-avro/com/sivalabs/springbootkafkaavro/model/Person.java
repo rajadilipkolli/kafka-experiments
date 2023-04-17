@@ -14,10 +14,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class Person extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 2833184250831685670L;
+  private static final long serialVersionUID = 1026404221001588001L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.sivalabs.springbootkafkaavro.model\",\"fields\":[{\"name\":\"id\",\"type\":\"int\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"age\",\"type\":\"int\"}],\"version\":\"1\"}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.sivalabs.springbootkafkaavro.model\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"age\",\"type\":\"int\"}],\"version\":\"1\"}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -73,7 +73,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     return DECODER.decode(b);
   }
 
-  private int id;
+  private long id;
   private java.lang.CharSequence name;
   private int age;
 
@@ -90,7 +90,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
    * @param name The new value for name
    * @param age The new value for age
    */
-  public Person(java.lang.Integer id, java.lang.CharSequence name, java.lang.Integer age) {
+  public Person(java.lang.Long id, java.lang.CharSequence name, java.lang.Integer age) {
     this.id = id;
     this.name = name;
     this.age = age;
@@ -118,7 +118,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
-    case 0: id = (java.lang.Integer)value$; break;
+    case 0: id = (java.lang.Long)value$; break;
     case 1: name = (java.lang.CharSequence)value$; break;
     case 2: age = (java.lang.Integer)value$; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
@@ -129,7 +129,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
    * Gets the value of the 'id' field.
    * @return The value of the 'id' field.
    */
-  public int getId() {
+  public long getId() {
     return id;
   }
 
@@ -138,7 +138,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
    * Sets the value of the 'id' field.
    * @param value the value to set.
    */
-  public void setId(int value) {
+  public void setId(long value) {
     this.id = value;
   }
 
@@ -217,7 +217,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<Person>
     implements org.apache.avro.data.RecordBuilder<Person> {
 
-    private int id;
+    private long id;
     private java.lang.CharSequence name;
     private int age;
 
@@ -270,7 +270,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       * Gets the value of the 'id' field.
       * @return The value.
       */
-    public int getId() {
+    public long getId() {
       return id;
     }
 
@@ -280,7 +280,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       * @param value The value of 'id'.
       * @return This builder.
       */
-    public com.sivalabs.springbootkafkaavro.model.Person.Builder setId(int value) {
+    public com.sivalabs.springbootkafkaavro.model.Person.Builder setId(long value) {
       validate(fields()[0], value);
       this.id = value;
       fieldSetFlags()[0] = true;
@@ -389,7 +389,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     public Person build() {
       try {
         Person record = new Person();
-        record.id = fieldSetFlags()[0] ? this.id : (java.lang.Integer) defaultValue(fields()[0]);
+        record.id = fieldSetFlags()[0] ? this.id : (java.lang.Long) defaultValue(fields()[0]);
         record.name = fieldSetFlags()[1] ? this.name : (java.lang.CharSequence) defaultValue(fields()[1]);
         record.age = fieldSetFlags()[2] ? this.age : (java.lang.Integer) defaultValue(fields()[2]);
         return record;
@@ -424,7 +424,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   @Override public void customEncode(org.apache.avro.io.Encoder out)
     throws java.io.IOException
   {
-    out.writeInt(this.id);
+    out.writeLong(this.id);
 
     out.writeString(this.name);
 
@@ -437,7 +437,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   {
     org.apache.avro.Schema.Field[] fieldOrder = in.readFieldOrderIfDiff();
     if (fieldOrder == null) {
-      this.id = in.readInt();
+      this.id = in.readLong();
 
       this.name = in.readString(this.name instanceof Utf8 ? (Utf8)this.name : null);
 
@@ -447,7 +447,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       for (int i = 0; i < 3; i++) {
         switch (fieldOrder[i].pos()) {
         case 0:
-          this.id = in.readInt();
+          this.id = in.readLong();
           break;
 
         case 1:
