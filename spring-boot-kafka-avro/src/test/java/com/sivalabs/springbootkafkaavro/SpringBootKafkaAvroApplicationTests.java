@@ -40,6 +40,8 @@ class SpringBootKafkaAvroApplicationTests {
     static {
         KAFKA.start();
         SCHEMA_REGISTRY.withKafka(KAFKA).start();
+        // Should be set after container is started
+        SCHEMA_REGISTRY.withEnv("SCHEMA_REGISTRY_LISTENERS", SCHEMA_REGISTRY.getSchemaUrl());
     }
 
     @DynamicPropertySource
@@ -75,7 +77,7 @@ class SpringBootKafkaAvroApplicationTests {
         public SchemaRegistryContainer withKafka(Network network, String bootstrapServers) {
             withNetwork(network);
             withEnv("SCHEMA_REGISTRY_HOST_NAME", "schema-registry");
-            withEnv("SCHEMA_REGISTRY_LISTENERS", "http://" + getHost() + ":" + SCHEMA_REGISTRY_PORT);
+            // withEnv("SCHEMA_REGISTRY_LISTENERS", "http://" + getHost() + ":" + SCHEMA_REGISTRY_PORT);
             withEnv("SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS", "PLAINTEXT://" + bootstrapServers);
             return self();
         }
