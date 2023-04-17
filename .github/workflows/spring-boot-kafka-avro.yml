@@ -31,7 +31,8 @@ jobs:
         cache: 'maven'
     - name: Start up kafka via Docker Compose
       run: |
-        docker compose -f docker-compose-confluent.yml up -d
+        cd docker
+        docker compose -f docker-compose.yml up -d
         sleep 10
         docker ps -a
     - name: Build with Maven
