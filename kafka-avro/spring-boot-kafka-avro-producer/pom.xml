@@ -9,10 +9,10 @@
         <version>3.0.5</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.sivalabs</groupId>
-    <artifactId>spring-boot-kafka-avro</artifactId>
+    <groupId>com.example</groupId>
+    <artifactId>spring-boot-kafka-avro-producer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-boot-kafka-avro</name>
+    <name>spring-boot-kafka-avro-producer</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>

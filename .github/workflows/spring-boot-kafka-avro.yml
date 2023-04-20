@@ -1,13 +1,13 @@
-name: spring-boot-kafka-avro
+name: spring-boot-kafka-avro-producer
 
 on:
   push:
     paths:
-      - "spring-boot-kafka-avro/**"
+      - "kafka-avro/spring-boot-kafka-avro-producer/**"
     branches: [ master ]
   pull_request:
     paths:
-      - "spring-boot-kafka-avro/**"
+      - "kafka-avro/spring-boot-kafka-avro-producer/**"
     types:
       - opened
       - synchronize
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "spring-boot-kafka-avro"
+        working-directory: "kafka-avro/spring-boot-kafka-avro"
     steps:
     - uses: actions/checkout@v3
       with:
