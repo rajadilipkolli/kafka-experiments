@@ -102,6 +102,7 @@ class SpringBootKafkaAvroConsumerApplicationTests {
         person.setName("junit");
         this.kafkaTemplate.send(
                 ApplicationConstants.PERSONS_TOPIC, person.getName().toString(), person);
+
         await().atMost(10, SECONDS)
                 .untilAsserted(() -> assertThat(personRepository.count()).isEqualTo(1));
     }
