@@ -23,7 +23,11 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 
-@SpringBootTest
+@SpringBootTest(
+        properties = {
+            "spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer",
+            "spring.kafka.producer.value-serializer=io.confluent.kafka.serializers.KafkaAvroSerializer"
+        })
 class SpringBootKafkaAvroConsumerApplicationTests {
 
     private static final Network KAFKA_NETWORK = Network.newNetwork();
