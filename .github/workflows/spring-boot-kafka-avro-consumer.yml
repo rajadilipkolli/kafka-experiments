@@ -1,0 +1,33 @@
+name: spring-boot-kafka-avro-consumer
+
+on:
+  push:
+    paths:
+      - "kafka-avro/spring-boot-kafka-avro-consumer/**"
+    branches: [ master ]
+  pull_request:
+    paths:
+      - "kafka-avro/spring-boot-kafka-avro-consumer/**"
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "kafka-avro/spring-boot-kafka-avro-consumer"
+    steps:
+    - uses: actions/checkout@v3
+      with:
+          fetch-depth: 0
+    - name: Set up JDK
+      uses: actions/setup-java@v3.11.0
+      with:
+        java-version: '17'
+        distribution: 'microsoft'
+        cache: 'maven'
+    - name: Build with Maven
+      run: ./mvnw -B clean verify --file pom.xml

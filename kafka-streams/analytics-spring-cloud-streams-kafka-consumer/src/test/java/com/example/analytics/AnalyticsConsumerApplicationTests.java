@@ -34,7 +34,7 @@ import org.testcontainers.utility.DockerImageName;
 public class AnalyticsConsumerApplicationTests {
 
     private static final DockerImageName KAFKA_TEST_IMAGE =
-            DockerImageName.parse("confluentinc/cp-kafka:7.3.1");
+            DockerImageName.parse("confluentinc/cp-kafka:7.3.3");
 
     @Container
     public static final KafkaContainer KAFKA_CONTAINER = new KafkaContainer(KAFKA_TEST_IMAGE);
