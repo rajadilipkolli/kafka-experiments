@@ -22,11 +22,21 @@
         },
         {
             "type": "java",
-            "name": "Spring Boot-SpringBootKafkaAvroApplication<spring-boot-kafka-avro>",
+            "name": "Spring Boot-SpringBootKafkaAvroConsumerApplication<spring-boot-kafka-avro-consumer>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.springbootkafkaavro.SpringBootKafkaAvroConsumerApplication",
+            "projectName": "spring-boot-kafka-avro-consumer",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringBootKafkaAvroApplication<spring-boot-kafka-avro-producer>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "mainClass": "com.example.springbootkafkaavro.SpringBootKafkaAvroApplication",
-            "projectName": "spring-boot-kafka-avro",
+            "projectName": "spring-boot-kafka-avro-producer",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }
