@@ -5,7 +5,7 @@
      "version": "1",
      "fields": [
        { "name": "id", "type": "long" },
-       { "name": "name", "type": "string", "avro.java.string": "String" },
+       { "name": "name", "type": "string" },
        { "name": "age", "type": "int" }
      ]
 }
