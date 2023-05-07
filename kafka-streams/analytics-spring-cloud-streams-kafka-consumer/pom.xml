@@ -19,7 +19,7 @@
 		<spring-cloud.version>2022.0.2</spring-cloud.version>
 		<testcontainers.version>1.18.0</testcontainers.version>
 		<maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
-		<maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
+		<maven-failsafe-plugin.version>3.1.0</maven-failsafe-plugin.version>
 
 		<project.testresult.directory>${project.build.directory}/test-results</project.testresult.directory>
 		<junit.utReportFolder>${project.testresult.directory}/test</junit.utReportFolder>
