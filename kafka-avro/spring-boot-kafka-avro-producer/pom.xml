@@ -21,7 +21,7 @@
         <confluent.version>7.4.0</confluent.version>
         <springdoc-openapi.version>2.1.0</springdoc-openapi.version>
 
-        <testcontainers.version>1.18.0</testcontainers.version>
+        <testcontainers.version>1.18.1</testcontainers.version>
         <spotless.version>2.36.0</spotless.version>
     </properties>
 
