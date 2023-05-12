@@ -26,12 +26,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 
-@SpringBootTest(
-        properties = {
-            "spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer",
-            "spring.kafka.consumer.value-deserializer=io.confluent.kafka.serializers.KafkaAvroDeserializer",
-            "spring.kafka.consumer.group-id=group-1"
-        })
+@SpringBootTest
 @AutoConfigureMockMvc
 @Import(AvroKafkaListener.class)
 @ExtendWith(OutputCaptureExtension.class)
