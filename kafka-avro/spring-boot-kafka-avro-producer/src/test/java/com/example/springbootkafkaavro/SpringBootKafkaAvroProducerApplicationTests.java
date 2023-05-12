@@ -7,12 +7,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-import com.example.springbootkafkaavro.repository.PersonRepository;
-
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,12 +26,18 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 
-@SpringBootTest
+@SpringBootTest(
+        properties = {
+            "spring.kafka.consumer.group-id=group-1",
+            "spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer",
+            "spring.kafka.consumer.value-deserializer=io.confluent.kafka.serializers.KafkaAvroDeserializer"
+        })
 @AutoConfigureMockMvc
-class SpringBootKafkaAvroApplicationTests {
+@Import(AvroKafkaListener.class)
+@ExtendWith(OutputCaptureExtension.class)
+class SpringBootKafkaAvroProducerApplicationTests {
 
     @Autowired MockMvc mockMvc;
-    @Autowired PersonRepository personRepository;
 
     private static final Network KAFKA_NETWORK = Network.newNetwork();
     private static final String CONFLUENT_PLATFORM_VERSION = "7.4.0";
@@ -98,11 +106,12 @@ class SpringBootKafkaAvroApplicationTests {
     }
 
     @Test
-    void contextLoads() throws Exception {
+    void contextLoads(CapturedOutput output) throws Exception {
         this.mockMvc
                 .perform(post("/person/publish").param("name", "junit").param("age", "33"))
                 .andExpect(status().isOk());
-        await().atMost(10, SECONDS)
-                .untilAsserted(() -> assertThat(personRepository.count()).isEqualTo(1));
+        await().atMost(30, SECONDS)
+                .untilAsserted(
+                        () -> assertThat(output.getOut()).contains("Person received : junit : 33"));
     }
 }
