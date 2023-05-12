@@ -14,10 +14,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class Person extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -500706896462008318L;
+  private static final long serialVersionUID = -1297658106841863798L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.example.springbootkafkaavro.model\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"name\",\"type\":\"string\",\"avro.java.string\":\"String\"},{\"name\":\"age\",\"type\":\"int\"},{\"name\":\"gender\",\"type\":\"string\"}],\"version\":\"2\"}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.example.springbootkafkaavro.model\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"name\",\"type\":\"string\",\"avro.java.string\":\"String\"},{\"name\":\"age\",\"type\":\"int\"},{\"name\":\"gender\",\"type\":[\"null\",\"string\"],\"avro.java.string\":\"String\"}],\"version\":\"2\"}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -502,7 +502,13 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
 
     out.writeInt(this.age);
 
-    out.writeString(this.gender);
+    if (this.gender == null) {
+      out.writeIndex(0);
+      out.writeNull();
+    } else {
+      out.writeIndex(1);
+      out.writeString(this.gender);
+    }
 
   }
 
@@ -517,7 +523,12 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
 
       this.age = in.readInt();
 
-      this.gender = in.readString(this.gender instanceof Utf8 ? (Utf8)this.gender : null);
+      if (in.readIndex() != 1) {
+        in.readNull();
+        this.gender = null;
+      } else {
+        this.gender = in.readString(this.gender instanceof Utf8 ? (Utf8)this.gender : null);
+      }
 
     } else {
       for (int i = 0; i < 4; i++) {
@@ -535,7 +546,12 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
           break;
 
         case 3:
-          this.gender = in.readString(this.gender instanceof Utf8 ? (Utf8)this.gender : null);
+          if (in.readIndex() != 1) {
+            in.readNull();
+            this.gender = null;
+          } else {
+            this.gender = in.readString(this.gender instanceof Utf8 ? (Utf8)this.gender : null);
+          }
           break;
 
         default:

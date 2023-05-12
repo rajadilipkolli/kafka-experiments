@@ -7,6 +7,6 @@
        { "name": "id", "type": "long" },
        { "name": "name", "type": "string", "avro.java.string": "String" },
        { "name": "age", "type": "int" },
-       { "name": "gender", "type": "string" }
+       { "name": "gender", "type": ["null", "string"], "avro.java.string": "String" }
      ]
 }

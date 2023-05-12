@@ -25,7 +25,9 @@ public class KafkaController {
         Person person = new Person();
         person.setAge(age);
         person.setName(name);
-        person.setGender(gender);
+        if (gender != null) {
+            person.setGender(gender);
+        }
         this.producer.sendMessage(person);
     }
 }
