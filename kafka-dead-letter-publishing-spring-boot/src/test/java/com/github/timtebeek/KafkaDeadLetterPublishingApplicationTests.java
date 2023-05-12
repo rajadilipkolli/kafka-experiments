@@ -16,10 +16,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.kafka.core.KafkaOperations;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -35,14 +34,9 @@ class KafkaDeadLetterPublishingApplicationTests {
     private static final String ORDERS_DLT = "orders.DLT";
 
     @Container // https://www.testcontainers.org/modules/kafka/
+    @ServiceConnection
     static KafkaContainer kafka =
-            new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.3.3")).withKraft();
-
-    @DynamicPropertySource
-    static void setProperties(DynamicPropertyRegistry registry) {
-        // Connect our Spring application to our Testcontainers Kafka instance
-        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
-    }
+            new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")).withKraft();
 
     @Autowired private KafkaOperations<String, Order> operations;
 

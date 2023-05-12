@@ -2,10 +2,13 @@
     "configurations": [
         {
             "type": "java",
-            "name": "KafkaDeadLetterPublishingApplication",
+            "name": "Spring Boot-KafkaDeadLetterPublishingApplication<kafka-dead-letter-publishing>",
             "request": "launch",
+            "cwd": "${workspaceFolder}",
             "mainClass": "com.github.timtebeek.KafkaDeadLetterPublishingApplication",
-            "projectName": "kafka-dead-letter-publishing"
+            "projectName": "kafka-dead-letter-publishing",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         },
         {
             "type": "java",
