@@ -32,7 +32,7 @@ class SpringBootKafkaAvroApplicationTests {
     @Autowired PersonRepository personRepository;
 
     private static final Network KAFKA_NETWORK = Network.newNetwork();
-    private static final String CONFLUENT_PLATFORM_VERSION = "7.3.3";
+    private static final String CONFLUENT_PLATFORM_VERSION = "7.4.0";
     private static final DockerImageName KAFKA_IMAGE =
             DockerImageName.parse("confluentinc/cp-kafka").withTag(CONFLUENT_PLATFORM_VERSION);
     private static final KafkaContainer KAFKA =
