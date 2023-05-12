@@ -2,17 +2,17 @@ package com.example.springbootkafkaavro;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+import com.example.springbootkafkaavro.model.Person;
 import com.example.springbootkafkaavro.repository.PersonRepository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,10 +26,12 @@ import java.time.Duration;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class SpringBootKafkaAvroApplicationTests {
+@Import(KafkaProducer.class)
+class SpringBootKafkaAvroConsumerApplicationTests {
 
     @Autowired MockMvc mockMvc;
     @Autowired PersonRepository personRepository;
+    @Autowired KafkaProducer kafkaProducer;
 
     private static final Network KAFKA_NETWORK = Network.newNetwork();
     private static final String CONFLUENT_PLATFORM_VERSION = "7.4.0";
@@ -99,9 +101,10 @@ class SpringBootKafkaAvroApplicationTests {
 
     @Test
     void contextLoads() throws Exception {
-        this.mockMvc
-                .perform(post("/person/publish").param("name", "junit").param("age", "33"))
-                .andExpect(status().isOk());
+        Person person = new Person();
+        person.setAge(33);
+        person.setName("junit");
+        this.kafkaProducer.sendMessage(person);
         await().atMost(10, SECONDS)
                 .untilAsserted(() -> assertThat(personRepository.count()).isEqualTo(1));
     }
