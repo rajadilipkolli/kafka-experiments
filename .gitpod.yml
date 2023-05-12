@@ -7,7 +7,6 @@ image: gitpod/workspace-java-17
 
 vscode:
   extensions:
-    - pivotal.vscode-boot-dev-pack
     - pivotal.vscode-spring-boot
     - redhat.java
     - vscjava.vscode-java-debug
@@ -17,6 +16,7 @@ vscode:
     - vscjava.vscode-maven
     - vscjava.vscode-spring-boot-dashboard
     - vscjava.vscode-spring-initializr
+    - Pivotal.vscode-boot-dev-pack
 
 ports:
   - port: 9091-9093

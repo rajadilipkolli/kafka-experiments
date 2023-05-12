@@ -14,8 +14,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaOperations;
@@ -35,9 +33,6 @@ import java.util.List;
 class KafkaDeadLetterPublishingApplicationTests {
 
     private static final String ORDERS_DLT = "orders.DLT";
-
-    private static final Logger log =
-            LoggerFactory.getLogger(KafkaDeadLetterPublishingApplicationTests.class);
 
     @Container // https://www.testcontainers.org/modules/kafka/
     static KafkaContainer kafka =
