@@ -30,7 +30,8 @@ import java.time.Duration;
         properties = {
             "spring.kafka.consumer.group-id=group-1",
             "spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer",
-            "spring.kafka.consumer.value-deserializer=io.confluent.kafka.serializers.KafkaAvroDeserializer"
+            "spring.kafka.consumer.value-deserializer=io.confluent.kafka.serializers.KafkaAvroDeserializer",
+            "spring.kafka.properties.specific.avro.reader=true"
         })
 @AutoConfigureMockMvc
 @Import(AvroKafkaListener.class)
