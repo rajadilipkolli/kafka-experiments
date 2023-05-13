@@ -2,13 +2,16 @@
 package com.example.analytics;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.analytics.config.KafkaTestContainersConfiguration;
 import com.example.analytics.model.PageViewEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,35 +21,23 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import java.util.concurrent.TimeUnit;
 
 @Import(KafkaTestContainersConfiguration.class)
-@SpringBootTest
-@DirtiesContext
-@Testcontainers
+@SpringBootTest(
+        properties = {
+            "spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer",
+            "spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.StringSerializer",
+            "spring.kafka.consumer.auto.offset.reset=earliest",
+            "spring.kafka.consumer.group.id=pcs",
+            "spring.kafka.consumer.key.deserializer=org.apache.kafka.common.serialization.StringDeserializer",
+            "spring.kafka.consumer.value.deserializer=org.apache.kafka.common.serialization.StringDeserializer"
+        })
 @AutoConfigureMockMvc
-public class AnalyticsConsumerApplicationTests {
-
-    private static final DockerImageName KAFKA_TEST_IMAGE =
-            DockerImageName.parse("confluentinc/cp-kafka:7.4.0");
-
-    @Container
-    public static final KafkaContainer KAFKA_CONTAINER =
-            new KafkaContainer(KAFKA_TEST_IMAGE).withKraft();
-
-    @DynamicPropertySource
-    static void registerPgProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.kafka.bootstrap-servers", KAFKA_CONTAINER::getBootstrapServers);
-    }
+public class AnalyticsConsumerApplicationIntegrationTest {
 
     @Autowired public KafkaTemplate<String, String> kafkaTemplate;
 
@@ -54,9 +45,8 @@ public class AnalyticsConsumerApplicationTests {
 
     @Autowired private ObjectMapper objectMapper;
 
-    @Test
-    void contextLoads() throws Exception {
-        assertThat(KAFKA_CONTAINER.isRunning()).isTrue();
+    @BeforeEach
+    void setUpData() throws JsonProcessingException, InterruptedException {
         // send message
         PageViewEvent pageViewEvent =
                 new PageViewEvent("rName", "rPage", Math.random() > 5 ? 10 : 1000);
@@ -68,8 +58,23 @@ public class AnalyticsConsumerApplicationTests {
                         .build();
 
         this.kafkaTemplate.send(message);
-        // waiting for event to get processed
-        TimeUnit.SECONDS.sleep(30);
-        this.mockMvc.perform(get("/counts")).andExpect(status().isOk());
+        // waiting for stream to change status from NOT_PATITIONED to RUNNING
+        TimeUnit.SECONDS.sleep(10);
+    }
+
+    @Test
+    void verifyProcessing() {
+
+        await().atMost(30, TimeUnit.SECONDS)
+                .untilAsserted(
+                        () -> {
+                            MockHttpServletResponse response =
+                                    this.mockMvc
+                                            .perform(get("/counts"))
+                                            .andExpect(status().isOk())
+                                            .andReturn()
+                                            .getResponse();
+                            assertThat(response.getContentAsString()).isNotNull();
+                        });
     }
 }

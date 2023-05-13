@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 // To use the constructor binding, we need to explicitly enable our configuration class either with
 // @EnableConfigurationProperties or with @ConfigurationPropertiesScan.
-@ConfigurationProperties(prefix = "io.confluent.developer.topic")
+@ConfigurationProperties(prefix = "application.topic")
 public record AnalyticsApplicationProperties(
         @NotBlank String topicNamePvs,
         @NotBlank String topicNamePcs,
