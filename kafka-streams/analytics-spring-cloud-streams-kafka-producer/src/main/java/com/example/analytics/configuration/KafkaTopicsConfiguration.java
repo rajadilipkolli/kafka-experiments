@@ -1,3 +1,4 @@
+/* Licensed under Apache-2.0 2021-2022 */
 package com.example.analytics.configuration;
 
 import org.apache.kafka.clients.admin.NewTopic;
@@ -7,17 +8,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class KafkaTopicsConfiguration {
 
-  private final AnalyticsApplicationProperties analyticsApplicationProperties;
+    private final AnalyticsApplicationProperties analyticsApplicationProperties;
 
-  public KafkaTopicsConfiguration(AnalyticsApplicationProperties analyticsApplicationProperties) {
-    this.analyticsApplicationProperties = analyticsApplicationProperties;
-  }
+    public KafkaTopicsConfiguration(AnalyticsApplicationProperties analyticsApplicationProperties) {
+        this.analyticsApplicationProperties = analyticsApplicationProperties;
+    }
 
-  @Bean
-  public NewTopic pvsTopic() {
-    return new NewTopic(
-        analyticsApplicationProperties.topicNamePvs(),
-        analyticsApplicationProperties.partitions(),
-        analyticsApplicationProperties.replication());
-  }
+    @Bean
+    public NewTopic pvsTopic() {
+        return new NewTopic(
+                analyticsApplicationProperties.topicNamePvs(),
+                analyticsApplicationProperties.partitions(),
+                analyticsApplicationProperties.replication());
+    }
 }
