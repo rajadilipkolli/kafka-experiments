@@ -9,6 +9,7 @@ vscode:
   extensions:
     - vscjava.vscode-java-pack
     - Pivotal.vscode-boot-dev-pack
+    - GabrielBB.vscode-lombok
 
 ports:
   - port: 9091-9093

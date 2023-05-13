@@ -1,3 +1,4 @@
+/* Licensed under Apache-2.0 2019-2023 */
 package com.example.analytics;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -7,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.analytics.config.KafkaTestContainersConfiguration;
 import com.example.analytics.model.PageViewEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.concurrent.TimeUnit;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,6 +27,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+import java.util.concurrent.TimeUnit;
+
 @Import(KafkaTestContainersConfiguration.class)
 @SpringBootTest
 @DirtiesContext
@@ -34,16 +37,15 @@ import org.testcontainers.utility.DockerImageName;
 public class AnalyticsConsumerApplicationTests {
 
     private static final DockerImageName KAFKA_TEST_IMAGE =
-            DockerImageName.parse("confluentinc/cp-kafka:7.3.3");
+            DockerImageName.parse("confluentinc/cp-kafka:7.4.0");
 
     @Container
-    public static final KafkaContainer KAFKA_CONTAINER = new KafkaContainer(KAFKA_TEST_IMAGE);
+    public static final KafkaContainer KAFKA_CONTAINER =
+            new KafkaContainer(KAFKA_TEST_IMAGE).withKraft();
 
     @DynamicPropertySource
     static void registerPgProperties(DynamicPropertyRegistry registry) {
-        registry.add(
-                "spring.kafka.bootstrap-servers",
-                () -> KAFKA_CONTAINER.getBootstrapServers().substring(12));
+        registry.add("spring.kafka.bootstrap-servers", KAFKA_CONTAINER::getBootstrapServers);
     }
 
     @Autowired public KafkaTemplate<String, String> kafkaTemplate;
@@ -66,6 +68,7 @@ public class AnalyticsConsumerApplicationTests {
                         .build();
 
         this.kafkaTemplate.send(message);
+        // waiting for event to get processed
         TimeUnit.SECONDS.sleep(30);
         this.mockMvc.perform(get("/counts")).andExpect(status().isOk());
     }

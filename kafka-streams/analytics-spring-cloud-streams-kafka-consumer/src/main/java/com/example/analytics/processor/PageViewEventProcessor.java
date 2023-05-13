@@ -1,8 +1,9 @@
+/* Licensed under Apache-2.0 2019-2022 */
 package com.example.analytics.processor;
 
 import com.example.analytics.configuration.AnalyticsConsumerConstants;
 import com.example.analytics.model.PageViewEvent;
-import java.util.function.Function;
+
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KeyValue;
@@ -12,6 +13,8 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+
+import java.util.function.Function;
 
 @Component
 public class PageViewEventProcessor {

@@ -1,8 +1,8 @@
+/* Licensed under Apache-2.0 2019-2022 */
 package com.example.analytics.controller;
 
 import com.example.analytics.configuration.AnalyticsConsumerConstants;
-import java.util.HashMap;
-import java.util.Map;
+
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.binder.kafka.streams.InteractiveQueryService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class CountRestController {

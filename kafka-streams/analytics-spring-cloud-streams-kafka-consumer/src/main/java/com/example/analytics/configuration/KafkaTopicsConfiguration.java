@@ -1,3 +1,4 @@
+/* Licensed under Apache-2.0 2021-2022 */
 package com.example.analytics.configuration;
 
 import org.apache.kafka.clients.admin.NewTopic;
@@ -9,43 +10,43 @@ import org.springframework.kafka.config.TopicBuilder;
 @Configuration
 public class KafkaTopicsConfiguration {
 
-  private final AnalyticsApplicationProperties analyticsApplicationProperties;
+    private final AnalyticsApplicationProperties analyticsApplicationProperties;
 
-  public KafkaTopicsConfiguration(AnalyticsApplicationProperties analyticsApplicationProperties) {
-    this.analyticsApplicationProperties = analyticsApplicationProperties;
-  }
+    public KafkaTopicsConfiguration(AnalyticsApplicationProperties analyticsApplicationProperties) {
+        this.analyticsApplicationProperties = analyticsApplicationProperties;
+    }
 
-  @Bean
-  public NewTopic kafkaStreamspcmvRePartitionTopic() {
-    return TopicBuilder.name(analyticsApplicationProperties.topicNameRePartition())
-        .partitions(analyticsApplicationProperties.partitions())
-        .replicas(analyticsApplicationProperties.replication())
-        .build();
-  }
+    @Bean
+    public NewTopic kafkaStreamspcmvRePartitionTopic() {
+        return TopicBuilder.name(analyticsApplicationProperties.topicNameRePartition())
+                .partitions(analyticsApplicationProperties.partitions())
+                .replicas(analyticsApplicationProperties.replication())
+                .build();
+    }
 
-  @Bean
-  public NewTopic kafkaStreamspcmvChangeLogTopic() {
-    return TopicBuilder.name(analyticsApplicationProperties.topicNameChangelog())
-        .partitions(analyticsApplicationProperties.partitions())
-        .replicas(analyticsApplicationProperties.replication())
-        .build();
-  }
+    @Bean
+    public NewTopic kafkaStreamspcmvChangeLogTopic() {
+        return TopicBuilder.name(analyticsApplicationProperties.topicNameChangelog())
+                .partitions(analyticsApplicationProperties.partitions())
+                .replicas(analyticsApplicationProperties.replication())
+                .build();
+    }
 
-  @Bean
-  public NewTopic pcsTopic() {
-    return TopicBuilder.name(analyticsApplicationProperties.topicNamePcs())
-        .partitions(analyticsApplicationProperties.partitions())
-        .replicas(analyticsApplicationProperties.replication())
-        .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
-        .build();
-  }
+    @Bean
+    public NewTopic pcsTopic() {
+        return TopicBuilder.name(analyticsApplicationProperties.topicNamePcs())
+                .partitions(analyticsApplicationProperties.partitions())
+                .replicas(analyticsApplicationProperties.replication())
+                .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+                .build();
+    }
 
-  @Bean
-  public NewTopic pvsTopic() {
-    return TopicBuilder.name(analyticsApplicationProperties.topicNamePvs())
-        .partitions(analyticsApplicationProperties.partitions())
-        .replicas(analyticsApplicationProperties.replication())
-        .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
-        .build();
-  }
+    @Bean
+    public NewTopic pvsTopic() {
+        return TopicBuilder.name(analyticsApplicationProperties.topicNamePvs())
+                .partitions(analyticsApplicationProperties.partitions())
+                .replicas(analyticsApplicationProperties.replication())
+                .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+                .build();
+    }
 }

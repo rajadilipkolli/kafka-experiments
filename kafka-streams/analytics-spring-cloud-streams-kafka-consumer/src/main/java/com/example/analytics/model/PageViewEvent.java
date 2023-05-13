@@ -1,3 +1,4 @@
+/* Licensed under Apache-2.0 2019-2022 */
 package com.example.analytics.model;
 
 public class PageViewEvent {
