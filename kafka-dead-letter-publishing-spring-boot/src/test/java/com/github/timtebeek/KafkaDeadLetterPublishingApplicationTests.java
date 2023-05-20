@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static java.util.UUID.randomUUID;
 
+import com.github.timtebeek.dto.OrderDto;
+
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -35,10 +37,10 @@ class KafkaDeadLetterPublishingApplicationTests {
 
     @Container // https://www.testcontainers.org/modules/kafka/
     @ServiceConnection
-    static KafkaContainer kafka =
+    static final KafkaContainer KAFKACONTAINER =
             new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")).withKraft();
 
-    @Autowired private KafkaOperations<String, Order> operations;
+    @Autowired private KafkaOperations<String, OrderDto> operations;
 
     private static KafkaConsumer<String, String> kafkaConsumer;
 
@@ -47,7 +49,8 @@ class KafkaDeadLetterPublishingApplicationTests {
         // Create a test consumer that handles <String, String> records, listening to orders.DLT
         // https://docs.spring.io/spring-kafka/docs/current/reference/html/#testing
         var consumerProps =
-                KafkaTestUtils.consumerProps(kafka.getBootstrapServers(), "test-consumer", "true");
+                KafkaTestUtils.consumerProps(
+                        KAFKACONTAINER.getBootstrapServers(), "test-consumer", "true");
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         kafkaConsumer = new KafkaConsumer<>(consumerProps);
         kafkaConsumer.subscribe(List.of(ORDERS_DLT));
@@ -62,7 +65,7 @@ class KafkaDeadLetterPublishingApplicationTests {
     @Test
     void should_not_produce_onto_dlt_for_ok_message() throws Exception {
         // Send in valid order
-        Order order = new Order(randomUUID(), randomUUID(), 1);
+        OrderDto order = new OrderDto(randomUUID(), randomUUID(), 1);
         operations.send("orders", order.orderId().toString(), order);
 
         // Verify no message was produced onto Dead Letter Topic
@@ -77,7 +80,7 @@ class KafkaDeadLetterPublishingApplicationTests {
     @Test
     void should_produce_onto_dlt_for_bad_message() throws Exception {
         // Amount can not be negative, validation will fail
-        Order order = new Order(randomUUID(), randomUUID(), -2);
+        OrderDto order = new OrderDto(randomUUID(), randomUUID(), -2);
         operations.send("orders", order.orderId().toString(), order);
 
         // Verify message produced onto Dead Letter Topic
