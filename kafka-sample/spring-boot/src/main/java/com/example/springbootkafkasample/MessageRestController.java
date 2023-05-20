@@ -1,7 +1,5 @@
-package com.sivalabs.springbootkafkasample;
+package com.example.springbootkafkasample;
 
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,18 +7,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MessageRestController {
 
-    @Autowired
-    private Sender sender;
+    private final Sender sender;
+
+    public MessageRestController(Sender sender) {
+        this.sender = sender;
+    }
 
     @PostMapping("/messages")
     public void sendMessage(@RequestBody Message message) {
-        sender.send(message.getTopic(), message.getMsg());
+        sender.send(message.topic(), message.msg());
     }
 
 }
 
-@Data
-class Message {
-    private String topic;
-    private String msg;
+record Message (
+    String topic,
+    String msg){
 }

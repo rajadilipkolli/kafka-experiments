@@ -1,4 +1,4 @@
-package com.sivalabs.springbootkafkasample;
+package com.example.springbootkafkasample;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,8 +15,8 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.sivalabs.springbootkafkasample.SpringBootKafkaSampleApplication.TOPIC_TEST_1;
-import static com.sivalabs.springbootkafkasample.SpringBootKafkaSampleApplication.TOPIC_TEST_2;
+import static com.example.springbootkafkasample.SpringBootKafkaSampleApplication.TOPIC_TEST_1;
+import static com.example.springbootkafkasample.SpringBootKafkaSampleApplication.TOPIC_TEST_2;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest

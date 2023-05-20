@@ -1,4 +1,4 @@
-package com.sivalabs.springbootkafkasample;
+package com.example.springbootkafkasample;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +18,6 @@ public class Sender {
 
     void send(String topic, String msg) {
         this.template.send(topic, msg);
-        logger.info("Sent msg="+msg+" to topic:"+topic);
+        logger.info("Sent msg={} to topic:{}",msg, topic);
     }
 }

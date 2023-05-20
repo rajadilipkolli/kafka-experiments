@@ -1,4 +1,4 @@
-package com.sivalabs.springbootkafkasample;
+package com.example.springbootkafkasample;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,6 +10,6 @@ public class SpringBootKafkaSampleApplication {
     static final String TOPIC_TEST_2 = "test_2";
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringBootKafkaSampleApplication.class, args).close();
+        SpringApplication.run(SpringBootKafkaSampleApplication.class, args);
     }
 }
