@@ -27,7 +27,7 @@ public class PageViewEventProcessor {
                         .filter((key, value) -> value.getDuration() > 10)
                         .map((key, value) -> new KeyValue<>(value.getPage(), "0"))
                         .groupByKey(Grouped.with(Serdes.String(), Serdes.String()))
-                        //        .windowedBy(TimeWindows.of(1000 * 60))
+                        // .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(1)))
                         .count(
                                 Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as(
                                                 AnalyticsConsumerConstants.PAGE_COUNT_MV)

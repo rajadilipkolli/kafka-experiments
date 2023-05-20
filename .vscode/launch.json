@@ -2,6 +2,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "AnalyticsConsumerApplication",
+            "request": "launch",
+            "mainClass": "com.example.analytics.AnalyticsConsumerApplication",
+            "projectName": "analytics-spring-cloud-streams-kafka-consumer"
+        },
+        {
+            "type": "java",
+            "name": "AnalyticsProducerApplication",
+            "request": "launch",
+            "mainClass": "com.example.analytics.AnalyticsProducerApplication",
+            "projectName": "analytics-spring-cloud-streams-kafka-producer"
+        },
+        {
+            "type": "java",
             "name": "TestAnalyticsConsumerApplication",
             "request": "launch",
             "mainClass": "com.example.analytics.TestAnalyticsConsumerApplication",
