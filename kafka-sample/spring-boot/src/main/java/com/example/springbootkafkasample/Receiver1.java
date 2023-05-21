@@ -10,30 +10,16 @@ import org.springframework.stereotype.Component;
 import static com.example.springbootkafkasample.SpringBootKafkaSampleApplication.TOPIC_TEST_1;
 import static com.example.springbootkafkasample.SpringBootKafkaSampleApplication.TOPIC_TEST_2;
 
-import java.util.concurrent.CountDownLatch;
-
 @Component
-public class Receiver {
+public class Receiver1 {
 
-    private static Logger logger = LoggerFactory.getLogger(Receiver.class);
-
-    private CountDownLatch latch = new CountDownLatch(1);
-
-    public CountDownLatch getLatch() {
-        return latch;
-    }
+    private static final Logger logger = LoggerFactory.getLogger(Receiver1.class);
 
     @KafkaListener(topics = TOPIC_TEST_1, groupId = "foo")
     @SendTo(TOPIC_TEST_2)
     public String listen(ConsumerRecord<String, String> cr) {
-        logger.info(TOPIC_TEST_1+" Received: "+cr.toString());
+        logger.info(TOPIC_TEST_1 + " Received: " + cr.toString());
         return cr.value();
-    }
-
-    @KafkaListener(topics = TOPIC_TEST_2)
-    public void listenTopic2(ConsumerRecord<String, String> cr) {
-        logger.info(TOPIC_TEST_2+" Received: "+cr.toString());
-        latch.countDown();
     }
 
 }

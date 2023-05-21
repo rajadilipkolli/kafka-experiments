@@ -20,7 +20,7 @@ public class MessageRestController {
 
 }
 
-record Message (
-    String topic,
-    String msg){
+record Message(
+        String topic,
+        String msg) {
 }

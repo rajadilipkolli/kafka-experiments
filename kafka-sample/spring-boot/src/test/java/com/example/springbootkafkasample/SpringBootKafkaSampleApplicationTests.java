@@ -33,7 +33,7 @@ class SpringBootKafkaSampleApplicationTests {
 
   @Autowired private KafkaTemplate<String, String> template;
 
-  @Autowired private Receiver receiver;
+  @Autowired private Receiver2 receiver2;
 
   @BeforeAll
   public void setUp() {
@@ -48,7 +48,7 @@ class SpringBootKafkaSampleApplicationTests {
   @Test
   void sendAndReceiveData() throws InterruptedException {
     template.send(TOPIC_TEST_1, "foo");
-    receiver.getLatch().await(5, TimeUnit.SECONDS);
-    assertEquals(0, receiver.getLatch().getCount());
+    receiver2.getLatch().await(5, TimeUnit.SECONDS);
+    assertEquals(0, receiver2.getLatch().getCount());
   }
 }
