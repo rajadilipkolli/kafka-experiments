@@ -4,10 +4,8 @@ import com.example.springbootkafkaavro.entity.PersonEntity;
 import com.example.springbootkafkaavro.model.Person;
 import com.example.springbootkafkaavro.repository.PersonRepository;
 import com.example.springbootkafkaavro.util.ApplicationConstants;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
