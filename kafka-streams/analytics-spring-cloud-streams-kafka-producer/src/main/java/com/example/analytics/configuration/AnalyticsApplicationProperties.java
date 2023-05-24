@@ -3,7 +3,6 @@ package com.example.analytics.configuration;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "io.confluent.developer.topic")

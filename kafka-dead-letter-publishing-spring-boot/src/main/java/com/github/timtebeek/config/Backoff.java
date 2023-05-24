@@ -2,7 +2,6 @@ package com.github.timtebeek.config;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-
 import java.time.Duration;
 
 record Backoff(

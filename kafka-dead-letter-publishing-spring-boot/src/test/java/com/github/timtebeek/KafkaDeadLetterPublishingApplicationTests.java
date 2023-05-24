@@ -1,12 +1,12 @@
 package com.github.timtebeek;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static java.util.UUID.randomUUID;
-
 import com.github.timtebeek.dto.OrderDto;
-
+import java.time.Duration;
+import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -25,9 +25,6 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-
-import java.time.Duration;
-import java.util.List;
 
 @SpringBootTest
 @Testcontainers

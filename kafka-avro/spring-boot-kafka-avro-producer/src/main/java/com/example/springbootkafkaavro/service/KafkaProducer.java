@@ -2,9 +2,7 @@ package com.example.springbootkafkaavro.service;
 
 import com.example.springbootkafkaavro.model.Person;
 import com.example.springbootkafkaavro.util.ApplicationConstants;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 

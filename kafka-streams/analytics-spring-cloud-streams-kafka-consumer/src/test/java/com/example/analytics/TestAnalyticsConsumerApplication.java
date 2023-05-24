@@ -2,7 +2,6 @@
 package com.example.analytics;
 
 import com.example.analytics.config.KafkaTestContainersConfiguration;
-
 import org.springframework.boot.SpringApplication;
 
 public class TestAnalyticsConsumerApplication {

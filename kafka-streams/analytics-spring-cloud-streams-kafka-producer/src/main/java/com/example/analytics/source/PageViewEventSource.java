@@ -2,13 +2,11 @@
 package com.example.analytics.source;
 
 import com.example.analytics.model.PageViewEvent;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.function.Supplier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 @Component
 public class PageViewEventSource {
