@@ -1,4 +1,4 @@
-package com.sivalabs.springbootkafka.multi.util;
+package com.example.springbootkafka.multi.util;
 
 import lombok.experimental.UtilityClass;
 

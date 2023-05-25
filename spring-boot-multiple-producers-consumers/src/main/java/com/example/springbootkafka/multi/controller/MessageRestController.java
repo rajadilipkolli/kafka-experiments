@@ -1,11 +1,11 @@
-package com.sivalabs.springbootkafka.multi.controller;
+package com.example.springbootkafka.multi.controller;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sivalabs.springbootkafka.multi.domain.SimpleMessage;
-import com.sivalabs.springbootkafka.multi.sender.Sender;
+import com.example.springbootkafka.multi.domain.SimpleMessage;
+import com.example.springbootkafka.multi.sender.Sender;
 
 import lombok.RequiredArgsConstructor;
 

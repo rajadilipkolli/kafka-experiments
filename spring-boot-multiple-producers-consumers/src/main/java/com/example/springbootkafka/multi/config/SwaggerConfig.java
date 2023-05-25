@@ -1,4 +1,4 @@
-package com.sivalabs.springbootkafka.multi.config;
+package com.example.springbootkafka.multi.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;

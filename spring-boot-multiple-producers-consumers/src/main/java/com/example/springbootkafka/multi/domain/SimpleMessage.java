@@ -1,4 +1,4 @@
-package com.sivalabs.springbootkafka.multi.domain;
+package com.example.springbootkafka.multi.domain;
 
 public record SimpleMessage(
         Integer key,

@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "TestSpringBootKafkaMultiApplication",
+            "request": "launch",
+            "mainClass": "com.example.springbootkafka.multi.TestSpringBootKafkaMultiApplication",
+            "projectName": "spring-boot-multiple-producers-consumers"
+        },
+        {
+            "type": "java",
             "name": "AnalyticsConsumerApplication",
             "request": "launch",
             "mainClass": "com.example.analytics.AnalyticsConsumerApplication",

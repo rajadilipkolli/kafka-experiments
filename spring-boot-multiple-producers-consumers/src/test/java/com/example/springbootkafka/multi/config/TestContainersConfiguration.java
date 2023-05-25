@@ -1,0 +1,19 @@
+package com.example.springbootkafka.multi.config;
+
+import org.springframework.boot.devtools.restart.RestartScope;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Bean;
+import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.utility.DockerImageName;
+
+@TestConfiguration(proxyBeanMethods = false)
+public class TestContainersConfiguration {
+
+    @Bean
+    @ServiceConnection
+    @RestartScope
+    public KafkaContainer kafkaContainer() {
+        return new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag("7.4.0")).withKraft();
+    }
+}

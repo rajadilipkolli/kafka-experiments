@@ -1,4 +1,4 @@
-package com.sivalabs.springbootkafka.multi;
+package com.example.springbootkafka.multi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
