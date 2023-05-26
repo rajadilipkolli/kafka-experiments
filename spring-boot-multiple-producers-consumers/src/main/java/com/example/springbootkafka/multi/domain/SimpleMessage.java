@@ -1,6 +1,9 @@
 package com.example.springbootkafka.multi.domain;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+
 public record SimpleMessage(
-        Integer key,
-        String value) {
+                @Positive Integer key,
+                @NotBlank String value) {
 }

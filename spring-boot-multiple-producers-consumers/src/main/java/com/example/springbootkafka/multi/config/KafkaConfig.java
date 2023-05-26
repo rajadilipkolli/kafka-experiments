@@ -11,7 +11,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.annotation.KafkaListenerConfigurer;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.KafkaListenerEndpointRegistrar;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -19,6 +21,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.core.RoutingKafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import com.example.springbootkafka.multi.domain.SimpleMessage;
 import com.example.springbootkafka.multi.util.AppConstants;
@@ -34,9 +37,10 @@ import java.util.regex.Pattern;
 @EnableKafka
 @RequiredArgsConstructor
 @EnableConfigurationProperties(KafkaProperties.class)
-public class KafkaConfig {
+public class KafkaConfig implements KafkaListenerConfigurer {
 
     private final KafkaProperties properties;
+    private final LocalValidatorFactoryBean validator;
 
     @Bean
     public RoutingKafkaTemplate routingTemplate(GenericApplicationContext context,
@@ -86,5 +90,10 @@ public class KafkaConfig {
         ConcurrentKafkaListenerContainerFactory<String, SimpleMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(jsonKafkaConsumerFactory());
         return factory;
+    }
+
+    @Override
+    public void configureKafkaListeners(KafkaListenerEndpointRegistrar registrar) {
+        registrar.setValidator(this.validator);
     }
 }
