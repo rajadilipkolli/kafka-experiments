@@ -1,5 +1,7 @@
-package com.example.springbootkafkasample;
+package com.example.springbootkafkasample.controller;
 
+import com.example.springbootkafkasample.dto.MessageDTO;
+import com.example.springbootkafkasample.sender.Sender;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,13 +16,9 @@ public class MessageRestController {
     }
 
     @PostMapping("/messages")
-    public void sendMessage(@RequestBody Message message) {
-        sender.send(message.topic(), message.msg());
+    public void sendMessage(@RequestBody MessageDTO messageDTO) {
+        this.sender.send(messageDTO);
     }
 
 }
 
-record Message(
-        String topic,
-        String msg) {
-}

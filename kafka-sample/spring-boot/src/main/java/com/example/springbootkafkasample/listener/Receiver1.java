@@ -1,5 +1,6 @@
-package com.example.springbootkafkasample;
+package com.example.springbootkafkasample.listener;
 
+import com.example.springbootkafkasample.dto.MessageDTO;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +18,8 @@ public class Receiver1 {
 
     @KafkaListener(topics = TOPIC_TEST_1, groupId = "foo")
     @SendTo(TOPIC_TEST_2)
-    public String listen(ConsumerRecord<String, String> cr) {
-        logger.info(TOPIC_TEST_1 + " Received: " + cr.toString());
+    public MessageDTO listen(ConsumerRecord<String, MessageDTO> cr) {
+        logger.info(TOPIC_TEST_1 + " Received: {}", cr.toString());
         return cr.value();
     }
 

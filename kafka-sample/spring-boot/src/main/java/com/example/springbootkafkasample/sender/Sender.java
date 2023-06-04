@@ -1,5 +1,6 @@
-package com.example.springbootkafkasample;
+package com.example.springbootkafkasample.sender;
 
+import com.example.springbootkafkasample.dto.MessageDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -10,21 +11,21 @@ import java.util.UUID;
 @Component
 public class Sender {
 
-    private static final Logger logger = LoggerFactory.getLogger(SpringBootKafkaSampleApplication.class);
+    private static final Logger logger = LoggerFactory.getLogger(Sender.class);
 
-    private final KafkaTemplate<String, String> template;
+    private final KafkaTemplate<String, MessageDTO> template;
 
-    public Sender(KafkaTemplate<String, String> template) {
+    public Sender(KafkaTemplate<String, MessageDTO> template) {
         this.template = template;
     }
 
-    void send(String topic, String msg) {
-        this.template.send(topic, UUID.randomUUID().toString(), msg)
+    public void send(MessageDTO messageDTO) {
+        this.template.send(messageDTO.topic(), UUID.randomUUID().toString(), messageDTO)
                 .whenComplete((result, ex) -> {
                     if (ex == null) {
-                        handleSuccess(topic, msg);
+                        handleSuccess(messageDTO.topic(), messageDTO.msg());
                     } else {
-                        handleFailure(topic, msg, ex);
+                        handleFailure(messageDTO.topic(), messageDTO.msg(), ex);
                     }
                 });
     }

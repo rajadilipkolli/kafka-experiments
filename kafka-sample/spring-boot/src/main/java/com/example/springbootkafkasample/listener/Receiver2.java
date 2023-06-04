@@ -1,10 +1,12 @@
-package com.example.springbootkafkasample;
+package com.example.springbootkafkasample.listener;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
+import com.example.springbootkafkasample.dto.MessageDTO;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.listener.ConsumerSeekAware;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CountDownLatch;
@@ -24,8 +26,8 @@ public class Receiver2 implements ConsumerSeekAware {
     }
 
     @KafkaListener(topics = TOPIC_TEST_2)
-    public void listenTopic2(ConsumerRecord<String, String> cr) {
-        logger.info(TOPIC_TEST_2 + " Received: " + cr.toString());
+    public void listenTopic2(@Payload @Valid MessageDTO messageDTO) {
+        logger.info(TOPIC_TEST_2 + " Received: {}" , messageDTO.toString());
         latch.countDown();
     }
 }

@@ -1,5 +1,7 @@
 package com.example.springbootkafkasample;
 
+import com.example.springbootkafkasample.dto.MessageDTO;
+import com.example.springbootkafkasample.listener.Receiver2;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -13,6 +15,7 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static com.example.springbootkafkasample.SpringBootKafkaSampleApplication.TOPIC_TEST_1;
@@ -31,7 +34,7 @@ class SpringBootKafkaSampleApplicationTests {
 
   @Autowired private EmbeddedKafkaBroker embeddedKafkaBroker;
 
-  @Autowired private KafkaTemplate<String, String> template;
+  @Autowired private KafkaTemplate<String, MessageDTO> template;
 
   @Autowired private Receiver2 receiver2;
 
@@ -47,7 +50,7 @@ class SpringBootKafkaSampleApplicationTests {
 
   @Test
   void sendAndReceiveData() throws InterruptedException {
-    template.send(TOPIC_TEST_1, "foo");
+    template.send(TOPIC_TEST_1, UUID.randomUUID().toString(), new MessageDTO(TOPIC_TEST_1, "foo"));
     receiver2.getLatch().await(5, TimeUnit.SECONDS);
     assertEquals(0, receiver2.getLatch().getCount());
   }
