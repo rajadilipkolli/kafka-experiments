@@ -1,6 +1,7 @@
 package com.example.springbootkafkasample.sender;
 
 import com.example.springbootkafkasample.dto.MessageDTO;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -22,19 +23,13 @@ public class Sender {
     public void send(MessageDTO messageDTO) {
         this.template.send(messageDTO.topic(), UUID.randomUUID().toString(), messageDTO)
                 .whenComplete((result, ex) -> {
+                    ProducerRecord<String, MessageDTO> producerRecord = result.getProducerRecord();
                     if (ex == null) {
-                        handleSuccess(messageDTO.topic(), messageDTO.msg());
+                        logger.info("Sent msg={} to topic :{} with key = {}", producerRecord.value().toString(), producerRecord.topic(), producerRecord.key());
                     } else {
-                        handleFailure(messageDTO.topic(), messageDTO.msg(), ex);
+                        MessageDTO messageDTO1 = producerRecord.value();
+                        logger.error("Unable to send msg = {} to topic:{}", messageDTO1.msg(), producerRecord.topic(), ex);
                     }
                 });
-    }
-
-    private void handleFailure(String topic, String msg, Throwable ex) {
-        logger.error("Unable to send msg = {} to topic:{}", msg, topic, ex);
-    }
-
-    private void handleSuccess(String topic, String msg) {
-        logger.info("Sent msg={} to topic:{}", msg, topic);
     }
 }
