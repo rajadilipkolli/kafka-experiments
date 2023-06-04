@@ -4,8 +4,11 @@
             "type": "java",
             "name": "TestSpringBootKafkaMultiApplication",
             "request": "launch",
+            "cwd": "${workspaceFolder}",
             "mainClass": "com.example.springbootkafka.multi.TestSpringBootKafkaMultiApplication",
-            "projectName": "spring-boot-multiple-producers-consumers"
+            "projectName": "spring-boot-multiple-producers-consumers",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         },
         {
             "type": "java",
