@@ -1,13 +1,13 @@
-name: kafka-dead-letter-publishing-spring-boot
+name: spring-boot-kafka-dead-letter-publishing
 
 on:
   push:
     paths:
-      - "kafka-dead-letter-publishing-spring-boot/**"
+      - "kafka-sample/spring-boot-kafka-dead-letter-publishing/**"
     branches: [ master ]
   pull_request:
     paths:
-      - "kafka-dead-letter-publishing-spring-boot/**"
+      - "kafka-sample/spring-boot-kafka-dead-letter-publishing/**"
     types:
       - opened
       - synchronize
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "kafka-dead-letter-publishing-spring-boot"
+        working-directory: "kafka-sample/spring-boot-kafka-dead-letter-publishing"
     steps:
     - uses: actions/checkout@v3
       with:
