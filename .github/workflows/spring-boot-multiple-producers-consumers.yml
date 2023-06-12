@@ -3,11 +3,11 @@ name: spring-boot-multiple-producers-consumers
 on:
   push:
     paths:
-      - "spring-boot-multiple-producers-consumers/**"
+      - "kafka-sample/spring-boot-multiple-producers-consumers/**"
     branches: [ master ]
   pull_request:
     paths:
-      - "spring-boot-multiple-producers-consumers/**"
+      - "kafka-sample/spring-boot-multiple-producers-consumers/**"
     types:
       - opened
       - synchronize
@@ -17,6 +17,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run: 
+          working-directory: kafka-sample/spring-boot-multiple-producers-consumers
 
     steps:
     - uses: actions/checkout@v3
@@ -29,6 +32,4 @@ jobs:
         distribution: 'adopt'
         cache: 'maven'
     - name: Build with Maven
-      run: |
-        cd spring-boot-multiple-producers-consumers
-        mvn -B package --file pom.xml
+      run: ./mvnw -B clean verify --file pom.xml
