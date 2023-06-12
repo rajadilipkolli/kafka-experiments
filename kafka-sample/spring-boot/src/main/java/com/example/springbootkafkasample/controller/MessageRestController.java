@@ -19,6 +19,4 @@ public class MessageRestController {
     public void sendMessage(@RequestBody MessageDTO messageDTO) {
         this.sender.send(messageDTO);
     }
-
 }
-

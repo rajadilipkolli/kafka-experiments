@@ -35,5 +35,3 @@ public class Config implements KafkaListenerConfigurer {
         };
     }
 }
-
-

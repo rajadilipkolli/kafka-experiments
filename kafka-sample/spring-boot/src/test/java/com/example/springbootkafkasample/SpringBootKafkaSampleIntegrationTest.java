@@ -1,9 +1,13 @@
 package com.example.springbootkafkasample;
 
-import com.example.springbootkafkasample.config.MyTestContainersConfiguration;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.example.springbootkafkasample.dto.MessageDTO;
 import com.example.springbootkafkasample.listener.Receiver2;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,14 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.concurrent.TimeUnit;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
-@Import(MyTestContainersConfiguration.class)
+@Import(TestSpringBootKafkaSampleApplication.class)
 @AutoConfigureMockMvc
 @DirtiesContext
 class SpringBootKafkaSampleIntegrationTest {
@@ -36,7 +34,8 @@ class SpringBootKafkaSampleIntegrationTest {
 
     @Test
     void testSendAndReceiveMessage() throws Exception {
-        this.mockMvc.perform(post("/messages")
+        this.mockMvc
+                .perform(post("/messages")
                         .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", "junitTest")))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

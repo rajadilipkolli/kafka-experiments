@@ -1,5 +1,8 @@
 package com.example.springbootkafkasample.listener;
 
+import static com.example.springbootkafkasample.SpringBootKafkaSampleApplication.TOPIC_TEST_1;
+import static com.example.springbootkafkasample.SpringBootKafkaSampleApplication.TOPIC_TEST_2;
+
 import com.example.springbootkafkasample.dto.MessageDTO;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -7,9 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
-
-import static com.example.springbootkafkasample.SpringBootKafkaSampleApplication.TOPIC_TEST_1;
-import static com.example.springbootkafkasample.SpringBootKafkaSampleApplication.TOPIC_TEST_2;
 
 @Component
 public class Receiver1 {
@@ -22,5 +22,4 @@ public class Receiver1 {
         logger.info(TOPIC_TEST_1 + " Received: {}", cr.toString());
         return cr.value();
     }
-
 }

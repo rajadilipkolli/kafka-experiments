@@ -17,8 +17,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"vscjava.vscode-maven",
-				"Pivotal.vscode-boot-dev-pack"
+				"vmware.vscode-boot-dev-pack",
+				"vscjava.vscode-java-pack"
 			]
 		}
 	}

@@ -1,12 +1,11 @@
 package com.example.springbootkafkasample.sender;
 
 import com.example.springbootkafkasample.dto.MessageDTO;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 public class Sender {
@@ -20,7 +19,8 @@ public class Sender {
     }
 
     public void send(MessageDTO messageDTO) {
-        this.template.send(messageDTO.topic(), UUID.randomUUID().toString(), messageDTO)
+        this.template
+                .send(messageDTO.topic(), UUID.randomUUID().toString(), messageDTO)
                 .whenComplete((result, ex) -> {
                     if (ex == null) {
                         LOGGER.info("Sent message=[" + messageDTO + "] with offset=["
