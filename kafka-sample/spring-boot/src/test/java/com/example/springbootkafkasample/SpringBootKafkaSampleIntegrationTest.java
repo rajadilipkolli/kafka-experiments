@@ -46,6 +46,7 @@ class SpringBootKafkaSampleIntegrationTest {
                 .andExpect(status().isOk());
 
         receiver2.getLatch().await(10, TimeUnit.SECONDS);
+        // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
         assertThat(receiver2.getLatch().getCount()).isEqualTo(2);
         assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(10);
     }
