@@ -23,7 +23,6 @@ This repository contains sample projects integrating with kafka using different 
   - [sample](./kafka-sample)
   - [streams](./kafka-streams)
   - [avro](./kafka-avro)
-  - others
 
 
 ### Reference
