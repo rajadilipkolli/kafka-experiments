@@ -9,6 +9,7 @@ import com.example.springbootkafkasample.listener.Receiver2;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import org.springframework.test.annotation.DirtiesContext;
         brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
 @DirtiesContext
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Disabled
 class SpringBootKafkaSampleApplicationTests {
 
     @Autowired

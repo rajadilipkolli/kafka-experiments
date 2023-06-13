@@ -16,10 +16,10 @@ public class Receiver1 {
 
     private static final Logger logger = LoggerFactory.getLogger(Receiver1.class);
 
-    @KafkaListener(topics = TOPIC_TEST_1, groupId = "foo")
+    @KafkaListener(topics = TOPIC_TEST_1, groupId = "foo", errorHandler = "validationErrorHandler")
     @SendTo(TOPIC_TEST_2)
     public MessageDTO listen(ConsumerRecord<String, MessageDTO> cr) {
-        logger.info(TOPIC_TEST_1 + " Received: {}", cr.toString());
+        logger.info("Received message : {} in topic :{}", cr.toString(), cr.topic());
         return cr.value();
     }
 }
