@@ -46,8 +46,8 @@ class SpringBootKafkaSampleIntegrationTest {
                 .andExpect(status().isOk());
 
         receiver2.getLatch().await(10, TimeUnit.SECONDS);
-        assertThat(receiver2.getLatch().getCount()).isZero();
-        assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(1);
+        assertThat(receiver2.getLatch().getCount()).isEqualTo(4);
+        assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(10);
     }
 
     @Test
@@ -59,7 +59,7 @@ class SpringBootKafkaSampleIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        receiver2.getLatch().await(10, TimeUnit.SECONDS);
-        assertThat(receiver2.getDeadLetterLatch().getCount()).isZero();
+        receiver2.getDeadLetterLatch().await(10, TimeUnit.SECONDS);
+        assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(9);
     }
 }

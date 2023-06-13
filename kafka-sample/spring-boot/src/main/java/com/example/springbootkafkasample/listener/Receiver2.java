@@ -1,6 +1,6 @@
 package com.example.springbootkafkasample.listener;
 
-import static com.example.springbootkafkasample.SpringBootKafkaSampleApplication.TOPIC_TEST_2;
+import static com.example.springbootkafkasample.config.Initializer.TOPIC_TEST_2;
 
 import com.example.springbootkafkasample.dto.MessageDTO;
 import jakarta.validation.Valid;
@@ -23,9 +23,9 @@ public class Receiver2 {
 
     private static final Logger logger = LoggerFactory.getLogger(Receiver2.class);
 
-    private final CountDownLatch latch = new CountDownLatch(1);
+    private final CountDownLatch latch = new CountDownLatch(10);
 
-    private final CountDownLatch deadLetterLatch = new CountDownLatch(1);
+    private final CountDownLatch deadLetterLatch = new CountDownLatch(10);
 
     public CountDownLatch getLatch() {
         return latch;
