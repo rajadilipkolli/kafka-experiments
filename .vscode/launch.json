@@ -27,10 +27,13 @@
         },
         {
             "type": "java",
-            "name": "BootKafkaReactorProducerApplication",
+            "name": "Spring Boot-BootKafkaReactorProducerApplication<boot-kafka-reactor-producer>",
             "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
             "mainClass": "com.example.boot.kafka.reactor.BootKafkaReactorProducerApplication",
-            "projectName": "boot-kafka-reactor-producer"
+            "projectName": "boot-kafka-reactor-producer",
+            "args": "--spring.profiles.active=local"
         },
         {
             "type": "java",

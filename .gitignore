@@ -34,3 +34,4 @@ HELP.md
 /analytics-spring-cloud-streams-kafka-producer/target/
 kafka-java-sample/target/
 spring-kafka-sample/target/
+/logs/
