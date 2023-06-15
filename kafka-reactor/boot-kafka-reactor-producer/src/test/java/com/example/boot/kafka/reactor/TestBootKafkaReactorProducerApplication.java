@@ -34,7 +34,8 @@ public class TestBootKafkaReactorProducerApplication {
 
     @Bean
     KafkaReceiver<Integer, MessageDTO> receiver(KafkaProperties properties) {
-        var receiverOptions = ReceiverOptions.<Integer, MessageDTO>create(properties.buildConsumerProperties())
+        ReceiverOptions<Integer, MessageDTO> receiverOptions = ReceiverOptions.<Integer, MessageDTO>create(
+                        properties.buildConsumerProperties())
                 .subscription(Collections.singleton(HELLO_TOPIC))
                 .addAssignListener(partitions -> log.debug("onPartitionsAssigned {}", partitions))
                 .addRevokeListener(partitions -> log.debug("onPartitionsRevoked {}", partitions));

@@ -17,6 +17,7 @@
             <column name="text" type="varchar(1024)">
                 <constraints nullable="false"/>
             </column>
+            <column name="sent_at" type="timestamp"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

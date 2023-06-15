@@ -3,5 +3,5 @@ package com.example.boot.kafka.reactor.dto;
 import java.time.LocalDateTime;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table
+@Table(name = "messages")
 public record MessageDTO(Long id, String text, LocalDateTime sentAt) {}
