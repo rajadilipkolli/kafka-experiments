@@ -7,7 +7,7 @@
     <changeSet author="app" id="createTable-message">
         <createSequence
             sequenceName="messages_seq"
-            incrementBy="50"
+            incrementBy="1"
             startValue="1"
         />
         <createTable tableName="messages">

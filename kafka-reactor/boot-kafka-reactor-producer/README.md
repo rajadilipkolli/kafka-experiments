@@ -16,3 +16,6 @@ $ ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ### Useful Links
 * Swagger UI: http://localhost:8080/swagger-ui.html
 * Actuator Endpoint: http://localhost:8080/actuator
+* Kafdrop UI: http://localhost:9000
+* PGAdmin UI: http://localhost:5050 (pgadmin4@pgadmin.org/admin)
+

@@ -2,7 +2,7 @@ package com.example.boot.kafka.reactor;
 
 import static com.example.boot.kafka.reactor.util.AppConstants.HELLO_TOPIC;
 
-import com.example.boot.kafka.reactor.dto.MessageDTO;
+import com.example.boot.kafka.reactor.entity.MessageDTO;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
