@@ -1,0 +1,120 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "AnalyticsConsumerApplication",
+            "request": "launch",
+            "mainClass": "com.example.analytics.AnalyticsConsumerApplication",
+            "projectName": "analytics-spring-cloud-streams-kafka-consumer"
+        },
+        {
+            "type": "java",
+            "name": "TestAnalyticsConsumerApplication",
+            "request": "launch",
+            "mainClass": "com.example.analytics.TestAnalyticsConsumerApplication",
+            "projectName": "analytics-spring-cloud-streams-kafka-consumer"
+        },
+        {
+            "type": "java",
+            "name": "AnalyticsProducerApplication",
+            "request": "launch",
+            "mainClass": "com.example.analytics.AnalyticsProducerApplication",
+            "projectName": "analytics-spring-cloud-streams-kafka-producer"
+        },
+        {
+            "type": "java",
+            "name": "BootKafkaReactorProducerApplication",
+            "request": "launch",
+            "mainClass": "com.example.boot.kafka.reactor.BootKafkaReactorProducerApplication",
+            "projectName": "boot-kafka-reactor-producer"
+        },
+        {
+            "type": "java",
+            "name": "TestBootKafkaReactorProducerApplication",
+            "request": "launch",
+            "mainClass": "com.example.boot.kafka.reactor.TestBootKafkaReactorProducerApplication",
+            "projectName": "boot-kafka-reactor-producer"
+        },
+        {
+            "type": "java",
+            "name": "KafkaDeadLetterPublishingApplication",
+            "request": "launch",
+            "mainClass": "com.github.timtebeek.KafkaDeadLetterPublishingApplication",
+            "projectName": "kafka-dead-letter-publishing"
+        },
+        {
+            "type": "java",
+            "name": "MessageConsumer",
+            "request": "launch",
+            "mainClass": "com.sivalabs.kafkasample.MessageConsumer",
+            "projectName": "kafka-java-sample"
+        },
+        {
+            "type": "java",
+            "name": "MessageProducer",
+            "request": "launch",
+            "mainClass": "com.sivalabs.kafkasample.MessageProducer",
+            "projectName": "kafka-java-sample"
+        },
+        {
+            "type": "java",
+            "name": "MessageStreamListener",
+            "request": "launch",
+            "mainClass": "com.sivalabs.kafkasample.MessageStreamListener",
+            "projectName": "kafka-java-sample"
+        },
+        {
+            "type": "java",
+            "name": "SpringBootKafkaAvroConsumerApplication",
+            "request": "launch",
+            "mainClass": "com.example.springbootkafkaavro.SpringBootKafkaAvroConsumerApplication",
+            "projectName": "spring-boot-kafka-avro-consumer"
+        },
+        {
+            "type": "java",
+            "name": "SpringBootKafkaAvroProducerApplication",
+            "request": "launch",
+            "mainClass": "com.example.springbootkafkaavro.SpringBootKafkaAvroProducerApplication",
+            "projectName": "spring-boot-kafka-avro-producer"
+        },
+        {
+            "type": "java",
+            "name": "SpringBootKafkaSampleApplication",
+            "request": "launch",
+            "mainClass": "com.example.springbootkafkasample.SpringBootKafkaSampleApplication",
+            "projectName": "spring-boot-kafka-sample"
+        },
+        {
+            "type": "java",
+            "name": "TestSpringBootKafkaSampleApplication",
+            "request": "launch",
+            "mainClass": "com.example.springbootkafkasample.TestSpringBootKafkaSampleApplication",
+            "projectName": "spring-boot-kafka-sample"
+        },
+        {
+            "type": "java",
+            "name": "SpringBootKafkaMultiApplication",
+            "request": "launch",
+            "mainClass": "com.example.springbootkafka.multi.SpringBootKafkaMultiApplication",
+            "projectName": "spring-boot-multiple-producers-consumers"
+        },
+        {
+            "type": "java",
+            "name": "TestSpringBootKafkaMultiApplication",
+            "request": "launch",
+            "mainClass": "com.example.springbootkafka.multi.TestSpringBootKafkaMultiApplication",
+            "projectName": "spring-boot-multiple-producers-consumers"
+        },
+        {
+            "type": "java",
+            "name": "SpringKafkaDemo",
+            "request": "launch",
+            "mainClass": "com.sivalabs.sample.SpringKafkaDemo",
+            "projectName": "spring-kafka-sample"
+        }
+    ]
+}
