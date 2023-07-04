@@ -1,6 +1,5 @@
 package com.example.springbootkafkasample.config;
 
-import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListenerConfigurer;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistrar;
-import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.listener.KafkaListenerErrorHandler;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
@@ -35,10 +33,5 @@ public class Config implements KafkaListenerConfigurer {
             logger.error("Error for message :{} ", m, e);
             return m;
         };
-    }
-
-    @Bean
-    KafkaAdminClient kafkaAdminClient(KafkaAdmin kafkaAdmin) {
-        return (KafkaAdminClient) KafkaAdminClient.create(kafkaAdmin.getConfigurationProperties());
     }
 }

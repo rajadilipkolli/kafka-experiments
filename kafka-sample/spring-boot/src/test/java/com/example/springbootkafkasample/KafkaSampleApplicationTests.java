@@ -3,6 +3,7 @@ package com.example.springbootkafkasample;
 import static com.example.springbootkafkasample.config.Initializer.TOPIC_TEST_1;
 import static com.example.springbootkafkasample.config.Initializer.TOPIC_TEST_2;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -11,8 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.springbootkafkasample.dto.MessageDTO;
 import com.example.springbootkafkasample.service.listener.Receiver2;
+import java.time.Duration;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -73,9 +74,10 @@ class KafkaSampleApplicationTests {
     @Test
     void sendAndReceiveData() throws InterruptedException {
         template.send(TOPIC_TEST_1, UUID.randomUUID(), new MessageDTO(TOPIC_TEST_1, "foo"));
-        receiver2.getLatch().await(5, TimeUnit.SECONDS);
         // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
-        assertThat(receiver2.getLatch().getCount()).isEqualTo(2);
+        await().pollInterval(Duration.ofSeconds(1))
+                .atMost(Duration.ofSeconds(15))
+                .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(2));
     }
 
     @Test

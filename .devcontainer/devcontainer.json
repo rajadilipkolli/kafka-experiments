@@ -19,7 +19,8 @@
 			"extensions": [
 				"vmware.vscode-boot-dev-pack",
 				"vscjava.vscode-java-pack",
-				"github.vscode-github-actions"
+				"github.vscode-github-actions",
+				"redhat.java"
 			]
 		}
 	}
