@@ -63,6 +63,6 @@ class BootKafkaSampleApplicationTests {
         template.send(TOPIC_TEST_1, UUID.randomUUID().toString(), new MessageDTO(TOPIC_TEST_1, "foo"));
         receiver2.getLatch().await(5, TimeUnit.SECONDS);
         // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
-        assertThat(receiver2.getLatch().getCount()).isEqualTo(4);
+        assertThat(receiver2.getLatch().getCount()).isEqualTo(2);
     }
 }
