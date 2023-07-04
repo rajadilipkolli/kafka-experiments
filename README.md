@@ -29,4 +29,3 @@ This repository contains sample projects integrating with kafka using different 
 
 Copied and modified from 
  - [sivalabs](https://github.com/sivaprasadreddy/kafka-tutorial)
- - https://github.com/timtebeek/kafka-dead-letter-publishing
