@@ -1,8 +1,8 @@
 package com.example.springbootkafkasample.controller;
 
 import com.example.springbootkafkasample.dto.MessageDTO;
-import com.example.springbootkafkasample.sender.Sender;
 import com.example.springbootkafkasample.service.MessageService;
+import com.example.springbootkafkasample.service.sender.Sender;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;

@@ -1,4 +1,4 @@
-package com.example.springbootkafkasample.sender;
+package com.example.springbootkafkasample.service.sender;
 
 import com.example.springbootkafkasample.dto.MessageDTO;
 import java.util.UUID;

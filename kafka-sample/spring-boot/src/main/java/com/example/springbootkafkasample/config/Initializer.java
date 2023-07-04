@@ -1,7 +1,7 @@
 package com.example.springbootkafkasample.config;
 
 import com.example.springbootkafkasample.dto.MessageDTO;
-import com.example.springbootkafkasample.sender.Sender;
+import com.example.springbootkafkasample.service.sender.Sender;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package com.example.springbootkafkasample.listener;
+package com.example.springbootkafkasample.service.listener;
 
 import static com.example.springbootkafkasample.config.Initializer.TOPIC_TEST_2;
 
