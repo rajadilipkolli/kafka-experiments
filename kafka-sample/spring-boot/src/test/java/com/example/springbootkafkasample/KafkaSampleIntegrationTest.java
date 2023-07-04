@@ -19,10 +19,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(classes = TestSpringBootKafkaSampleApplication.class)
+@SpringBootTest(classes = TestBootKafkaSampleApplication.class)
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class SpringBootKafkaSampleIntegrationTest {
+class KafkaSampleIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

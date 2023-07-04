@@ -8,7 +8,7 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @TestConfiguration(proxyBeanMethods = false)
-public class TestSpringBootKafkaSampleApplication {
+public class TestBootKafkaSampleApplication {
 
     @Bean
     @ServiceConnection
@@ -17,8 +17,8 @@ public class TestSpringBootKafkaSampleApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.from(SpringBootKafkaSampleApplication::main)
-                .with(TestSpringBootKafkaSampleApplication.class)
+        SpringApplication.from(BootKafkaSampleApplication::main)
+                .with(TestBootKafkaSampleApplication.class)
                 .run(args);
     }
 }

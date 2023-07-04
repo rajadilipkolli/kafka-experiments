@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringBootKafkaSampleApplication {
+public class BootKafkaSampleApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringBootKafkaSampleApplication.class, args);
+        SpringApplication.run(BootKafkaSampleApplication.class, args);
     }
 }

@@ -27,7 +27,7 @@ import org.springframework.test.annotation.DirtiesContext;
         brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
 @DirtiesContext
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class BootKafkaSampleApplicationTests {
+class KafkaSampleApplicationTests {
 
     @Autowired
     private KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
