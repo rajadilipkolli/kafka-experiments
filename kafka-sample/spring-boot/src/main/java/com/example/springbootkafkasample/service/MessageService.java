@@ -1,11 +1,17 @@
 package com.example.springbootkafkasample.service;
 
-import java.util.HashMap;
+import com.example.springbootkafkasample.dto.TopicInfo;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.apache.kafka.clients.admin.*;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.ListTopicsOptions;
+import org.apache.kafka.clients.admin.TopicDescription;
+import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.stereotype.Service;
 
@@ -18,26 +24,37 @@ public class MessageService {
         this.kafkaAdmin = kafkaAdmin;
     }
 
-    public Map<String, Integer> getTopicsWithPartitions(boolean showInternalTopics)
-            throws ExecutionException, InterruptedException, TimeoutException {
+    public List<TopicInfo> getTopicsWithPartitions(boolean showInternalTopics) {
         ListTopicsOptions options = new ListTopicsOptions();
         options.listInternal(showInternalTopics);
 
-        Map<String, Integer> topicPartitionCounts = new HashMap<>();
+        List<TopicInfo> topicPartitionCounts = new ArrayList<>();
 
         Map<String, TopicDescription> topicDescriptionMap;
-        try (Admin kafkaAdminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties())) {
-            topicDescriptionMap = kafkaAdminClient
-                    .describeTopics(kafkaAdminClient.listTopics(options).names().get(1, TimeUnit.MINUTES))
-                    .allTopicNames()
-                    .get(1, TimeUnit.MINUTES);
+        try (AdminClient kafkaAdminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties())) {
+            try {
+                topicDescriptionMap = kafkaAdmin.describeTopics(kafkaAdminClient
+                        .listTopics(options)
+                        .names()
+                        .get(1, TimeUnit.MINUTES)
+                        .toArray(String[]::new));
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                throw new KafkaException("Interrupted while getting topic listings", ie);
+            } catch (TimeoutException | ExecutionException ex) {
+                throw new KafkaException("Failed to obtain topic listings", ex);
+            }
         }
 
         topicDescriptionMap.forEach((topicName, topicDescription) -> {
             int partitionCount = topicDescription.partitions().size();
-            topicPartitionCounts.put(topicName, partitionCount);
+            int replicationCount =
+                    topicDescription.partitions().get(0).replicas().size();
+            topicPartitionCounts.add(new TopicInfo(topicName, partitionCount, replicationCount));
         });
 
+        // Sort the list by topicName
+        topicPartitionCounts.sort(Comparator.comparing(TopicInfo::topicName));
         return topicPartitionCounts;
     }
 }

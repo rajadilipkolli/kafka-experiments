@@ -1,11 +1,10 @@
 package com.example.springbootkafkasample.controller;
 
 import com.example.springbootkafkasample.dto.MessageDTO;
+import com.example.springbootkafkasample.dto.TopicInfo;
 import com.example.springbootkafkasample.service.MessageService;
 import com.example.springbootkafkasample.service.sender.Sender;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
+import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,10 +28,9 @@ public class MessageRestController {
     }
 
     @GetMapping("/topics")
-    public Map<String, Integer> getTopicsWithPartitionsCount(
+    public List<TopicInfo> getTopicsWithPartitionsCount(
             @RequestParam(name = "showInternalTopics", required = false, defaultValue = "false")
-                    boolean showInternalTopics)
-            throws ExecutionException, InterruptedException, TimeoutException {
+                    boolean showInternalTopics) {
         return messageService.getTopicsWithPartitions(showInternalTopics);
     }
 }

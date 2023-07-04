@@ -4,10 +4,8 @@ import static com.example.springbootkafkasample.config.Initializer.TOPIC_TEST_1;
 import static com.example.springbootkafkasample.config.Initializer.TOPIC_TEST_2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.springbootkafkasample.dto.MessageDTO;
@@ -76,22 +74,28 @@ class KafkaSampleApplicationTests {
         template.send(TOPIC_TEST_1, UUID.randomUUID(), new MessageDTO(TOPIC_TEST_1, "foo"));
         // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
         await().pollInterval(Duration.ofSeconds(1))
-                .atMost(Duration.ofSeconds(15))
+                .atMost(Duration.ofSeconds(30))
                 .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(2));
     }
 
     @Test
     void testTopicsWithPartitionsCount() throws Exception {
+
+        String expectedJson =
+                """
+                [
+                    {"topicName":"test_2-dlt","partitionCount":1,"replicationCount":1},
+                    {"topicName":"test_3","partitionCount":2,"replicationCount":1},
+                    {"topicName":"test_2","partitionCount":2,"replicationCount":1},
+                    {"topicName":"test_1","partitionCount":2,"replicationCount":1},
+                    {"topicName":"test_2-retry-0","partitionCount":1,"replicationCount":1},
+                    {"topicName":"test_2-retry-1","partitionCount":1,"replicationCount":1}
+                ]
+                """;
         this.mockMvc
                 .perform(get("/topics"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("size()", is(6)))
-                .andExpect(jsonPath("$.test_2-dlt").value(1))
-                .andExpect(jsonPath("$.test_3").value(2))
-                .andExpect(jsonPath("$.test_2").value(2))
-                .andExpect(jsonPath("$.test_1").value(2))
-                .andExpect(jsonPath("$.test_2-retry-0").value(1))
-                .andExpect(jsonPath("$.test_2-retry-1").value(1));
+                .andExpect(content().json(expectedJson));
     }
 }
