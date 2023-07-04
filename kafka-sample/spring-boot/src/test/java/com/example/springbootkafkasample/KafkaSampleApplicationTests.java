@@ -45,7 +45,7 @@ class KafkaSampleApplicationTests {
     private EmbeddedKafkaBroker embeddedKafkaBroker;
 
     @Autowired
-    private KafkaTemplate<String, MessageDTO> template;
+    private KafkaTemplate<UUID, MessageDTO> template;
 
     @Autowired
     private Receiver2 receiver2;
@@ -72,7 +72,7 @@ class KafkaSampleApplicationTests {
 
     @Test
     void sendAndReceiveData() throws InterruptedException {
-        template.send(TOPIC_TEST_1, UUID.randomUUID().toString(), new MessageDTO(TOPIC_TEST_1, "foo"));
+        template.send(TOPIC_TEST_1, UUID.randomUUID(), new MessageDTO(TOPIC_TEST_1, "foo"));
         receiver2.getLatch().await(5, TimeUnit.SECONDS);
         // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
         assertThat(receiver2.getLatch().getCount()).isEqualTo(2);
