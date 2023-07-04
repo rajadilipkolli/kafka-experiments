@@ -25,7 +25,7 @@ public class Receiver2 {
 
     private final CountDownLatch latch = new CountDownLatch(10);
 
-    private final CountDownLatch deadLetterLatch = new CountDownLatch(10);
+    private final CountDownLatch deadLetterLatch = new CountDownLatch(1);
 
     public CountDownLatch getLatch() {
         return latch;

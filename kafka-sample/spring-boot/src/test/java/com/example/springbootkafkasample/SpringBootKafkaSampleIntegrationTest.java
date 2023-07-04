@@ -46,7 +46,7 @@ class SpringBootKafkaSampleIntegrationTest {
         await().pollInterval(Duration.ofSeconds(1))
                 .atMost(Duration.ofSeconds(15))
                 .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(2));
-        assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(10);
+        assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(1);
     }
 
     @Test
@@ -61,6 +61,6 @@ class SpringBootKafkaSampleIntegrationTest {
         await().pollInterval(Duration.ofSeconds(1))
                 .atMost(Duration.ofSeconds(15))
                 .untilAsserted(() ->
-                        assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(9));
+                        assertThat(receiver2.getDeadLetterLatch().getCount()).isZero());
     }
 }
