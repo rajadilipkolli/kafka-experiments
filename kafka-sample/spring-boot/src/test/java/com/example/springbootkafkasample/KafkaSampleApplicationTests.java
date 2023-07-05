@@ -25,14 +25,12 @@ import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @EmbeddedKafka(
         topics = {TOPIC_TEST_1, TOPIC_TEST_2},
-        brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
-@DirtiesContext
+        bootstrapServersProperty = "spring.kafka.bootstrap-servers")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 class KafkaSampleApplicationTests {
