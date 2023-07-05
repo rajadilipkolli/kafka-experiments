@@ -18,8 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ContextConfiguration(classes = KafkaConfig.class)
 @EmbeddedKafka(
-        brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
-@DirtiesContext
+    bootstrapServersProperty = "spring.kafka.bootstrap-servers")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SpringKafkaDemoTest {
 
