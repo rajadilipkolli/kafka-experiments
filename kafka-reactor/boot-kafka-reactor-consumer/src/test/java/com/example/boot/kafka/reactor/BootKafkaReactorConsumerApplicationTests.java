@@ -34,7 +34,7 @@ class BootKafkaReactorConsumerApplicationTests {
 
     @Test
     void loadDataAndConsume() throws InterruptedException {
-        MessageDTO messageDTO = new MessageDTO(10_000L, "hello1", LocalDateTime.now());
+        MessageDTO messageDTO = new MessageDTO(null, "hello1", LocalDateTime.now());
         Integer key = new SecureRandom().nextInt(Integer.MAX_VALUE);
         this.sender
                 .send(Flux.just(
@@ -50,6 +50,7 @@ class BootKafkaReactorConsumerApplicationTests {
                             metadata.offset(),
                             LocalDateTime.now());
                 });
+        // letting kafka process it, as it is lazy initialization takes time
         TimeUnit.SECONDS.sleep(5);
 
         // Send a GET request to the /messages endpoint and validate the response
