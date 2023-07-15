@@ -34,7 +34,7 @@ public class MessageService {
                         .doOnError(e -> log.error("Send failed", e))
                         .subscribe(r -> {
                             RecordMetadata metadata = r.recordMetadata();
-                            log.debug(
+                            log.info(
                                     "Message {} sent successfully, topic-partition={}-{} offset={} timestamp={}",
                                     r.correlationMetadata(),
                                     metadata.topic(),

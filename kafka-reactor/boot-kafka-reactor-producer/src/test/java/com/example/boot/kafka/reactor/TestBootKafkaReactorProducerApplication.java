@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.DynamicPropertyRegistry;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -28,12 +29,18 @@ public class TestBootKafkaReactorProducerApplication {
 
     @Bean
     @ServiceConnection
-    KafkaContainer kafkaContainer() {
-        return new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag("7.4.0")).withKraft();
+    KafkaContainer kafkaContainer(DynamicPropertyRegistry propertyRegistry) {
+        KafkaContainer kafkaContainer = new KafkaContainer(
+                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.4.1"))
+                .withKraft();
+        propertyRegistry.add("spring.kafka.producer.bootstrapServers", kafkaContainer::getBootstrapServers);
+        propertyRegistry.add("spring.kafka.consumer.bootstrapServers", kafkaContainer::getBootstrapServers);
+        return kafkaContainer;
     }
 
     @Bean
     KafkaReceiver<Integer, MessageDTO> receiver(KafkaProperties properties) {
+        log.info("Creating receiver");
         ReceiverOptions<Integer, MessageDTO> receiverOptions = ReceiverOptions.<Integer, MessageDTO>create(
                         properties.buildConsumerProperties())
                 .subscription(Collections.singleton(HELLO_TOPIC))
