@@ -45,6 +45,16 @@
             "projectName": "spring-boot-kafka-avro-consumer",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-BootKafkaReactorConsumerApplication<boot-kafka-reactor-consumer>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.boot.kafka.reactor.BootKafkaReactorConsumerApplication",
+            "projectName": "boot-kafka-reactor-consumer",
+            "args": "--spring.profiles.active=local",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
