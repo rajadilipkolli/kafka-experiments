@@ -1,13 +1,11 @@
 package com.example.springbootkafka.multi.controller;
 
+import com.example.springbootkafka.multi.domain.SimpleMessage;
+import com.example.springbootkafka.multi.sender.Sender;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.springbootkafka.multi.domain.SimpleMessage;
-import com.example.springbootkafka.multi.sender.Sender;
-
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,5 +22,4 @@ public class MessageRestController {
     public void sendJsonMessage(@RequestBody SimpleMessage message) {
         sender.send(message);
     }
-
 }

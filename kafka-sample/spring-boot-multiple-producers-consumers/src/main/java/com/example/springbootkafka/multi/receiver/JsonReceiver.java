@@ -1,18 +1,15 @@
 package com.example.springbootkafka.multi.receiver;
 
+import static com.example.springbootkafka.multi.util.AppConstants.TOPIC_TEST_2;
+
+import com.example.springbootkafka.multi.domain.SimpleMessage;
+import jakarta.validation.Valid;
+import java.util.concurrent.CountDownLatch;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-
-import com.example.springbootkafka.multi.domain.SimpleMessage;
-
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
-
-import static com.example.springbootkafka.multi.util.AppConstants.TOPIC_TEST_2;
-
-import java.util.concurrent.CountDownLatch;
 
 @Component
 @Slf4j

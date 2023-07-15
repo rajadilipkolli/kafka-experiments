@@ -3,13 +3,11 @@ package com.example.springbootkafka.multi.sender;
 import static com.example.springbootkafka.multi.util.AppConstants.TOPIC_TEST_1;
 import static com.example.springbootkafka.multi.util.AppConstants.TOPIC_TEST_2;
 
-import org.springframework.kafka.core.RoutingKafkaTemplate;
-import org.springframework.stereotype.Component;
-
 import com.example.springbootkafka.multi.domain.SimpleMessage;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.RoutingKafkaTemplate;
+import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j

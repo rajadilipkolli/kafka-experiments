@@ -1,5 +1,12 @@
 package com.example.springbootkafka.multi.config;
 
+import com.example.springbootkafka.multi.domain.SimpleMessage;
+import com.example.springbootkafka.multi.util.AppConstants;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
@@ -23,16 +30,6 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import com.example.springbootkafka.multi.domain.SimpleMessage;
-import com.example.springbootkafka.multi.util.AppConstants;
-
-import lombok.RequiredArgsConstructor;
-
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 @Configuration
 @EnableKafka
 @RequiredArgsConstructor
@@ -43,8 +40,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
     private final LocalValidatorFactoryBean validator;
 
     @Bean
-    public RoutingKafkaTemplate routingTemplate(GenericApplicationContext context,
-            ProducerFactory<Object, Object> pf) {
+    public RoutingKafkaTemplate routingTemplate(GenericApplicationContext context, ProducerFactory<Object, Object> pf) {
 
         // Clone the PF with a different Serializer, register with Spring for shutdown
         Map<String, Object> configs = new HashMap<>(pf.getConfigurationProperties());
@@ -69,7 +65,8 @@ public class KafkaConfig implements KafkaListenerConfigurer {
 
     @Bean("simpleKafkaListenerContainerFactory")
     ConcurrentKafkaListenerContainerFactory<Integer, String> simpleKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<Integer, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<Integer, String> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(simpleKafkaConsumerFactory());
         return factory;
     }
@@ -87,7 +84,8 @@ public class KafkaConfig implements KafkaListenerConfigurer {
 
     @Bean("jsonKafkaListenerContainerFactory")
     ConcurrentKafkaListenerContainerFactory<String, SimpleMessage> jsonKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, SimpleMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<String, SimpleMessage> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(jsonKafkaConsumerFactory());
         return factory;
     }
