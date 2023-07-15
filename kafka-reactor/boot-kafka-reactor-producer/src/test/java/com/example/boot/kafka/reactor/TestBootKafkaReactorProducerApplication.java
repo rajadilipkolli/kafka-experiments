@@ -33,8 +33,7 @@ public class TestBootKafkaReactorProducerApplication {
         KafkaContainer kafkaContainer = new KafkaContainer(
                         DockerImageName.parse("confluentinc/cp-kafka").withTag("7.4.1"))
                 .withKraft();
-        propertyRegistry.add("spring.kafka.producer.bootstrapServers", kafkaContainer::getBootstrapServers);
-        propertyRegistry.add("spring.kafka.consumer.bootstrapServers", kafkaContainer::getBootstrapServers);
+        propertyRegistry.add("spring.kafka.bootstrapServers", kafkaContainer::getBootstrapServers);
         return kafkaContainer;
     }
 
