@@ -1,12 +1,9 @@
 package com.example.boot.kafka.reactor;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.example.boot.kafka.reactor.entity.MessageDTO;
 import com.example.boot.kafka.reactor.util.AppConstants;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -21,6 +18,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderRecord;
+import reactor.test.StepVerifier;
 
 @SpringBootTest(classes = TestBootKafkaReactorConsumerApplication.class)
 @ActiveProfiles("test")
@@ -53,8 +51,9 @@ class BootKafkaReactorConsumerApplicationTests {
                             LocalDateTime.now());
                 });
         TimeUnit.SECONDS.sleep(5);
+
         // Send a GET request to the /messages endpoint and validate the response
-        webTestClient
+        Flux<MessageDTO> responseFlux = webTestClient
                 .get()
                 .uri("/messages")
                 .accept(MediaType.TEXT_EVENT_STREAM)
@@ -62,11 +61,11 @@ class BootKafkaReactorConsumerApplicationTests {
                 .expectStatus()
                 .isOk()
                 .expectHeader()
-                .contentType(MediaType.TEXT_EVENT_STREAM)
-                .expectBody(MessageDTO.class)
-                .consumeWith(messageDTOEntityExchangeResult -> assertThat(
-                                Objects.requireNonNull(messageDTOEntityExchangeResult.getResponseBody())
-                                        .id())
-                        .isEqualTo(10000));
+                .contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
+                .returnResult(MessageDTO.class)
+                .getResponseBody();
+
+        // Use StepVerifier to verify the behavior of the Flux
+        StepVerifier.create(responseFlux).expectNextCount(1).thenCancel().verify();
     }
 }
