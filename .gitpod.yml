@@ -10,8 +10,11 @@ vscode:
     - vscjava.vscode-java-pack
     - Pivotal.vscode-boot-dev-pack
     - GabrielBB.vscode-lombok
+    - ms-azuretools.vscode-docker
 
 ports:
+  - port: 5050
+    visibility: public
   - port: 9091-9093
     visibility: public
   - port: 8080

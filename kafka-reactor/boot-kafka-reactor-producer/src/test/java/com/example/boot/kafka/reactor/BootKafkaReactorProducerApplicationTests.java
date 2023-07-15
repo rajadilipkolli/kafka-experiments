@@ -46,7 +46,7 @@ class BootKafkaReactorProducerApplicationTests {
                 .body(Mono.just(requestBody), String.class)
                 .exchange()
                 .expectStatus()
-                .isCreated();
+                .isOk();
 
         TimeUnit.SECONDS.sleep(5);
         Flux<MessageDTO> flux = receiver.receive().map(record -> {
