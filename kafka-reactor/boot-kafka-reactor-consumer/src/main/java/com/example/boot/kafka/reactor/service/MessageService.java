@@ -38,6 +38,6 @@ public class MessageService {
                     offset.acknowledge();
                     return value;
                 })
-                .doOnNext(this::saveMessage);
+                .flatMap(this::saveMessage);
     }
 }
