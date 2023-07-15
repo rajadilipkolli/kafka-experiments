@@ -12,7 +12,39 @@
             "console": "internalConsole",
             "mainClass": "com.example.boot.kafka.reactor.BootKafkaReactorProducerApplication",
             "projectName": "boot-kafka-reactor-producer",
-            "args": "--spring.profiles.active=local"
+            "args": "--spring.profiles.active=local",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=35415 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=boot-kafka-reactor-producer"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringBootKafkaMultiApplication<spring-boot-multiple-producers-consumers>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.springbootkafka.multi.SpringBootKafkaMultiApplication",
+            "projectName": "spring-boot-multiple-producers-consumers",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-BootKafkaSampleApplication<spring-boot-kafka-sample>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.springbootkafkasample.BootKafkaSampleApplication",
+            "projectName": "spring-boot-kafka-sample",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=44993 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=spring-boot-kafka-sample"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringBootKafkaAvroConsumerApplication<spring-boot-kafka-avro-consumer>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.springbootkafkaavro.SpringBootKafkaAvroConsumerApplication",
+            "projectName": "spring-boot-kafka-avro-consumer",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

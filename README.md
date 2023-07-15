@@ -21,8 +21,9 @@ Kafka has a number of key features that make it a popular choice for data proces
 This repository contains sample projects integrating with kafka using different mechanisms available
 
   - [sample](./kafka-sample)
-  - [streams](./kafka-streams)
-  - [avro](./kafka-avro)
+  - [streams](./kafka-streams/README.md)
+  - [reactor](./kafka-reactor/README.md)
+  - [avro](./kafka-avro/README.md)
 
 
 ### Reference
