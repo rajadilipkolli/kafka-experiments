@@ -2,7 +2,6 @@ package com.example.boot.kafka.reactor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.example.boot.kafka.reactor.config.MyTestContainers;
 import com.example.boot.kafka.reactor.entity.MessageDTO;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,9 +19,10 @@ import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOffset;
 import reactor.test.StepVerifier;
 
-@Slf4j
-@SpringBootTest(classes = {MyTestContainers.class})
+@SpringBootTest(classes = TestBootKafkaReactorProducerApplication.class)
+@ActiveProfiles("test")
 @AutoConfigureWebTestClient
+@Slf4j
 class BootKafkaReactorProducerApplicationTests {
 
     @Autowired
