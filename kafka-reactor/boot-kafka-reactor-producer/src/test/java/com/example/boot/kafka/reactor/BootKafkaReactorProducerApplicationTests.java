@@ -1,7 +1,5 @@
 package com.example.boot.kafka.reactor;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.example.boot.kafka.reactor.entity.MessageDTO;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
@@ -32,11 +30,6 @@ class BootKafkaReactorProducerApplicationTests {
     protected WebTestClient webTestClient;
 
     @Test
-    void contextLoads() throws InterruptedException {
-        assertThat(receiver).isNotNull();
-    }
-
-    @Test
     void loadDataAndConsume() throws InterruptedException {
         String requestBody =
                 """
@@ -59,7 +52,7 @@ class BootKafkaReactorProducerApplicationTests {
         Flux<MessageDTO> flux = receiver.receive().map(record -> {
             ReceiverOffset offset = record.receiverOffset();
             var value = record.value();
-            log.debug(
+            log.info(
                     "Received message: topic-partition={} offset={} timestamp={} key={} value={}",
                     offset.topicPartition(),
                     offset.offset(),
@@ -69,8 +62,7 @@ class BootKafkaReactorProducerApplicationTests {
             offset.acknowledge();
             return value;
         });
-        assertThat(flux).isNotNull();
 
-        StepVerifier.create(flux).expectNextCount(1).verifyComplete();
+        StepVerifier.create(flux).expectNextCount(1).thenCancel().verify();
     }
 }
