@@ -40,7 +40,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
     private final LocalValidatorFactoryBean validator;
 
     @Bean
-    public RoutingKafkaTemplate routingTemplate(GenericApplicationContext context, ProducerFactory<Object, Object> pf) {
+    RoutingKafkaTemplate routingTemplate(GenericApplicationContext context, ProducerFactory<Object, Object> pf) {
 
         // Clone the PF with a different Serializer, register with Spring for shutdown
         Map<String, Object> configs = new HashMap<>(pf.getConfigurationProperties());
@@ -56,7 +56,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
     }
 
     @Bean
-    public ConsumerFactory<Integer, String> simpleKafkaConsumerFactory() {
+    ConsumerFactory<Integer, String> simpleKafkaConsumerFactory() {
         Map<String, Object> consumerProperties = this.properties.buildConsumerProperties();
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class.getName());
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
@@ -64,17 +64,17 @@ public class KafkaConfig implements KafkaListenerConfigurer {
     }
 
     @Bean("simpleKafkaListenerContainerFactory")
-    ConcurrentKafkaListenerContainerFactory<Integer, String> simpleKafkaListenerContainerFactory() {
+    ConcurrentKafkaListenerContainerFactory<Integer, String> simpleKafkaListenerContainerFactory(
+            ConsumerFactory<Integer, String> simpleKafkaConsumerFactory) {
         ConcurrentKafkaListenerContainerFactory<Integer, String> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(simpleKafkaConsumerFactory());
+        factory.setConsumerFactory(simpleKafkaConsumerFactory);
         return factory;
     }
 
     // Second consumer config
-
     @Bean
-    public ConsumerFactory<String, SimpleMessage> jsonKafkaConsumerFactory() {
+    ConsumerFactory<String, SimpleMessage> jsonKafkaConsumerFactory() {
         Map<String, Object> consumerProperties = this.properties.buildConsumerProperties();
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class.getName());
@@ -83,10 +83,11 @@ public class KafkaConfig implements KafkaListenerConfigurer {
     }
 
     @Bean("jsonKafkaListenerContainerFactory")
-    ConcurrentKafkaListenerContainerFactory<String, SimpleMessage> jsonKafkaListenerContainerFactory() {
+    ConcurrentKafkaListenerContainerFactory<String, SimpleMessage> jsonKafkaListenerContainerFactory(
+            ConsumerFactory<String, SimpleMessage> jsonKafkaConsumerFactory) {
         ConcurrentKafkaListenerContainerFactory<String, SimpleMessage> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(jsonKafkaConsumerFactory());
+        factory.setConsumerFactory(jsonKafkaConsumerFactory);
         return factory;
     }
 

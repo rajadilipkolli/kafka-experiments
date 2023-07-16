@@ -1,21 +1,19 @@
 package com.example.springbootkafka.multi;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.devtools.restart.RestartScope;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @TestConfiguration(proxyBeanMethods = false)
 public class TestSpringBootKafkaMultiApplication {
 
-    @Bean
-    @ServiceConnection
-    @RestartScope
-    public KafkaContainer kafkaContainer() {
-        return new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag("7.4.1")).withKraft();
+    private static final KafkaContainer kafkaContainer =
+            new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag("7.4.1")).withKraft();
+
+    static {
+        kafkaContainer.start();
+        System.setProperty("spring.kafka.bootstrap-servers", kafkaContainer.getBootstrapServers());
     }
 
     public static void main(String[] args) {
