@@ -1,4 +1,4 @@
-/* Licensed under Apache-2.0 2021-2022 */
+/* Licensed under Apache-2.0 2021-2023 */
 package com.example.analytics.configuration;
 
 import jakarta.validation.constraints.NotBlank;
@@ -9,9 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 // @EnableConfigurationProperties or with @ConfigurationPropertiesScan.
 @ConfigurationProperties(prefix = "application.topic")
 public record AnalyticsApplicationProperties(
-        @NotBlank String topicNamePvs,
-        @NotBlank String topicNamePcs,
-        @NotBlank String topicNameChangelog,
-        @NotBlank String topicNameRePartition,
+        @NotBlank(message = "pvs topicName cant be Blank") String topicNamePvs,
+        @NotBlank(message = "pcs topicName cant be Blank") String topicNamePcs,
         @Positive short replication,
         @Positive short partitions) {}
