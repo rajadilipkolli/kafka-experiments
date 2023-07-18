@@ -36,3 +36,8 @@ docker exec -it analytics-spring-cloud-streams-kafka_kafka1_1 kafka-topics --zoo
  >  localhost:9000
  
  Code base of https://youtu.be/YPDzcmqwCNo
+
+ ### Important links
+ - Actuator Consumer - http://localhost:18081/actuator
+ - Swagger Consumer - http://localhost:18081/swagger-ui.html
+ 

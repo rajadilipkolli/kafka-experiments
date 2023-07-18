@@ -75,6 +75,16 @@
             "projectName": "analytics-spring-cloud-streams-kafka-producer",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-AnalyticsConsumerApplication<analytics-spring-cloud-streams-kafka-consumer>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.analytics.AnalyticsConsumerApplication",
+            "projectName": "analytics-spring-cloud-streams-kafka-consumer",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
