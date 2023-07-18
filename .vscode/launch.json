@@ -55,6 +55,26 @@
             "projectName": "boot-kafka-reactor-consumer",
             "args": "--spring.profiles.active=local",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SpringBootKafkaAvroProducerApplication<spring-boot-kafka-avro-producer>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.springbootkafkaavro.SpringBootKafkaAvroProducerApplication",
+            "projectName": "spring-boot-kafka-avro-producer",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-AnalyticsProducerApplication<analytics-spring-cloud-streams-kafka-producer>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.analytics.AnalyticsProducerApplication",
+            "projectName": "analytics-spring-cloud-streams-kafka-producer",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
