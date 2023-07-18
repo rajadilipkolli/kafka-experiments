@@ -2,48 +2,47 @@
 package com.example.analytics;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 import com.example.analytics.model.PageViewEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.context.annotation.Import;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
+import org.springframework.kafka.core.KafkaTemplate;
 
-@Import(KafkaTestContainersConfiguration.class)
-@SpringBootTest
-@Testcontainers
+@SpringBootTest(classes = TestAnalyticsProducerApplication.class)
 class AnalyticsProducerApplicationIntegrationTest {
 
-    private static final DockerImageName KAFKA_TEST_IMAGE =
-            DockerImageName.parse("confluentinc/cp-kafka:7.4.0");
+    @Autowired KafkaTemplate<String, String> kafkaTemplate;
 
-    @Container @ServiceConnection
-    public static final KafkaContainer KAFKA = new KafkaContainer(KAFKA_TEST_IMAGE).withKraft();
+    private final CountDownLatch messagesLatch = new CountDownLatch(100);
 
     @Test
     void contextLoads() {
-        assertThat(KAFKA.isRunning()).isTrue();
+        assertThat(kafkaTemplate).isNotNull();
+        await().pollDelay(1, TimeUnit.SECONDS)
+                .atMost(10, TimeUnit.SECONDS)
+                .untilAsserted(() -> assertThat(messagesLatch.getCount()).isEqualTo(99));
     }
 
-    @KafkaListener(topics = "pvs")
+    @KafkaListener(topics = "pvs", groupId = "pcs")
     public void listenMessages(String message) throws JsonProcessingException {
         final ObjectMapper objectMapper = new ObjectMapper();
         PageViewEvent value = objectMapper.readValue(message, PageViewEvent.class);
+        messagesLatch.countDown();
         assertThat(value).isNotNull();
-        assertThat(value.getDuration()).isIn(List.of(10, 1000));
+        assertThat(value.getDuration()).isIn(List.of(10L, 1000L));
         assertThat(value.getPage())
                 .isNotBlank()
-                .isIn(List.of("blog", "sitemap", "initializer", "news"));
+                .isIn(List.of("blog", "sitemap", "initializr", "news", "colophon", "about"));
         assertThat(value.getUserId())
                 .isNotBlank()
-                .isIn(List.of("Raja", "Dilip", "Chowdary", "Kolli"));
+                .isIn(List.of("rajesh", "kumar", "raja", "dilip", "chowdary", "kolli"));
     }
 }

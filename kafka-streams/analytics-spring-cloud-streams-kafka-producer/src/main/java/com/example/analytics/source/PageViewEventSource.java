@@ -17,8 +17,8 @@ public class PageViewEventSource {
         List<String> pages = List.of("blog", "sitemap", "initializr", "news", "colophon", "about");
         return () -> {
             String rPage = pages.get(new SecureRandom().nextInt(pages.size()));
-            String rName = pages.get(new SecureRandom().nextInt(names.size()));
-            return new PageViewEvent(rName, rPage, Math.random() > .5 ? 10 : 1000);
+            String rName = names.get(new SecureRandom().nextInt(names.size()));
+            return new PageViewEvent(rName, rPage, new SecureRandom().nextInt(10) > 5 ? 10 : 1000);
         };
     }
 }
