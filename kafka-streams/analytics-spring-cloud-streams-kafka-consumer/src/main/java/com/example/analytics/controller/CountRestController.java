@@ -1,4 +1,4 @@
-/* Licensed under Apache-2.0 2019-2022 */
+/* Licensed under Apache-2.0 2019-2023 */
 package com.example.analytics.controller;
 
 import com.example.analytics.configuration.AnalyticsConsumerConstants;
@@ -35,10 +35,11 @@ public class CountRestController {
         log.info(
                 "interactiveQueryService.getCurrentHostInfo() => {}",
                 interactiveQueryService.getCurrentHostInfo());
-        KeyValueIterator<String, Long> all = queryableStoreType.all();
-        while (all.hasNext()) {
-            KeyValue<String, Long> value = all.next();
-            counts.put(value.key, value.value);
+        try (KeyValueIterator<String, Long> all = queryableStoreType.all()) {
+            while (all.hasNext()) {
+                KeyValue<String, Long> value = all.next();
+                counts.put(value.key, value.value);
+            }
         }
         return counts;
     }
