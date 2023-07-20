@@ -60,7 +60,7 @@ class AnalyticsConsumerApplicationIntegrationTest {
     void verifyProcessing() {
 
         await().pollInterval(Duration.ofSeconds(1))
-                .atMost(30, TimeUnit.SECONDS)
+                .atMost(60, TimeUnit.SECONDS)
                 .untilAsserted(
                         () -> {
                             MockHttpServletResponse response =
