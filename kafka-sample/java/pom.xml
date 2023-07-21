@@ -14,18 +14,19 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <kafka.version>3.5.1</kafka.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>3.5.1</version>
+            <version>${kafka.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-            <version>3.5.0</version>
+            <version>${kafka.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
