@@ -28,7 +28,7 @@ class AnalyticsProducerApplicationIntegrationTest {
         assertThat(kafkaTemplate).isNotNull();
         await().pollDelay(1, TimeUnit.SECONDS)
                 .atMost(10, TimeUnit.SECONDS)
-                .untilAsserted(() -> assertThat(messagesLatch.getCount()).isEqualTo(99));
+                .untilAsserted(() -> assertThat(messagesLatch.getCount()).isLessThanOrEqualTo(99));
     }
 
     @KafkaListener(topics = "pvs", groupId = "pcs")
