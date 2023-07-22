@@ -4,8 +4,6 @@ package com.example.analytics.controller;
 import com.example.analytics.configuration.AnalyticsConsumerConstants;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.kafka.streams.KeyValue;
-import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.slf4j.Logger;
@@ -35,12 +33,8 @@ public class CountRestController {
         log.info(
                 "interactiveQueryService.getCurrentHostInfo() => {}",
                 interactiveQueryService.getCurrentHostInfo());
-        try (KeyValueIterator<String, Long> all = queryableStoreType.all()) {
-            while (all.hasNext()) {
-                KeyValue<String, Long> value = all.next();
-                counts.put(value.key, value.value);
-            }
-        }
+        queryableStoreType.all().forEachRemaining(kv -> counts.put(kv.key, kv.value));
+
         return counts;
     }
 }
