@@ -1,3 +1,4 @@
+/* (C)2023 */
 package com.example.cloudkafkasample;
 
 import org.springframework.boot.SpringApplication;
@@ -17,6 +18,8 @@ class TestCloudKafkaSampleApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.from(CloudKafkaSampleApplication::main).with(TestCloudKafkaSampleApplication.class).run(args);
+        SpringApplication.from(CloudKafkaSampleApplication::main)
+                .with(TestCloudKafkaSampleApplication.class)
+                .run(args);
     }
 }

@@ -1,3 +1,4 @@
+/* (C)2023 */
 package com.example.cloudkafkasample.controller;
 
 import com.example.cloudkafkasample.domain.MessageDTO;
@@ -19,5 +20,4 @@ public class MessageRestController {
     public void sendMessage(@RequestBody MessageDTO messageDTO) {
         this.sender.send(messageDTO);
     }
-
 }

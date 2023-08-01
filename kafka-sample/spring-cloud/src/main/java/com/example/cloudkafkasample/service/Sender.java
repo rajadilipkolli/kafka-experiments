@@ -1,7 +1,9 @@
+/* (C)2023 */
 package com.example.cloudkafkasample.service;
 
 import com.example.cloudkafkasample.domain.MessageDTO;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +16,6 @@ public class Sender {
     }
 
     public void send(MessageDTO messageDTO) {
-        this.streamBridge.send("receive-out-0", messageDTO);
+        this.streamBridge.send("receive-out-0", messageDTO, MediaType.APPLICATION_JSON);
     }
 }

@@ -1,13 +1,13 @@
+/* (C)2023 */
 package com.example.cloudkafkasample.sink;
 
 import com.example.cloudkafkasample.domain.MessageDTO;
+import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.function.Consumer;
 
 @Configuration(proxyBeanMethods = false)
 public class Receiver {
@@ -23,9 +23,12 @@ public class Receiver {
     @Bean
     public Consumer<MessageDTO> receive() {
         return data -> {
-            logger.info("Data received from topic-1... {}", data);
-            latch.countDown();
+            if (data.msg() != null) {
+                logger.info("Data received from input-topic... {}", data);
+                latch.countDown();
+            } else {
+                throw new RuntimeException();
+            }
         };
-
     }
 }

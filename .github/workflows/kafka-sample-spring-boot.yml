@@ -1,4 +1,4 @@
-name: spring-boot-kafka-sample
+name: kafka-sample-spring-boot
 
 on:
   push:

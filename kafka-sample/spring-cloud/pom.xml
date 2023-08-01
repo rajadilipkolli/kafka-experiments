@@ -18,6 +18,7 @@
 		<java.version>17</java.version>
 		<spring-cloud.version>2022.0.4</spring-cloud.version>
 		<springdoc-openapi.version>2.1.0</springdoc-openapi.version>
+		<spotless.version>2.38.0</spotless.version>
 	</properties>
 
 	<dependencies>
@@ -84,6 +85,33 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <configuration>
+                    <java>
+                        <palantirJavaFormat>
+                            <version>2.30.0</version>
+                        </palantirJavaFormat>
+                        <importOrder />
+                        <removeUnusedImports />
+                        <formatAnnotations />
+						<licenseHeader>
+							<content>/* (C)$YEAR */</content>
+							<delimiter>package</delimiter>  <!-- content until first occurrence of the delimiter regex will be interpreted as header section -->
+						</licenseHeader>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 

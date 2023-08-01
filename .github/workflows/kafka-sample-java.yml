@@ -1,4 +1,4 @@
-name: kafka-java-sample
+name: kafka-sample-java
 
 on:
   push:
