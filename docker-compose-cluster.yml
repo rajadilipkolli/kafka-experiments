@@ -1,93 +1,110 @@
-version: '2'
+version: '3.9'
 
 # Sets up a multi-node Kafka cluster w/ 3 brokers w/ the following listeners:
-#  - broker1 listening (external/internal): localhost:9091 / broker1:29091
-#  - broker2 listening (external/internal): localhost:9092 / broker2:29092
-#  - broker3 listening (external/internal): localhost:9093 / broker3:29093
+#  - broker1 listening (external/internal): localhost:9091 / kafka1:29092
+#  - broker2 listening (external/internal): localhost:9092 / kafka2:29092
+#  - broker3 listening (external/internal): localhost:9093 / kafka3:29092
 
 services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.4.1
-    hostname: zookeeper
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
-  broker1:
+  kafka1:
     image: confluentinc/cp-kafka:7.4.1
-    hostname: broker1
-    container_name: broker1
-    depends_on:
-      - zookeeper
-    ports:
-      - "9091:9091"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://broker1:29091,EXTERNAL://localhost:9091
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_ADVERTISED_HOST_NAME: broker1
-
-  broker2:
-    image: confluentinc/cp-kafka:7.4.1
-    hostname: broker2
-    container_name: broker2
-    depends_on:
-      - zookeeper
+    container_name: kafka1
+    hostname: kafka1
     ports:
       - "9092:9092"
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost 9092" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     environment:
-      KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://broker2:29092,EXTERNAL://localhost:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_LISTENERS: 'INTERNAL://kafka1:29092,CONTROLLER://kafka1:29093,EXTERNAL://0.0.0.0:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka1:29092,EXTERNAL://localhost:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:29093,2@kafka2:29093,3@kafka3:29093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_ADVERTISED_HOST_NAME: broker2
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 32
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      CLUSTER_ID: '4L6g3nShT-eMCtK--X86sw'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
 
-  broker3:
+  kafka2:
     image: confluentinc/cp-kafka:7.4.1
-    hostname: broker3
-    container_name: broker3
-    depends_on:
-      - zookeeper
+    container_name: kafka2
+    hostname: kafka2
     ports:
       - "9093:9093"
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost 9093" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     environment:
-      KAFKA_BROKER_ID: 3
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://broker3:29093,EXTERNAL://localhost:9093
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_NODE_ID: 2
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_LISTENERS: 'INTERNAL://kafka2:29092,CONTROLLER://kafka2:29093,EXTERNAL://0.0.0.0:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka2:29092,EXTERNAL://localhost:9093'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:29093,2@kafka2:29093,3@kafka3:29093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_ADVERTISED_HOST_NAME: broker3
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 32
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      CLUSTER_ID: '4L6g3nShT-eMCtK--X86sw'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
 
-# Runs a Confluent Schema Registry instance on 'http://localhost:8081'.
-#
-# Pre-requisites: The brokers are already running.
+  kafka3:
+    image: confluentinc/cp-kafka:7.4.1
+    container_name: kafka3
+    hostname: kafka3
+    ports:
+      - "9091:9091"
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost 9091" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_LISTENERS: 'INTERNAL://kafka3:29092,CONTROLLER://kafka3:29093,EXTERNAL://0.0.0.0:9091'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka3:29092,EXTERNAL://localhost:9091'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:29093,2@kafka2:29093,3@kafka3:29093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 32
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      CLUSTER_ID: '4L6g3nShT-eMCtK--X86sw'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+
   schema-registry:
     image: confluentinc/cp-schema-registry:7.4.1
-    hostname: schema-registry
     container_name: schema-registry
-    depends_on:
-      - broker1
-      - broker2
-      - broker3
+    hostname: schema-registry
     ports:
       - "8081:8081"
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker1:29091,broker2:29092,broker3:29093'
-      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka1:29092,kafka2:29092,kafka3:29092'
+      SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:8081'
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: WARN
+    depends_on:
+      kafka1:
+        condition: service_healthy
+      kafka2:
+        condition: service_healthy
+      kafka3:
+        condition: service_healthy
 
   kafdrop:
     image: obsidiandynamics/kafdrop
@@ -95,8 +112,11 @@ services:
     ports:
       - "9000:9000"
     environment:
-      KAFKA_BROKERCONNECT: "broker1:29091,broker2:29092,broker3:29093"
+      KAFKA_BROKERCONNECT: "kafka1:29092,kafka2:29092,kafka3:29092"
     depends_on:
-      - broker1
-      - broker2
-      - broker3
+      kafka1:
+        condition: service_healthy
+      kafka2:
+        condition: service_healthy
+      kafka3:
+        condition: service_healthy
