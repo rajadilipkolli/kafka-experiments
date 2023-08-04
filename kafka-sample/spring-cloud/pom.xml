@@ -11,7 +11,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>spring-cloud-kafka-sample</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>cloudstream</name>
+	<name>cloud-kafka-sample</name>
 	<description>Demo project for Spring Boot with test stream</description>
 
 	<properties>
