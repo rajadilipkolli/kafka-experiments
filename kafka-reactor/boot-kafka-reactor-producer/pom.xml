@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <org.springdoc.version>2.2.0</org.springdoc.version>
+        <springdoc-openapi.version>2.2.0</springdoc-openapi.version>
 
         <spotless.version>2.38.0</spotless.version>
     </properties>
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
-            <version>${org.springdoc.version}</version>
+            <version>${springdoc-openapi.version}</version>
         </dependency>
 
         <dependency>
