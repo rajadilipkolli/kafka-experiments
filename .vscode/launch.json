@@ -85,6 +85,16 @@
             "projectName": "analytics-spring-cloud-streams-kafka-consumer",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-TestBootKafkaSampleApplication<spring-boot-kafka-sample>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.springbootkafkasample.TestBootKafkaSampleApplication",
+            "projectName": "spring-boot-kafka-sample",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
