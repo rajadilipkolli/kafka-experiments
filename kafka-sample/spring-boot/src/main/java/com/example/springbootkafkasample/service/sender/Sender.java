@@ -26,7 +26,7 @@ public class Sender {
     @AsyncPublisher(
             operation =
                     @AsyncOperation(
-                            channelName = "producer-topic",
+                            channelName = "test1",
                             description = "MessageDTO payload",
                             headers =
                                     @AsyncOperation.Headers(
