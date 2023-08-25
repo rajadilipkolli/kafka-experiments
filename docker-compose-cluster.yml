@@ -7,7 +7,7 @@ version: '3.9'
 
 services:
   kafka1:
-    image: confluentinc/cp-kafka:7.4.1
+    image: confluentinc/cp-kafka:7.5.0
     container_name: kafka1
     hostname: kafka1
     ports:
@@ -34,7 +34,7 @@ services:
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
 
   kafka2:
-    image: confluentinc/cp-kafka:7.4.1
+    image: confluentinc/cp-kafka:7.5.0
     container_name: kafka2
     hostname: kafka2
     ports:
@@ -61,7 +61,7 @@ services:
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
 
   kafka3:
-    image: confluentinc/cp-kafka:7.4.1
+    image: confluentinc/cp-kafka:7.5.0
     container_name: kafka3
     hostname: kafka3
     ports:
