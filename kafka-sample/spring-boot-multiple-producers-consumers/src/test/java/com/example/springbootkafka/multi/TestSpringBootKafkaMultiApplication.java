@@ -9,7 +9,7 @@ import org.testcontainers.utility.DockerImageName;
 public class TestSpringBootKafkaMultiApplication {
 
     private static final KafkaContainer kafkaContainer =
-            new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag("7.4.1")).withKraft();
+            new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.0")).withKraft();
 
     static {
         kafkaContainer.start();
