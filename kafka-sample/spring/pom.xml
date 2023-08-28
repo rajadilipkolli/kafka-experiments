@@ -12,7 +12,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.kafka.version>3.0.10</spring.kafka.version>
+        <spring.kafka.version>3.0.11</spring.kafka.version>
     </properties>
 
     <dependencies>
