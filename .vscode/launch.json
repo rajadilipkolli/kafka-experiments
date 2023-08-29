@@ -88,6 +88,16 @@
         },
         {
             "type": "java",
+            "name": "Spring Boot-TestSpringBootKafkaMultiApplication<spring-boot-multiple-producers-consumers>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.springbootkafka.multi.TestSpringBootKafkaMultiApplication",
+            "projectName": "spring-boot-multiple-producers-consumers",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-TestBootKafkaSampleApplication<spring-boot-kafka-sample>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
