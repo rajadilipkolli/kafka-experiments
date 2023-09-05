@@ -1,3 +1,4 @@
+/* (C)2023 */
 package com.example.cloudkafkasample.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;

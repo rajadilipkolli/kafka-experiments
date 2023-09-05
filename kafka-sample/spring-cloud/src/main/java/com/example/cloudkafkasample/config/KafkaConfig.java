@@ -1,3 +1,4 @@
+/* (C)2023 */
 package com.example.cloudkafkasample.config;
 
 import org.springframework.cloud.stream.config.ListenerContainerCustomizer;
@@ -12,7 +13,8 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 public class KafkaConfig {
 
     @Bean
-    ListenerContainerCustomizer<AbstractMessageListenerContainer<byte[], byte[]>> customizer(DefaultErrorHandler errorHandler) {
+    ListenerContainerCustomizer<AbstractMessageListenerContainer<byte[], byte[]>> customizer(
+            DefaultErrorHandler errorHandler) {
         return (container, dest, group) -> {
             container.setCommonErrorHandler(errorHandler);
         };
