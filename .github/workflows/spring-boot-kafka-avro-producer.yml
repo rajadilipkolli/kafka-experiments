@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - "kafka-avro/spring-boot-kafka-avro-producer/**"
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
     paths:
       - "kafka-avro/spring-boot-kafka-avro-producer/**"

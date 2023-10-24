@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - "kafka-reactor/boot-kafka-reactor-producer/**"
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
     paths:
       - "kafka-reactor/boot-kafka-reactor-producer/**"

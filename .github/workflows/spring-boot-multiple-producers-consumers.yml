@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - "kafka-sample/spring-boot-multiple-producers-consumers/**"
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
     paths:
       - "kafka-sample/spring-boot-multiple-producers-consumers/**"

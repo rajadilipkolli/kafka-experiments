@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - "kafka-streams/analytics-spring-cloud-streams-kafka-consumer/**"
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
     paths:
       - "kafka-streams/analytics-spring-cloud-streams-kafka-consumer/**"
