@@ -39,7 +39,7 @@ class SpringBootKafkaAvroProducerApplicationTests {
     @Autowired MockMvc mockMvc;
 
     private static final Network KAFKA_NETWORK = Network.newNetwork();
-    private static final String CONFLUENT_PLATFORM_VERSION = "7.4.1";
+    private static final String CONFLUENT_PLATFORM_VERSION = "7.5.2";
     private static final DockerImageName KAFKA_IMAGE =
             DockerImageName.parse("confluentinc/cp-kafka").withTag(CONFLUENT_PLATFORM_VERSION);
     private static final KafkaContainer KAFKA =
@@ -50,8 +50,7 @@ class SpringBootKafkaAvroProducerApplicationTests {
                     .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", "1");
 
     private static final SchemaRegistryContainer SCHEMA_REGISTRY =
-            new SchemaRegistryContainer(CONFLUENT_PLATFORM_VERSION)
-                    .withStartupTimeout(Duration.ofMinutes(2));
+            new SchemaRegistryContainer().withStartupTimeout(Duration.ofMinutes(2));
 
     static {
         KAFKA.start();
@@ -80,7 +79,7 @@ class SpringBootKafkaAvroProducerApplicationTests {
         }
 
         public SchemaRegistryContainer(String version) {
-            super(DockerImageName.parse(SCHEMA_REGISTRY_IMAGE).withTag(CONFLUENT_PLATFORM_VERSION));
+            super(DockerImageName.parse(SCHEMA_REGISTRY_IMAGE).withTag(version));
 
             waitingFor(Wait.forHttp("/subjects").forStatusCode(200));
             withExposedPorts(SCHEMA_REGISTRY_PORT);
@@ -100,7 +99,7 @@ class SpringBootKafkaAvroProducerApplicationTests {
         }
 
         public String getSchemaUrl() {
-            return String.format("http://%s:%d", getHost(), getMappedPort(SCHEMA_REGISTRY_PORT));
+            return "http://%s:%d".formatted(getHost(), getMappedPort(SCHEMA_REGISTRY_PORT));
         }
     }
 
