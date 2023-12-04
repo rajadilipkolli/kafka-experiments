@@ -47,7 +47,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         DefaultKafkaProducerFactory<Object, Object> jsonPF = new DefaultKafkaProducerFactory<>(configs);
-        context.registerBean(DefaultKafkaProducerFactory.class, "jsonPF", jsonPF);
+        context.registerBean("jsonPF", DefaultKafkaProducerFactory.class, () -> jsonPF);
 
         Map<Pattern, ProducerFactory<Object, Object>> map = new LinkedHashMap<>();
         map.put(Pattern.compile(AppConstants.TOPIC_TEST_2), jsonPF);
