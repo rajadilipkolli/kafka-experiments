@@ -1,10 +1,10 @@
-name: spring-kafka-sample
+name: kafka-sample-spring
 
 on:
   push:
     paths:
       - "kafka-sample/spring/**"
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
     paths:
       - "kafka-sample/spring/**"
@@ -20,14 +20,14 @@ jobs:
       run:
         working-directory: "kafka-sample/spring"
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       with:
           fetch-depth: 0
     - name: Set up JDK
-      uses: actions/setup-java@v3.12.0
+      uses: actions/setup-java@v4.0.0
       with:
-        java-version: '17'
-        distribution: 'microsoft'
+        java-version: '21'
+        distribution: 'temurin'
         cache: 'maven'
     - name: Build with Maven
       run: mvn -B verify --file pom.xml

@@ -3,7 +3,7 @@ package com.example.springbootkafka.multi;
 import static com.example.springbootkafka.multi.util.AppConstants.TOPIC_TEST_1;
 import static com.example.springbootkafka.multi.util.AppConstants.TOPIC_TEST_2;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 
 import com.example.springbootkafka.multi.domain.SimpleMessage;
 import com.example.springbootkafka.multi.receiver.JsonReceiver;
@@ -23,9 +23,7 @@ import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest
-@EmbeddedKafka(
-        topics = {TOPIC_TEST_1, TOPIC_TEST_2},
-        bootstrapServersProperty = "spring.kafka.bootstrap-servers")
+@EmbeddedKafka(topics = {TOPIC_TEST_1, TOPIC_TEST_2})
 @DirtiesContext
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SpringBootKafkaMultiApplicationTests {

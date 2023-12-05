@@ -3,12 +3,13 @@
 # Please adjust to your needs (see https://www.gitpod.io/docs/config-gitpod-file)
 # and commit this file to your remote git repository to share the goodness with others.
 
-image: gitpod/workspace-java-17
+image:
+  file: .gitpod.Dockerfile
 
 vscode:
   extensions:
     - vscjava.vscode-java-pack
-    - Pivotal.vscode-boot-dev-pack
+    - Vmware.vscode-boot-dev-pack
     - GabrielBB.vscode-lombok
     - ms-azuretools.vscode-docker
     - redhat.java
