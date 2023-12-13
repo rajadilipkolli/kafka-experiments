@@ -1,6 +1,6 @@
 {
 	"name": "Java",
-	"image": "mcr.microsoft.com/devcontainers/java:17",
+	"image": "mcr.microsoft.com/devcontainers/java:21",
 	"features": {
 		"ghcr.io/devcontainers/features/java:1": {
 			"version": "none",
@@ -20,7 +20,8 @@
 				"vmware.vscode-boot-dev-pack",
 				"vscjava.vscode-java-pack",
 				"github.vscode-github-actions",
-				"redhat.java"
+				"redhat.java",
+				"vscjava.vscode-spring-boot-dashboard"
 			]
 		}
 	},
