@@ -6,3 +6,4 @@
 ### Useful Links
 * Swagger UI: http://localhost:8080/swagger-ui.html
 * kafdrop: http://localhost:9000
+* Zipkin: http://localhost:9411

@@ -2,6 +2,9 @@ package com.example.springbootkafka.multi.receiver;
 
 import static com.example.springbootkafka.multi.util.AppConstants.TOPIC_TEST_1;
 
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.tracing.Tracer;
 import java.util.concurrent.CountDownLatch;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +17,26 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SimpleReceiver {
 
+    private final Tracer tracer;
+
+    private final ObservationRegistry observationRegistry;
+
+    SimpleReceiver(Tracer tracer, ObservationRegistry observationRegistry) {
+        this.tracer = tracer;
+        this.observationRegistry = observationRegistry;
+    }
+
     private final CountDownLatch latch = new CountDownLatch(1);
 
     @KafkaListener(topics = TOPIC_TEST_1, containerFactory = "simpleKafkaListenerContainerFactory")
     public void simpleListener(ConsumerRecord<Integer, String> cr) {
-        log.info("{} Received a message with key = {} , value={}", TOPIC_TEST_1, cr.key(), cr.value());
+
+        Observation.createNotStarted("simpleListener", this.observationRegistry).observe(() -> {
+            log.info("{} Received a message with key = {} , value={}", TOPIC_TEST_1, cr.key(), cr.value());
+            log.info(
+                    "<TRACE:{}> for SimpleListener",
+                    this.tracer.currentSpan().context().traceId());
+        });
         latch.countDown();
     }
 }
