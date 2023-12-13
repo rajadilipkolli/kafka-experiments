@@ -31,12 +31,12 @@ public class SimpleReceiver {
     @KafkaListener(topics = TOPIC_TEST_1, containerFactory = "simpleKafkaListenerContainerFactory")
     public void simpleListener(ConsumerRecord<Integer, String> cr) {
 
-        Observation.createNotStarted("simpleListener", this.observationRegistry).observe(() -> {
-            log.info("{} Received a message with key = {} , value={}", TOPIC_TEST_1, cr.key(), cr.value());
-            log.info(
-                    "<TRACE:{}> for SimpleListener",
-                    this.tracer.currentSpan().context().traceId());
-        });
+        Observation.createNotStarted("simpleListener", this.observationRegistry)
+                .observe(() -> log.info(
+                        "Received a message in simpleListener with key = {} , value={} with traceId : {}",
+                        cr.key(),
+                        cr.value(),
+                        this.tracer.currentSpan().context().traceId()));
         latch.countDown();
     }
 }
