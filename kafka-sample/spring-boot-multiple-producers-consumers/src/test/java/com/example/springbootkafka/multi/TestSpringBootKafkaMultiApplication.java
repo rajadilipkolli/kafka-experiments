@@ -13,11 +13,14 @@ public class TestSpringBootKafkaMultiApplication {
 
     @Bean
     @ServiceConnection
-    KafkaContainer kafkaContainer(DynamicPropertyRegistry propertyRegistry) {
+    KafkaContainer kafkaContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
         KafkaContainer kafkaContainer = new KafkaContainer(
-                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.0"))
-                .withKraft();
-        propertyRegistry.add("spring.kafka.bootstrapServers", kafkaContainer::getBootstrapServers);
+                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.2"))
+                .withKraft()
+                .withReuse(true);
+        // Connect our Spring application to our Testcontainers Kafka instance
+        dynamicPropertyRegistry.add("spring.kafka.consumer.bootstrap-servers", kafkaContainer::getBootstrapServers);
+        dynamicPropertyRegistry.add("spring.kafka.producer.bootstrap-servers", kafkaContainer::getBootstrapServers);
         return kafkaContainer;
     }
 

@@ -22,14 +22,14 @@ public class TestBootKafkaReactorConsumerApplication {
     @Bean
     @ServiceConnection
     PostgreSQLContainer<?> postgresContainer() {
-        return new PostgreSQLContainer<>(DockerImageName.parse("postgres:15.3-alpine"));
+        return new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.1-alpine"));
     }
 
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer(DynamicPropertyRegistry propertyRegistry) {
         KafkaContainer kafkaContainer = new KafkaContainer(
-                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.4.1"))
+                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.2"))
                 .withKraft();
         propertyRegistry.add("spring.kafka.bootstrapServers", kafkaContainer::getBootstrapServers);
         return kafkaContainer;

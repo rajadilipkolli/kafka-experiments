@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - "kafka-sample/spring-boot/**"
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
     paths:
       - "kafka-sample/spring-boot/**"
@@ -20,14 +20,22 @@ jobs:
       run:
         working-directory: "kafka-sample/spring-boot"
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
           fetch-depth: 0
-    - name: Set up JDK
-      uses: actions/setup-java@v3.12.0
+    - uses: graalvm/setup-graalvm@v1
       with:
-        java-version: '17'
-        distribution: 'adopt'
+        java-version: '21'
+        distribution: 'graalvm'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         cache: 'maven'
+        native-image-job-reports: 'true'
+      
+    - name: Printing versions
+      run: |
+        echo "GRAALVM_HOME: $GRAALVM_HOME"
+        echo "JAVA_HOME: $JAVA_HOME"
+        java --version
+        native-image --version
     - name: Build with Maven
-      run: ./mvnw -B verify --file pom.xml
+      run: ./mvnw -Pnative -B verify spring-boot:build-image --file pom.xml

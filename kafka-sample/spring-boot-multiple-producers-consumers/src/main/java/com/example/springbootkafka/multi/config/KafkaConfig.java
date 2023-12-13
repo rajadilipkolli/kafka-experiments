@@ -47,7 +47,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         DefaultKafkaProducerFactory<Object, Object> jsonPF = new DefaultKafkaProducerFactory<>(configs);
-        context.registerBean(DefaultKafkaProducerFactory.class, "jsonPF", jsonPF);
+        context.registerBean("jsonPF", DefaultKafkaProducerFactory.class, () -> jsonPF);
 
         Map<Pattern, ProducerFactory<Object, Object>> map = new LinkedHashMap<>();
         map.put(Pattern.compile(AppConstants.TOPIC_TEST_2), jsonPF);
@@ -57,7 +57,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
 
     @Bean
     ConsumerFactory<Integer, String> simpleKafkaConsumerFactory() {
-        Map<String, Object> consumerProperties = this.properties.buildConsumerProperties();
+        Map<String, Object> consumerProperties = this.properties.buildConsumerProperties(null);
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class.getName());
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         return new DefaultKafkaConsumerFactory<>(consumerProperties);
@@ -75,7 +75,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
     // Second consumer config
     @Bean
     ConsumerFactory<String, SimpleMessage> jsonKafkaConsumerFactory() {
-        Map<String, Object> consumerProperties = this.properties.buildConsumerProperties();
+        Map<String, Object> consumerProperties = this.properties.buildConsumerProperties(null);
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class.getName());
         consumerProperties.put(JsonDeserializer.TRUSTED_PACKAGES, "com.example.springbootkafka.multi.domain");
