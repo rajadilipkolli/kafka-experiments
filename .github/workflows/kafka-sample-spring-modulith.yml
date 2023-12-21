@@ -1,13 +1,13 @@
-name: kafka-sample-spring-modulith
+name: kafka-sample-spring-modulith-outbox-pattern
 
 on:
   push:
     paths:
-      - "kafka-sample/modulith-outbox-demo/**"
+      - "kafka-sample/spring-modulith-outbox-pattern/**"
     branches: [ main ]
   pull_request:
     paths:
-      - "kafka-sample/modulith-outbox-demo/**"
+      - "kafka-sample/spring-modulith-outbox-pattern/**"
     types:
       - opened
       - synchronize
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "kafka-sample/modulith-outbox-demo"
+        working-directory: "kafka-sample/spring-modulith-outbox-pattern"
     steps:
     - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       with:
