@@ -1,6 +1,5 @@
-package com.example.outboxpattern;
+package com.example.outboxpattern.config;
 
-import com.example.outboxpattern.config.ApplicationProperties;
 import com.example.outboxpattern.order.OrderResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

@@ -2,10 +2,8 @@ package com.example.outboxpattern.order.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
-import com.example.outboxpattern.config.ApplicationProperties;
 import com.example.outboxpattern.order.OrderResponse;
 import com.example.outboxpattern.order.internal.request.OrderRequest;
 import java.util.concurrent.CompletableFuture;
@@ -25,9 +23,6 @@ class OrderModuleTests {
     @MockBean
     KafkaOperations<?, ?> kafkaOperations;
 
-    @MockBean
-    ApplicationProperties applicationProperties;
-
     @Autowired
     OrderService orders;
 
@@ -42,8 +37,6 @@ class OrderModuleTests {
                     invocation.getArguments()[0]);
             return CompletableFuture.completedFuture(new SendResult<>(null, null));
         });
-
-        given(applicationProperties.getOrderCreatedKafkaTopic()).willReturn("order-created");
 
         scenario.stimulate(() -> orders.saveOrder(new OrderRequest("Coffee")))
                 .andWaitForEventOfType(OrderResponse.class)
