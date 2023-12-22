@@ -1,4 +1,4 @@
-package com.example.outboxpattern.web.controllers;
+package com.example.outboxpattern.order;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -12,9 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.outboxpattern.common.AbstractIntegrationTest;
-import com.example.outboxpattern.entities.Order;
-import com.example.outboxpattern.model.request.OrderRequest;
-import com.example.outboxpattern.repositories.OrderRepository;
+import com.example.outboxpattern.order.request.OrderRequest;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,9 +33,9 @@ class OrderControllerIT extends AbstractIntegrationTest {
         orderRepository.deleteAllInBatch();
 
         orderList = new ArrayList<>();
-        orderList.add(new Order(null, "First Order"));
-        orderList.add(new Order(null, "Second Order"));
-        orderList.add(new Order(null, "Third Order"));
+        orderList.add(new Order("First Order"));
+        orderList.add(new Order("Second Order"));
+        orderList.add(new Order("Third Order"));
         orderList = orderRepository.saveAll(orderList);
     }
 
@@ -58,14 +56,14 @@ class OrderControllerIT extends AbstractIntegrationTest {
 
     @Test
     void shouldFindOrderById() throws Exception {
-        Order order = orderList.get(0);
+        Order order = orderList.getFirst();
         Long orderId = order.getId();
 
         this.mockMvc
                 .perform(get("/api/orders/{id}", orderId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(order.getId()), Long.class))
-                .andExpect(jsonPath("$.text", is(order.getText())));
+                .andExpect(jsonPath("$.product", is(order.getProduct())));
     }
 
     @Test
@@ -78,7 +76,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(jsonPath("$.id", notNullValue()))
-                .andExpect(jsonPath("$.text", is(orderRequest.text())));
+                .andExpect(jsonPath("$.product", is(orderRequest.product())));
     }
 
     @Test
@@ -97,14 +95,14 @@ class OrderControllerIT extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.detail", is("Invalid request content.")))
                 .andExpect(jsonPath("$.instance", is("/api/orders")))
                 .andExpect(jsonPath("$.violations", hasSize(1)))
-                .andExpect(jsonPath("$.violations[0].field", is("text")))
-                .andExpect(jsonPath("$.violations[0].message", is("Text cannot be empty")))
+                .andExpect(jsonPath("$.violations[0].field", is("product")))
+                .andExpect(jsonPath("$.violations[0].message", is("Product cannot be empty")))
                 .andReturn();
     }
 
     @Test
     void shouldUpdateOrder() throws Exception {
-        Long orderId = orderList.get(0).getId();
+        Long orderId = orderList.getFirst().getId();
         OrderRequest orderRequest = new OrderRequest("Updated Order");
 
         this.mockMvc
@@ -113,17 +111,17 @@ class OrderControllerIT extends AbstractIntegrationTest {
                         .content(objectMapper.writeValueAsString(orderRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(orderId), Long.class))
-                .andExpect(jsonPath("$.text", is(orderRequest.text())));
+                .andExpect(jsonPath("$.product", is(orderRequest.product())));
     }
 
     @Test
     void shouldDeleteOrder() throws Exception {
-        Order order = orderList.get(0);
+        Order order = orderList.getFirst();
 
         this.mockMvc
                 .perform(delete("/api/orders/{id}", order.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(order.getId()), Long.class))
-                .andExpect(jsonPath("$.text", is(order.getText())));
+                .andExpect(jsonPath("$.product", is(order.getProduct())));
     }
 }

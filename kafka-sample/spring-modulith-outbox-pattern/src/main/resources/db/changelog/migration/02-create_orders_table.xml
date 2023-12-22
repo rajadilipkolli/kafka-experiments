@@ -19,9 +19,10 @@
             <column name="id" type="bigint" defaultValueSequenceNext="orders_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="text" type="${string.type}">
+            <column name="product" type="${string.type}">
                 <constraints nullable="false"/>
             </column>
+            <column name="status" type="${string.type}"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

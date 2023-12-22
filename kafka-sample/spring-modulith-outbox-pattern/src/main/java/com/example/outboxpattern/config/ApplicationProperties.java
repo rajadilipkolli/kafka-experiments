@@ -8,6 +8,8 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 @ConfigurationProperties("application")
 public class ApplicationProperties {
 
+    private String orderCreatedKafkaTopic;
+
     @NestedConfigurationProperty
     private Cors cors = new Cors();
 

@@ -1,4 +1,6 @@
-package com.example.outboxpattern.exception;
+package com.example.outboxpattern.order;
+
+import com.example.outboxpattern.exception.ResourceNotFoundException;
 
 public class OrderNotFoundException extends ResourceNotFoundException {
 

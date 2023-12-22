@@ -1,11 +1,9 @@
-package com.example.outboxpattern.web.controllers;
+package com.example.outboxpattern.order;
 
-import com.example.outboxpattern.exception.OrderNotFoundException;
-import com.example.outboxpattern.model.query.FindOrdersQuery;
-import com.example.outboxpattern.model.request.OrderRequest;
-import com.example.outboxpattern.model.response.OrderResponse;
-import com.example.outboxpattern.model.response.PagedResult;
-import com.example.outboxpattern.services.OrderService;
+import com.example.outboxpattern.order.query.FindOrdersQuery;
+import com.example.outboxpattern.order.request.OrderRequest;
+import com.example.outboxpattern.order.response.OrderResponse;
+import com.example.outboxpattern.order.response.PagedResult;
 import com.example.outboxpattern.utils.AppConstants;
 import jakarta.validation.Valid;
 import java.net.URI;

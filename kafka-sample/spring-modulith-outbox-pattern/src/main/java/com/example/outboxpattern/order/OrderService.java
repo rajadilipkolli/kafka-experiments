@@ -1,16 +1,13 @@
-package com.example.outboxpattern.services;
+package com.example.outboxpattern.order;
 
-import com.example.outboxpattern.entities.Order;
-import com.example.outboxpattern.exception.OrderNotFoundException;
-import com.example.outboxpattern.mapper.OrderMapper;
-import com.example.outboxpattern.model.query.FindOrdersQuery;
-import com.example.outboxpattern.model.request.OrderRequest;
-import com.example.outboxpattern.model.response.OrderResponse;
-import com.example.outboxpattern.model.response.PagedResult;
-import com.example.outboxpattern.repositories.OrderRepository;
+import com.example.outboxpattern.order.query.FindOrdersQuery;
+import com.example.outboxpattern.order.request.OrderRequest;
+import com.example.outboxpattern.order.response.OrderResponse;
+import com.example.outboxpattern.order.response.PagedResult;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,12 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class OrderService {
+class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
+    private final ApplicationEventPublisher events;
 
-    public PagedResult<OrderResponse> findAllOrders(FindOrdersQuery findOrdersQuery) {
+    PagedResult<OrderResponse> findAllOrders(FindOrdersQuery findOrdersQuery) {
 
         // create Pageable instance
         Pageable pageable = createPageable(findOrdersQuery);
@@ -55,7 +53,9 @@ public class OrderService {
     public OrderResponse saveOrder(OrderRequest orderRequest) {
         Order order = orderMapper.toEntity(orderRequest);
         Order savedOrder = orderRepository.save(order);
-        return orderMapper.toResponse(savedOrder);
+        OrderResponse orderResponse = orderMapper.toResponse(savedOrder);
+        events.publishEvent(orderResponse);
+        return orderResponse;
     }
 
     @Transactional

@@ -1,4 +1,4 @@
-package com.example.outboxpattern.model.response;
+package com.example.outboxpattern.order.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
