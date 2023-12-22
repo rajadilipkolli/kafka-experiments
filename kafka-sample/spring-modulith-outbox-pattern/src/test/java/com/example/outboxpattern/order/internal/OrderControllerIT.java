@@ -1,4 +1,4 @@
-package com.example.outboxpattern.order;
+package com.example.outboxpattern.order.internal;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.outboxpattern.common.AbstractIntegrationTest;
-import com.example.outboxpattern.order.request.OrderRequest;
+import com.example.outboxpattern.order.internal.request.OrderRequest;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

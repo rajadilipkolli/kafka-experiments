@@ -1,4 +1,4 @@
-package com.example.outboxpattern.order;
+package com.example.outboxpattern.order.internal;
 
 import jakarta.persistence.*;
 import java.util.Objects;

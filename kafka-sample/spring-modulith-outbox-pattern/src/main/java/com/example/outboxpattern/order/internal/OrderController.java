@@ -1,14 +1,13 @@
-package com.example.outboxpattern.order;
+package com.example.outboxpattern.order.internal;
 
-import com.example.outboxpattern.order.query.FindOrdersQuery;
-import com.example.outboxpattern.order.request.OrderRequest;
-import com.example.outboxpattern.order.response.OrderResponse;
-import com.example.outboxpattern.order.response.PagedResult;
+import com.example.outboxpattern.order.OrderResponse;
+import com.example.outboxpattern.order.internal.query.FindOrdersQuery;
+import com.example.outboxpattern.order.internal.request.OrderRequest;
+import com.example.outboxpattern.order.internal.response.PagedResult;
 import com.example.outboxpattern.utils.AppConstants;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +23,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api/orders")
-@Slf4j
 @RequiredArgsConstructor
 public class OrderController {
 

@@ -1,9 +1,9 @@
-package com.example.outboxpattern.order;
+package com.example.outboxpattern.order.internal;
 
-import com.example.outboxpattern.order.query.FindOrdersQuery;
-import com.example.outboxpattern.order.request.OrderRequest;
-import com.example.outboxpattern.order.response.OrderResponse;
-import com.example.outboxpattern.order.response.PagedResult;
+import com.example.outboxpattern.order.OrderResponse;
+import com.example.outboxpattern.order.internal.query.FindOrdersQuery;
+import com.example.outboxpattern.order.internal.request.OrderRequest;
+import com.example.outboxpattern.order.internal.response.PagedResult;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -45,12 +45,12 @@ class OrderService {
         return PageRequest.of(pageNo, findOrdersQuery.pageSize(), sort);
     }
 
-    public Optional<OrderResponse> findOrderById(Long id) {
+    Optional<OrderResponse> findOrderById(Long id) {
         return orderRepository.findById(id).map(orderMapper::toResponse);
     }
 
     @Transactional
-    public OrderResponse saveOrder(OrderRequest orderRequest) {
+    OrderResponse saveOrder(OrderRequest orderRequest) {
         Order order = orderMapper.toEntity(orderRequest);
         Order savedOrder = orderRepository.save(order);
         OrderResponse orderResponse = orderMapper.toResponse(savedOrder);
@@ -59,7 +59,7 @@ class OrderService {
     }
 
     @Transactional
-    public OrderResponse updateOrder(Long id, OrderRequest orderRequest) {
+    OrderResponse updateOrder(Long id, OrderRequest orderRequest) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
 
         // Update the order object with data from orderRequest
@@ -72,7 +72,7 @@ class OrderService {
     }
 
     @Transactional
-    public void deleteOrderById(Long id) {
+    void deleteOrderById(Long id) {
         orderRepository.deleteById(id);
     }
 }

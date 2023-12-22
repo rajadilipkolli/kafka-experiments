@@ -1,7 +1,7 @@
-package com.example.outboxpattern.order;
+package com.example.outboxpattern.order.internal;
 
-import com.example.outboxpattern.order.request.OrderRequest;
-import com.example.outboxpattern.order.response.OrderResponse;
+import com.example.outboxpattern.order.OrderResponse;
+import com.example.outboxpattern.order.internal.request.OrderRequest;
 import java.util.List;
 import org.springframework.stereotype.Service;
 

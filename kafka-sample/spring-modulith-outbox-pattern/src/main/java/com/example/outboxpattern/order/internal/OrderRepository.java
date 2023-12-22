@@ -1,4 +1,4 @@
-package com.example.outboxpattern.order;
+package com.example.outboxpattern.order.internal;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,6 +1,6 @@
 package com.example.outboxpattern.shipping;
 
-import com.example.outboxpattern.order.response.OrderResponse;
+import com.example.outboxpattern.order.OrderResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.modulith.events.ApplicationModuleListener;

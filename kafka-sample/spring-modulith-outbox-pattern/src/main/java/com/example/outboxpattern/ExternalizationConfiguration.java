@@ -1,7 +1,7 @@
 package com.example.outboxpattern;
 
 import com.example.outboxpattern.config.ApplicationProperties;
-import com.example.outboxpattern.order.response.OrderResponse;
+import com.example.outboxpattern.order.OrderResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

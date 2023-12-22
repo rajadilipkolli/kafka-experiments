@@ -1,4 +1,4 @@
-package com.example.outboxpattern.order;
+package com.example.outboxpattern.order.internal;
 
 import com.example.outboxpattern.exception.ResourceNotFoundException;
 
