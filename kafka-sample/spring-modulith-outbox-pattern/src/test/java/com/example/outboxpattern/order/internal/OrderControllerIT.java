@@ -1,5 +1,7 @@
 package com.example.outboxpattern.order.internal;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasSize;
@@ -12,7 +14,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.outboxpattern.common.AbstractIntegrationTest;
+import com.example.outboxpattern.common.listener.OrderListener;
 import com.example.outboxpattern.order.internal.request.OrderRequest;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +29,9 @@ class OrderControllerIT extends AbstractIntegrationTest {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderListener orderListener;
 
     private List<Order> orderList = null;
 
@@ -77,6 +84,11 @@ class OrderControllerIT extends AbstractIntegrationTest {
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(jsonPath("$.id", notNullValue()))
                 .andExpect(jsonPath("$.product", is(orderRequest.product())));
+
+        await().pollInterval(Duration.ofSeconds(1))
+                .atMost(Duration.ofSeconds(15))
+                .untilAsserted(
+                        () -> assertThat(orderListener.getLatch().getCount()).isZero());
     }
 
     @Test
