@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.test.context.DynamicPropertyRegistry;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
@@ -61,7 +62,7 @@ public class TestSpringBootKafkaAvroProducerApplication {
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer() {
-        return new KafkaRaftWithExtraListenersContainer("confluentinc/cp-kafka:7.4.1")
+        return new KafkaRaftWithExtraListenersContainer("confluentinc/cp-kafka:7.5.2")
                 .withAdditionalListener(() -> "kafka:19092")
                 .withKraft()
                 .withNetwork(network)
@@ -71,9 +72,9 @@ public class TestSpringBootKafkaAvroProducerApplication {
 
     @Bean
     @DependsOn("kafkaContainer")
-    GenericContainer<?> schemaregistry() {
+    GenericContainer<?> schemaregistry(DynamicPropertyRegistry dynamicPropertyRegistry) {
         GenericContainer<?> schemaRegistry =
-                new GenericContainer<>("confluentinc/cp-schema-registry:7.4.1")
+                new GenericContainer<>("confluentinc/cp-schema-registry:7.5.2")
                         .withExposedPorts(8085)
                         .withNetworkAliases("schemaregistry")
                         .withNetwork(network)
@@ -86,6 +87,20 @@ public class TestSpringBootKafkaAvroProducerApplication {
                         .waitingFor(Wait.forHttp("/subjects"))
                         .withStartupTimeout(Duration.of(120, ChronoUnit.SECONDS))
                         .withLabel("com.testcontainers.desktop.service", "cp-schema-registry");
+        dynamicPropertyRegistry.add(
+                "spring.kafka.producer.properties.schema.registry.url",
+                () ->
+                        "http://%s:%d"
+                                .formatted(
+                                        schemaRegistry.getHost(),
+                                        schemaRegistry.getMappedPort(8085)));
+        dynamicPropertyRegistry.add(
+                "spring.kafka.properties.schema.registry.url",
+                () ->
+                        "http://%s:%d"
+                                .formatted(
+                                        schemaRegistry.getHost(),
+                                        schemaRegistry.getMappedPort(8085)));
 
         return schemaRegistry;
     }
