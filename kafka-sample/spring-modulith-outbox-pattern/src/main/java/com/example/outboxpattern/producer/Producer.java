@@ -1,4 +1,4 @@
-package com.example.outboxpattern.shipping;
+package com.example.outboxpattern.producer;
 
 import com.example.outboxpattern.order.OrderResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,14 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class Shipping {
+public class Producer {
 
     @ApplicationModuleListener
-    void on(OrderResponse event) {
-        ship(event.id());
+    void onOrderResponseEvent(OrderResponse event) {
+        publish(event.id());
     }
 
-    private void ship(Long orderId) {
-        log.info("Started shipping for order {}", orderId);
+    private void publish(Long orderId) {
+        log.info("Started publishing for order {}", orderId);
     }
 }

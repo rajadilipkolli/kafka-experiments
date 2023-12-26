@@ -95,6 +95,26 @@
             "projectName": "spring-boot-multiple-producers-consumers",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-Application<spring-modulith-outbox-pattern>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.outboxpattern.Application",
+            "projectName": "spring-modulith-outbox-pattern",
+            "args": "--spring.profiles.active=local",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-TestApplication<spring-modulith-outbox-pattern>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.outboxpattern.TestApplication",
+            "projectName": "spring-modulith-outbox-pattern",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
