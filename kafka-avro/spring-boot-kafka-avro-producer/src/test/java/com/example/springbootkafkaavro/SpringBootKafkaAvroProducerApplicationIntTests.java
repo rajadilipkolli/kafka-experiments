@@ -27,7 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 @Import(AvroKafkaListener.class)
 @ExtendWith(OutputCaptureExtension.class)
-class SpringBootKafkaAvroProducerApplicationTests {
+class SpringBootKafkaAvroProducerApplicationIntTests {
 
     @Autowired MockMvc mockMvc;
 

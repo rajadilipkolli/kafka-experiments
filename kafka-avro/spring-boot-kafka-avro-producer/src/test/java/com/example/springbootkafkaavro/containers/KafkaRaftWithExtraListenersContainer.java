@@ -10,7 +10,7 @@ import org.testcontainers.utility.DockerImageName;
 
 public class KafkaRaftWithExtraListenersContainer extends KafkaContainer {
 
-    private List<Supplier<String>> listeners = new ArrayList<>();
+    private final List<Supplier<String>> listeners = new ArrayList<>();
 
     public KafkaRaftWithExtraListenersContainer(String image) {
         super(DockerImageName.parse(image));
@@ -36,7 +36,7 @@ public class KafkaRaftWithExtraListenersContainer extends KafkaContainer {
                                 "%s@%s:9094",
                                 getEnvMap().get("KAFKA_NODE_ID"),
                                 getNetwork() != null
-                                        ? listeners.get(0).get().split(":")[0]
+                                        ? listeners.getFirst().get().split(":")[0]
                                         : "localhost"));
     }
 
@@ -47,7 +47,7 @@ public class KafkaRaftWithExtraListenersContainer extends KafkaContainer {
         command +=
                 String.format(
                         "export KAFKA_ADVERTISED_LISTENERS=%s,%s,%s\n",
-                        String.format("INTERNAL://%s", listeners.get(0).get()),
+                        String.format("INTERNAL://%s", listeners.getFirst().get()),
                         getBootstrapServers(),
                         brokerAdvertisedListener(containerInfo));
 

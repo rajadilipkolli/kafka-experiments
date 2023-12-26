@@ -53,10 +53,8 @@ public class TestSpringBootKafkaAvroProducerApplication {
                     .createNetworkCmdModifier(cmd -> cmd.withName(KAFKA_NETWORK))
                     .build()
                     .getId();
-            return defaultDaprNetwork;
-        } else {
-            return defaultDaprNetwork;
         }
+        return defaultDaprNetwork;
     }
 
     @Bean

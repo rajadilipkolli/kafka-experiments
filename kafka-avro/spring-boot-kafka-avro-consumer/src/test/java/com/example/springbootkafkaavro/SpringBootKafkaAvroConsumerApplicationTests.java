@@ -35,7 +35,7 @@ class SpringBootKafkaAvroConsumerApplicationTests {
     @Autowired KafkaProducer kafkaProducer;
 
     private static final Network KAFKA_NETWORK = Network.newNetwork();
-    private static final String CONFLUENT_PLATFORM_VERSION = "7.4.1";
+    private static final String CONFLUENT_PLATFORM_VERSION = "7.5.2";
     private static final DockerImageName KAFKA_IMAGE =
             DockerImageName.parse("confluentinc/cp-kafka").withTag(CONFLUENT_PLATFORM_VERSION);
     private static final KafkaContainer KAFKA =
@@ -101,7 +101,7 @@ class SpringBootKafkaAvroConsumerApplicationTests {
     }
 
     @Test
-    void contextLoads() throws Exception {
+    void contextLoads() {
         Person person = new Person();
         person.setAge(33);
         person.setName("junit");
