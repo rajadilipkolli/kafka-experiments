@@ -38,7 +38,7 @@ public class TestBootKafkaReactorConsumerApplication {
     @Bean
     KafkaSender<Integer, MessageDTO> reactiveKafkaSender(KafkaProperties properties) {
         log.info("Creating Sender");
-        Map<String, Object> props = properties.buildProducerProperties();
+        Map<String, Object> props = properties.buildProducerProperties(null);
         return KafkaSender.create(SenderOptions.create(props));
     }
 

@@ -25,15 +25,21 @@ public class LoggingAspect {
         this.env = env;
     }
 
-    @Pointcut("within(@org.springframework.stereotype.Repository *)"
-            + " || within(@org.springframework.stereotype.Service *)"
-            + " || within(@org.springframework.web.bind.annotation.RestController *)")
+    @Pointcut(
+            """
+            within(@org.springframework.stereotype.Repository *)\
+             || within(@org.springframework.stereotype.Service *)\
+             || within(@org.springframework.web.bind.annotation.RestController *)\
+            """)
     public void springBeanPointcut() {
         // pointcut definition
     }
 
     @Pointcut(
-            "@within(com.example.outboxpattern.config.Loggable) || @annotation(com.example.outboxpattern.config.Loggable)")
+            """
+                @within(com.example.outboxpattern.config.Loggable)
+                || @annotation(com.example.outboxpattern.config.Loggable)
+            """)
     public void applicationPackagePointcut() {
         // pointcut definition
     }

@@ -96,7 +96,7 @@ class SpringBootKafkaAvroConsumerApplicationTests {
         }
 
         public String getSchemaUrl() {
-            return String.format("http://%s:%d", getHost(), getMappedPort(SCHEMA_REGISTRY_PORT));
+            return "http://%s:%d".formatted(getHost(), getMappedPort(SCHEMA_REGISTRY_PORT));
         }
     }
 
