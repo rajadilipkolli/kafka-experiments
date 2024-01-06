@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.DynamicPropertyRegistry;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -12,10 +13,16 @@ import org.testcontainers.utility.DockerImageName;
 public class TestSpringBootKafkaMultiApplication {
 
     @Bean
+    @ServiceConnection(name = "openzipkin/zipkin")
+    GenericContainer<?> zipkinContainer() {
+        return new GenericContainer<>(DockerImageName.parse("openzipkin/zipkin:latest")).withExposedPorts(9411);
+    }
+
+    @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
         KafkaContainer kafkaContainer = new KafkaContainer(
-                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.2"))
+                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.3"))
                 .withKraft()
                 .withReuse(true);
         // Connect our Spring application to our Testcontainers Kafka instance

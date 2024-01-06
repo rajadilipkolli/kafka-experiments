@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.0</version>
+        <version>3.2.1</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
@@ -18,7 +18,7 @@
     <properties>
         <java.version>17</java.version>
         <avro.version>1.11.3</avro.version>
-        <confluent.version>7.5.2</confluent.version>
+        <confluent.version>7.5.3</confluent.version>
         <springdoc-openapi.version>2.3.0</springdoc-openapi.version>
 
         <spotless.version>2.41.1</spotless.version>
@@ -158,7 +158,7 @@
                 <configuration>
                     <java>
                         <googleJavaFormat>
-                            <version>1.17.0</version>
+                            <version>1.18.1</version>
                             <style>AOSP</style>
                         </googleJavaFormat>
                     </java>

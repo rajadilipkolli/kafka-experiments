@@ -1,6 +1,6 @@
 {
 	"name": "Java",
-	"image": "mcr.microsoft.com/devcontainers/java:17",
+	"image": "mcr.microsoft.com/devcontainers/java:21",
 	"features": {
 		"ghcr.io/devcontainers/features/java:1": {
 			"version": "none",
@@ -20,16 +20,17 @@
 				"vmware.vscode-boot-dev-pack",
 				"vscjava.vscode-java-pack",
 				"github.vscode-github-actions",
-				"redhat.java"
+				"redhat.java",
+				"vscjava.vscode-spring-boot-dashboard"
 			]
 		}
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [8080]
+	"forwardPorts": [8080],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "java -version",
+	"postCreateCommand": "java -version"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
