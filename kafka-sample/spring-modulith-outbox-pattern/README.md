@@ -31,3 +31,6 @@ You can also run the application using Maven as follows:
 ### Useful Links
 * Swagger UI: http://localhost:8080/swagger-ui.html
 * Actuator Endpoint: http://localhost:8080/actuator
+
+### Notes
+The event published is sent to Internal Application Listener(Publish) and Extenal Application(Kafka)

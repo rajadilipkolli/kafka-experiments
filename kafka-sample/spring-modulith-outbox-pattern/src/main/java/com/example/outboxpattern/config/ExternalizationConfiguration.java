@@ -16,7 +16,7 @@ public class ExternalizationConfiguration {
     private final ApplicationProperties applicationProperties;
 
     EventExternalizationConfiguration eventExternalizationConfiguration() {
-
+        // configuring topic to which event should be sent
         return EventExternalizationConfiguration.externalizing()
                 .select(EventExternalizationConfiguration.annotatedAsExternalized())
                 .route(OrderResponse.class, orderCreated -> RoutingTarget.forTarget(
