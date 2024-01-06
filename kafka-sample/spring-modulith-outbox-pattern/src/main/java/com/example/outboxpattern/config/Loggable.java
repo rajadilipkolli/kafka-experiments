@@ -1,4 +1,4 @@
-package com.example.outboxpattern.config.logging;
+package com.example.outboxpattern.config;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;

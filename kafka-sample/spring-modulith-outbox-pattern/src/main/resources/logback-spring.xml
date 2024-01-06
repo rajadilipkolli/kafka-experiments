@@ -22,5 +22,6 @@
     <logger name="org.springframework.modulith" level="DEBUG"/>
     <logger name="org.springframework.orm.jpa" level="INFO"/>
     <logger name="org.springframework" level="INFO"/>
+    <logger name="com.tngtech.archunit" level="WARN" />
 
 </configuration>

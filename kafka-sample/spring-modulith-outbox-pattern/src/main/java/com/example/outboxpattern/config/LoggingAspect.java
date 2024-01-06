@@ -1,4 +1,4 @@
-package com.example.outboxpattern.config.logging;
+package com.example.outboxpattern.config;
 
 import com.example.outboxpattern.utils.AppConstants;
 import org.aspectj.lang.JoinPoint;
@@ -32,8 +32,8 @@ public class LoggingAspect {
         // pointcut definition
     }
 
-    @Pointcut("@within(com.example.outboxpattern.config.logging.Loggable) || "
-            + "@annotation(com.example.outboxpattern.config.logging.Loggable)")
+    @Pointcut(
+            "@within(com.example.outboxpattern.config.Loggable) || @annotation(com.example.outboxpattern.config.Loggable)")
     public void applicationPackagePointcut() {
         // pointcut definition
     }
@@ -60,8 +60,8 @@ public class LoggingAspect {
 
     @Around("applicationPackagePointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
-        if (log.isTraceEnabled()) {
-            log.trace(
+        if (log.isDebugEnabled()) {
+            log.debug(
                     "Enter: {}.{}()",
                     joinPoint.getSignature().getDeclaringTypeName(),
                     joinPoint.getSignature().getName());
@@ -69,8 +69,8 @@ public class LoggingAspect {
         long start = System.currentTimeMillis();
         Object result = joinPoint.proceed();
         long end = System.currentTimeMillis();
-        if (log.isTraceEnabled()) {
-            log.trace(
+        if (log.isDebugEnabled()) {
+            log.debug(
                     "Exit: {}.{}(). Time taken: {} millis",
                     joinPoint.getSignature().getDeclaringTypeName(),
                     joinPoint.getSignature().getName(),

@@ -1,11 +1,13 @@
 package com.example.outboxpattern.order.internal;
 
+import com.example.outboxpattern.config.Loggable;
 import com.example.outboxpattern.order.OrderResponse;
 import com.example.outboxpattern.order.internal.request.OrderRequest;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
+@Loggable
 class OrderMapper {
 
     Order toEntity(OrderRequest orderRequest) {

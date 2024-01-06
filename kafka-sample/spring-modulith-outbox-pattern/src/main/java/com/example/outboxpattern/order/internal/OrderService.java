@@ -1,5 +1,6 @@
 package com.example.outboxpattern.order.internal;
 
+import com.example.outboxpattern.config.Loggable;
 import com.example.outboxpattern.order.OrderResponse;
 import com.example.outboxpattern.order.internal.query.FindOrdersQuery;
 import com.example.outboxpattern.order.internal.request.OrderRequest;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Loggable
 class OrderService {
 
     private final OrderRepository orderRepository;
