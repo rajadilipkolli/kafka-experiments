@@ -60,7 +60,7 @@ public class TestSpringBootKafkaAvroProducerApplication {
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer() {
-        return new KafkaRaftWithExtraListenersContainer("confluentinc/cp-kafka:7.5.2")
+        return new KafkaRaftWithExtraListenersContainer("confluentinc/cp-kafka:7.5.3")
                 .withAdditionalListener(() -> "kafka:19092")
                 .withKraft()
                 .withNetwork(network)
@@ -72,7 +72,7 @@ public class TestSpringBootKafkaAvroProducerApplication {
     @DependsOn("kafkaContainer")
     GenericContainer<?> schemaregistry(DynamicPropertyRegistry dynamicPropertyRegistry) {
         GenericContainer<?> schemaRegistry =
-                new GenericContainer<>("confluentinc/cp-schema-registry:7.5.2")
+                new GenericContainer<>("confluentinc/cp-schema-registry:7.5.3")
                         .withExposedPorts(8085)
                         .withNetworkAliases("schemaregistry")
                         .withNetwork(network)

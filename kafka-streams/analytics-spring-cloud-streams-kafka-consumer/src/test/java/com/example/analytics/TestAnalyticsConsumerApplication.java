@@ -13,7 +13,7 @@ import org.testcontainers.utility.DockerImageName;
 public class TestAnalyticsConsumerApplication {
 
     private static final DockerImageName KAFKA_IMAGE_NAME =
-            DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.0");
+            DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.3");
 
     @Bean
     @ServiceConnection
