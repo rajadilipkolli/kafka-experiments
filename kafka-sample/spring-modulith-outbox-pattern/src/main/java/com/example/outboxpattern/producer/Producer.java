@@ -14,8 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class Producer {
 
     @ApplicationModuleListener
-    void onOrderResponseEvent(OrderRecord event) {
-        publish(event.id());
+    void onOrderResponseEvent(OrderRecord orderRecord) {
+        log.info("Received Event :{}", orderRecord);
+        publish(orderRecord.id());
     }
 
     private void publish(Long orderId) {

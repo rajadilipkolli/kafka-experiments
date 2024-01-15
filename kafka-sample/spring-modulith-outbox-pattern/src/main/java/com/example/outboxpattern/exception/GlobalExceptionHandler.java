@@ -1,6 +1,5 @@
-package com.example.outboxpattern.config;
+package com.example.outboxpattern.exception;
 
-import com.example.outboxpattern.exception.ResourceNotFoundException;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Comparator;
