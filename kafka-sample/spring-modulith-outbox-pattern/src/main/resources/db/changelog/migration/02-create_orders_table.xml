@@ -19,7 +19,7 @@
             <column name="id" type="bigint" defaultValueSequenceNext="orders_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="product" type="${string.type}">
+            <column name="ordered_date" type="timestamptz">
                 <constraints nullable="false"/>
             </column>
             <column name="status" type="${string.type}"/>

@@ -1,7 +1,7 @@
 package com.example.outboxpattern.order.internal;
 
 import com.example.outboxpattern.config.Loggable;
-import com.example.outboxpattern.order.OrderResponse;
+import com.example.outboxpattern.order.OrderRecord;
 import com.example.outboxpattern.order.internal.query.FindOrdersQuery;
 import com.example.outboxpattern.order.internal.request.OrderRequest;
 import com.example.outboxpattern.order.internal.response.PagedResult;
@@ -31,7 +31,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    public PagedResult<OrderResponse> getAllOrders(
+    public PagedResult<OrderRecord> getAllOrders(
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
@@ -41,13 +41,13 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<OrderRecord> getOrderById(@PathVariable Long id) {
         return orderService.findOrderById(id).map(ResponseEntity::ok).orElseThrow(() -> new OrderNotFoundException(id));
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(@RequestBody @Validated OrderRequest orderRequest) {
-        OrderResponse response = orderService.saveOrder(orderRequest);
+    public ResponseEntity<OrderRecord> createOrder(@RequestBody @Validated OrderRequest orderRequest) {
+        OrderRecord response = orderService.saveOrder(orderRequest);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/api/orders/{id}")
                 .buildAndExpand(response.id())
@@ -56,13 +56,13 @@ public class OrderController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OrderResponse> updateOrder(
+    public ResponseEntity<OrderRecord> updateOrder(
             @PathVariable Long id, @RequestBody @Valid OrderRequest orderRequest) {
         return ResponseEntity.ok(orderService.updateOrder(id, orderRequest));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<OrderResponse> deleteOrder(@PathVariable Long id) {
+    public ResponseEntity<OrderRecord> deleteOrder(@PathVariable Long id) {
         return orderService
                 .findOrderById(id)
                 .map(order -> {

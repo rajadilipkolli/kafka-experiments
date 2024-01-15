@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
         if (exception instanceof ResourceNotFoundException resourceNotFoundException) {
             ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                     resourceNotFoundException.getHttpStatus(), resourceNotFoundException.getMessage());
-            problemDetail.setTitle("Not Found");
+            problemDetail.setTitle("Order Not Found");
             problemDetail.setType(URI.create("http://api.spring-modulith-outbox-pattern.com/errors/not-found"));
             problemDetail.setProperty("errorCategory", "Generic");
             problemDetail.setProperty("timestamp", Instant.now());

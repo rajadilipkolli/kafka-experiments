@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.example.outboxpattern.order.OrderResponse;
+import com.example.outboxpattern.order.OrderRecord;
+import com.example.outboxpattern.order.internal.request.OrderItemRequest;
 import com.example.outboxpattern.order.internal.request.OrderRequest;
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -38,8 +41,10 @@ class OrderModuleTests {
             return CompletableFuture.completedFuture(new SendResult<>(null, null));
         });
 
-        scenario.stimulate(() -> orders.saveOrder(new OrderRequest("Coffee")))
-                .andWaitForEventOfType(OrderResponse.class)
-                .toArriveAndVerify(event -> assertThat(event.product()).isEqualTo("Coffee"));
+        scenario.stimulate(() -> orders.saveOrder(
+                        new OrderRequest(List.of(new OrderItemRequest("Coffee", BigDecimal.TEN, 100)))))
+                .andWaitForEventOfType(OrderRecord.class)
+                .toArriveAndVerify(event ->
+                        assertThat(event.orderItems().getFirst().productCode()).isEqualTo("Coffee"));
     }
 }
