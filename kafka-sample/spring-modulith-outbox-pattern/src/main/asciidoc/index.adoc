@@ -9,3 +9,8 @@ plantuml::{modulith-docs}/components.puml[format="svg"]
 
 plantuml::{modulith-docs}/module-order.puml[format="svg"]
 include::{modulith-docs}/module-order.adoc[]
+
+== _Producer_
+
+plantuml::{modulith-docs}/module-producer.puml[format="svg"]
+include::{modulith-docs}/module-producer.adoc[]
