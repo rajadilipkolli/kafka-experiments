@@ -21,7 +21,7 @@
         <confluent.version>7.5.3</confluent.version>
         <springdoc-openapi.version>2.3.0</springdoc-openapi.version>
 
-        <spotless.version>2.42.0</spotless.version>
+        <spotless.version>2.43.0</spotless.version>
     </properties>
 
     <dependencies>
