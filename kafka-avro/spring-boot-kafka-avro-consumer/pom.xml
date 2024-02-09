@@ -18,7 +18,7 @@
     <properties>
         <java.version>17</java.version>
         <avro.version>1.11.3</avro.version>
-        <confluent.version>7.5.3</confluent.version>
+        <confluent.version>7.6.0</confluent.version>
         <springdoc-openapi.version>2.3.0</springdoc-openapi.version>
 
         <spotless.version>2.43.0</spotless.version>
