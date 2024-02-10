@@ -1,4 +1,4 @@
-/* Licensed under Apache-2.0 2023 */
+/* Licensed under Apache-2.0 2023-2024 */
 package com.example.analytics;
 
 import org.springframework.boot.SpringApplication;
@@ -16,7 +16,7 @@ class TestAnalyticsProducerApplication {
     @ServiceConnection
     KafkaContainer kafkaContainer(DynamicPropertyRegistry propertyRegistry) {
         KafkaContainer kafkaContainer =
-                new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.3"))
+                new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag("7.6.0"))
                         .withKraft();
         propertyRegistry.add("spring.kafka.bootstrapServers", kafkaContainer::getBootstrapServers);
         return kafkaContainer;

@@ -24,7 +24,7 @@ public class TestBootKafkaReactorProducerApplication {
     @ServiceConnection
     KafkaContainer kafkaContainer(DynamicPropertyRegistry propertyRegistry) {
         KafkaContainer kafkaContainer = new KafkaContainer(
-                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.3"))
+                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.6.0"))
                 .withKraft();
         propertyRegistry.add("spring.kafka.bootstrapServers", kafkaContainer::getBootstrapServers);
         return kafkaContainer;

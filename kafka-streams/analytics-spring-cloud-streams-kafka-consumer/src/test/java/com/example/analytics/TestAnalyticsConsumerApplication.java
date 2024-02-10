@@ -1,4 +1,4 @@
-/* Licensed under Apache-2.0 2023 */
+/* Licensed under Apache-2.0 2023-2024 */
 package com.example.analytics;
 
 import org.springframework.boot.SpringApplication;
@@ -13,7 +13,7 @@ import org.testcontainers.utility.DockerImageName;
 public class TestAnalyticsConsumerApplication {
 
     private static final DockerImageName KAFKA_IMAGE_NAME =
-            DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.3");
+            DockerImageName.parse("confluentinc/cp-kafka").withTag("7.6.0");
 
     @Bean
     @ServiceConnection
