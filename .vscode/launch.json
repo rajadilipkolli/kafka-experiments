@@ -98,6 +98,15 @@
         },
         {
             "type": "java",
+            "name": "Spring Boot-TestBootKafkaSampleApplication<spring-boot-kafka-sample>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.springbootkafkasample.TestBootKafkaSampleApplication",
+            "projectName": "spring-boot-kafka-sample",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
             "name": "Spring Boot-Application<spring-modulith-outbox-pattern>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
