@@ -1,13 +1,15 @@
 "component : avro":
- - kafka-avro/**/*
+  - changed-files:
+      - any-glob-to-any-file: 'kafka-avro/**/*'
 "component : reactor":
- - kafka-reactor/**/*
+  - changed-files:
+      - any-glob-to-any-file: 'kafka-reactor/**/*'
 "component : sample":
- - kafka-sample/**/*
+  - changed-files:
+      - any-glob-to-any-file: 'kafka-sample/**/*'
 "component : streams":
- - kafka-streams/**/*
-
-"status: waiting-for-triage":
-  - ./*
-  - ./**/*
-"type: documentation": docs/**/*
+  - changed-files:
+      - any-glob-to-any-file: 'kafka-streams/**/*'
+"type: documentation":
+  - changed-files:
+      - any-glob-to-any-file: 'docs/**/*'
