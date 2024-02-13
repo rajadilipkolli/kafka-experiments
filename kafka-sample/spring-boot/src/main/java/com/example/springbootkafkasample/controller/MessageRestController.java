@@ -29,8 +29,7 @@ public class MessageRestController {
 
     @GetMapping("/topics")
     public List<TopicInfo> getTopicsWithPartitionsCount(
-            @RequestParam(name = "showInternalTopics", required = false, defaultValue = "false")
-                    boolean showInternalTopics) {
+            @RequestParam(required = false, defaultValue = "false") boolean showInternalTopics) {
         return messageService.getTopicsWithPartitions(showInternalTopics);
     }
 }

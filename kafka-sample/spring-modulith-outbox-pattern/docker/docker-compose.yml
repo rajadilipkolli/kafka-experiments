@@ -2,7 +2,7 @@ version: '3.8'
 services:
 
   postgresql:
-    image: postgres:16.1-alpine
+    image: postgres:16.2-alpine
     environment:
       - POSTGRES_USER=appuser
       - POSTGRES_PASSWORD=secret
@@ -37,7 +37,7 @@ services:
       - "9411:9411"
 
   broker:
-    image: confluentinc/cp-kafka:7.5.3
+    image: confluentinc/cp-kafka:7.6.0
     hostname: broker
     ports:
       - "9092:9092"

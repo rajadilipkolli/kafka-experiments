@@ -1,7 +1,7 @@
 package com.example.outboxpattern.order.internal;
 
 import com.example.outboxpattern.config.Loggable;
-import com.example.outboxpattern.order.OrderResponse;
+import com.example.outboxpattern.order.OrderRecord;
 import com.example.outboxpattern.order.internal.query.FindOrdersQuery;
 import com.example.outboxpattern.order.internal.request.OrderRequest;
 import com.example.outboxpattern.order.internal.response.PagedResult;
@@ -31,27 +31,23 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    public PagedResult<OrderResponse> getAllOrders(
-            @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false)
-                    int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false)
-                    int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false)
-                    String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)
-                    String sortDir) {
+    public PagedResult<OrderRecord> getAllOrders(
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir) {
         FindOrdersQuery findOrdersQuery = new FindOrdersQuery(pageNo, pageSize, sortBy, sortDir);
         return orderService.findAllOrders(findOrdersQuery);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<OrderRecord> getOrderById(@PathVariable Long id) {
         return orderService.findOrderById(id).map(ResponseEntity::ok).orElseThrow(() -> new OrderNotFoundException(id));
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(@RequestBody @Validated OrderRequest orderRequest) {
-        OrderResponse response = orderService.saveOrder(orderRequest);
+    public ResponseEntity<OrderRecord> createOrder(@RequestBody @Validated OrderRequest orderRequest) {
+        OrderRecord response = orderService.saveOrder(orderRequest);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/api/orders/{id}")
                 .buildAndExpand(response.id())
@@ -60,13 +56,13 @@ public class OrderController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OrderResponse> updateOrder(
+    public ResponseEntity<OrderRecord> updateOrder(
             @PathVariable Long id, @RequestBody @Valid OrderRequest orderRequest) {
         return ResponseEntity.ok(orderService.updateOrder(id, orderRequest));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<OrderResponse> deleteOrder(@PathVariable Long id) {
+    public ResponseEntity<OrderRecord> deleteOrder(@PathVariable Long id) {
         return orderService
                 .findOrderById(id)
                 .map(order -> {

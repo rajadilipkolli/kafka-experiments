@@ -1,6 +1,6 @@
 package com.example.outboxpattern.common.listener;
 
-import com.example.outboxpattern.order.OrderResponse;
+import com.example.outboxpattern.order.OrderRecord;
 import java.util.concurrent.CountDownLatch;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +15,11 @@ public class OrderListener {
     private final CountDownLatch latch = new CountDownLatch(1);
 
     @KafkaListener(topics = "order-created", groupId = "notification")
-    public void notify(OrderResponse event) {
-        log.info("Notifying user for created order {} and product {}", event.id(), event.product());
+    public void notify(OrderRecord event) {
+        log.info(
+                "Notifying user for created order {} and productCode {}",
+                event.id(),
+                event.orderItems().getFirst().productCode());
         latch.countDown();
     }
 }

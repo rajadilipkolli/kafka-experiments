@@ -44,7 +44,7 @@ class SpringBootKafkaMultiApplicationTests {
     private EmbeddedKafkaBroker embeddedKafkaBroker;
 
     @BeforeAll
-    public void setUp() {
+    void setUp() {
         // wait until the partitions are assigned
         for (MessageListenerContainer messageListenerContainer :
                 kafkaListenerEndpointRegistry.getListenerContainers()) {

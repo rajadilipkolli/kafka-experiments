@@ -1,7 +1,8 @@
 package com.example.outboxpattern.order.internal;
 
 import com.example.outboxpattern.config.Loggable;
-import com.example.outboxpattern.order.OrderResponse;
+import com.example.outboxpattern.order.OrderRecord;
+import com.example.outboxpattern.order.internal.entities.Order;
 import com.example.outboxpattern.order.internal.query.FindOrdersQuery;
 import com.example.outboxpattern.order.internal.request.OrderRequest;
 import com.example.outboxpattern.order.internal.response.PagedResult;
@@ -26,16 +27,16 @@ class OrderService {
     private final OrderMapper orderMapper;
     private final ApplicationEventPublisher events;
 
-    PagedResult<OrderResponse> findAllOrders(FindOrdersQuery findOrdersQuery) {
+    PagedResult<OrderRecord> findAllOrders(FindOrdersQuery findOrdersQuery) {
 
         // create Pageable instance
         Pageable pageable = createPageable(findOrdersQuery);
 
         Page<Order> ordersPage = orderRepository.findAll(pageable);
 
-        List<OrderResponse> orderResponseList = orderMapper.toResponseList(ordersPage.getContent());
+        List<OrderRecord> orderRecordList = orderMapper.toResponseList(ordersPage.getContent());
 
-        return new PagedResult<>(ordersPage, orderResponseList);
+        return new PagedResult<>(ordersPage, orderRecordList);
     }
 
     private Pageable createPageable(FindOrdersQuery findOrdersQuery) {
@@ -47,22 +48,22 @@ class OrderService {
         return PageRequest.of(pageNo, findOrdersQuery.pageSize(), sort);
     }
 
-    Optional<OrderResponse> findOrderById(Long id) {
-        return orderRepository.findById(id).map(orderMapper::toResponse);
+    Optional<OrderRecord> findOrderById(Long id) {
+        return orderRepository.findOrderById(id).map(orderMapper::toResponse);
     }
 
     @Transactional
-    OrderResponse saveOrder(OrderRequest orderRequest) {
+    OrderRecord saveOrder(OrderRequest orderRequest) {
         Order order = orderMapper.toEntity(orderRequest);
         Order savedOrder = orderRepository.save(order);
-        OrderResponse orderResponse = orderMapper.toResponse(savedOrder);
-        events.publishEvent(orderResponse);
-        return orderResponse;
+        OrderRecord orderRecord = orderMapper.toResponse(savedOrder);
+        events.publishEvent(orderRecord);
+        return orderRecord;
     }
 
     @Transactional
-    OrderResponse updateOrder(Long id, OrderRequest orderRequest) {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+    OrderRecord updateOrder(Long id, OrderRequest orderRequest) {
+        Order order = orderRepository.findOrderById(id).orElseThrow(() -> new OrderNotFoundException(id));
 
         // Update the order object with data from orderRequest
         orderMapper.mapOrderWithRequest(order, orderRequest);

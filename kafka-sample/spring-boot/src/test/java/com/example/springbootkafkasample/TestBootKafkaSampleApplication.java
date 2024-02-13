@@ -13,7 +13,7 @@ public class TestBootKafkaSampleApplication {
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer() {
-        return new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.3")).withKraft();
+        return new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag("7.6.0")).withKraft();
     }
 
     public static void main(String[] args) {

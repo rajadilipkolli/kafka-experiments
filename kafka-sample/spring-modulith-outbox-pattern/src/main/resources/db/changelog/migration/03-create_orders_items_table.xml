@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://docs.liquibase.com/concepts/changelogs/xml-format.html -->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <property  name="string.type"  value="varchar(255)"  dbms="!postgresql"/>
+    <property  name="string.type"  value="text"  dbms="postgresql"/>
+
+    <changeSet author="app" id="createTable-order_items">
+        <createSequence
+                        sequenceName="order_items_seq"
+                        incrementBy="50"
+                        startValue="1"
+                        />
+        <createTable tableName="order_items">
+            <column name="id" type="bigint" defaultValueSequenceNext="order_items_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="product_code" type="${string.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_price" type="NUMERIC(19,2)"/>
+            <column name="order_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_items"
+                                 constraintName="FK_ORDER_ITEMS_ON_ORDER" referencedColumnNames="id"
+                                 referencedTableName="orders"/>
+
+        <addUniqueConstraint tableName="order_items" columnNames="product_code,order_id"
+                             constraintName="UC_ORDER_ITEMS_PRODUCT_ORDER"/>
+    </changeSet>
+</databaseChangeLog>

@@ -15,11 +15,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.outboxpattern.common.AbstractIntegrationTest;
 import com.example.outboxpattern.common.listener.OrderListener;
+import com.example.outboxpattern.order.internal.entities.Order;
+import com.example.outboxpattern.order.internal.entities.OrderItem;
+import com.example.outboxpattern.order.internal.request.OrderItemRequest;
 import com.example.outboxpattern.order.internal.request.OrderRequest;
+import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -31,18 +38,40 @@ class OrderControllerIT extends AbstractIntegrationTest {
     private OrderRepository orderRepository;
 
     @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
     private OrderListener orderListener;
 
     private List<Order> orderList = null;
 
     @BeforeEach
     void setUp() {
+        orderItemRepository.deleteAll();
         orderRepository.deleteAllInBatch();
 
         orderList = new ArrayList<>();
-        orderList.add(new Order("First Order"));
-        orderList.add(new Order("Second Order"));
-        orderList.add(new Order("Third Order"));
+        orderList.add(new Order()
+                .setOrderedDate(LocalDateTime.now())
+                .setStatus(Order.OrderStatus.CREATED)
+                .addOrderItem(new OrderItem()
+                        .setProductCode("First Order")
+                        .setProductPrice(BigDecimal.TWO)
+                        .setQuantity(10)));
+        orderList.add(new Order()
+                .setOrderedDate(LocalDateTime.now().plusDays(1))
+                .setStatus(Order.OrderStatus.CREATED)
+                .addOrderItem(new OrderItem()
+                        .setProductCode("Second Order")
+                        .setProductPrice(BigDecimal.TEN)
+                        .setQuantity(10)));
+        orderList.add(new Order()
+                .setOrderedDate(LocalDateTime.now().plusDays(2))
+                .setStatus(Order.OrderStatus.CREATED)
+                .addOrderItem(new OrderItem()
+                        .setProductCode("Third Order")
+                        .setProductPrice(BigDecimal.ONE)
+                        .setQuantity(10)));
         orderList = orderRepository.saveAll(orderList);
     }
 
@@ -51,6 +80,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
         this.mockMvc
                 .perform(get("/api/orders"))
                 .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_JSON_VALUE)))
                 .andExpect(jsonPath("$.data.size()", is(orderList.size())))
                 .andExpect(jsonPath("$.totalElements", is(3)))
                 .andExpect(jsonPath("$.pageNumber", is(1)))
@@ -61,79 +91,158 @@ class OrderControllerIT extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.hasPrevious", is(false)));
     }
 
-    @Test
-    void shouldFindOrderById() throws Exception {
-        Order order = orderList.getFirst();
-        Long orderId = order.getId();
+    @Nested
+    @DisplayName("find methods")
+    class Find {
+        @Test
+        void shouldFindOrderById() throws Exception {
+            Order order = orderList.getFirst();
+            Long orderId = order.getId();
 
-        this.mockMvc
-                .perform(get("/api/orders/{id}", orderId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(order.getId()), Long.class))
-                .andExpect(jsonPath("$.product", is(order.getProduct())));
+            mockMvc.perform(get("/api/orders/{id}", orderId))
+                    .andExpect(status().isOk())
+                    .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_JSON_VALUE)))
+                    .andExpect(jsonPath("$.id", is(order.getId()), Long.class))
+                    .andExpect(jsonPath("$.status", is("CREATED")))
+                    .andExpect(jsonPath(
+                            "$.orderItems[0].productCode",
+                            is(order.getItems().getFirst().getProductCode())))
+                    .andExpect(jsonPath("$.orderItems[0].productPrice", is(2.0)))
+                    .andExpect(jsonPath(
+                            "$.orderItems[0].quantity",
+                            is(order.getItems().getFirst().getQuantity())));
+        }
+
+        @Test
+        void shouldReturn404WhenFetchingNonExistingOrder() throws Exception {
+            Long orderId = 10_000L;
+
+            mockMvc.perform(get("/api/orders/{id}", orderId))
+                    .andExpect(status().isNotFound())
+                    .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_PROBLEM_JSON_VALUE)))
+                    .andExpect(jsonPath("$.type", is("http://api.spring-modulith-outbox-pattern.com/errors/not-found")))
+                    .andExpect(jsonPath("$.title", is("Order Not Found")))
+                    .andExpect(jsonPath("$.status", is(404)))
+                    .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
+                    .andExpect(jsonPath("$.instance").value("/api/orders/10000"))
+                    .andExpect(jsonPath("$.errorCategory").value("Generic"));
+        }
     }
 
-    @Test
-    void shouldCreateNewOrder() throws Exception {
-        OrderRequest orderRequest = new OrderRequest("New Order");
-        this.mockMvc
-                .perform(post("/api/orders")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(orderRequest)))
-                .andExpect(status().isCreated())
-                .andExpect(header().exists(HttpHeaders.LOCATION))
-                .andExpect(jsonPath("$.id", notNullValue()))
-                .andExpect(jsonPath("$.product", is(orderRequest.product())));
+    @Nested
+    @DisplayName("save methods")
+    class Save {
+        @Test
+        void shouldCreateNewOrder() throws Exception {
+            OrderRequest orderRequest =
+                    new OrderRequest(List.of(new OrderItemRequest("New Order", BigDecimal.TEN, 100)));
+            mockMvc.perform(post("/api/orders")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(orderRequest)))
+                    .andExpect(status().isCreated())
+                    .andExpect(header().exists(HttpHeaders.LOCATION))
+                    .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_JSON_VALUE)))
+                    .andExpect(jsonPath("$.id", notNullValue()))
+                    .andExpect(jsonPath(
+                            "$.orderItems[0].productCode",
+                            is(orderRequest.itemsList().getFirst().productCode())));
 
-        await().pollInterval(Duration.ofSeconds(1))
-                .atMost(Duration.ofSeconds(15))
-                .untilAsserted(
-                        () -> assertThat(orderListener.getLatch().getCount()).isZero());
+            await().pollInterval(Duration.ofSeconds(1))
+                    .atMost(Duration.ofSeconds(15))
+                    .untilAsserted(() ->
+                            assertThat(orderListener.getLatch().getCount()).isZero());
+        }
+
+        @Test
+        void shouldReturn400WhenCreateNewOrderWithoutItems() throws Exception {
+            OrderRequest orderRequest = new OrderRequest(null);
+
+            mockMvc.perform(post("/api/orders")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(orderRequest)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_PROBLEM_JSON_VALUE)))
+                    .andExpect(jsonPath("$.type", is("about:blank")))
+                    .andExpect(jsonPath("$.title", is("Constraint Violation")))
+                    .andExpect(jsonPath("$.status", is(400)))
+                    .andExpect(jsonPath("$.detail", is("Invalid request content.")))
+                    .andExpect(jsonPath("$.instance", is("/api/orders")))
+                    .andExpect(jsonPath("$.violations", hasSize(1)))
+                    .andExpect(jsonPath("$.violations[0].field", is("itemsList")))
+                    .andExpect(jsonPath("$.violations[0].message", is("ItemsList must not be empty")))
+                    .andReturn();
+        }
     }
 
-    @Test
-    void shouldReturn400WhenCreateNewOrderWithoutText() throws Exception {
-        OrderRequest orderRequest = new OrderRequest(null);
+    @Nested
+    @DisplayName("update methods")
+    class Update {
+        @Test
+        void shouldUpdateOrder() throws Exception {
+            Long orderId = orderList.getFirst().getId();
+            OrderRequest orderRequest = new OrderRequest(List.of(new OrderItemRequest(
+                    orderList.getFirst().getItems().getFirst().getProductCode(), BigDecimal.TEN, 100)));
 
-        this.mockMvc
-                .perform(post("/api/orders")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(orderRequest)))
-                .andExpect(status().isBadRequest())
-                .andExpect(header().string("Content-Type", is("application/problem+json")))
-                .andExpect(jsonPath("$.type", is("about:blank")))
-                .andExpect(jsonPath("$.title", is("Constraint Violation")))
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.detail", is("Invalid request content.")))
-                .andExpect(jsonPath("$.instance", is("/api/orders")))
-                .andExpect(jsonPath("$.violations", hasSize(1)))
-                .andExpect(jsonPath("$.violations[0].field", is("product")))
-                .andExpect(jsonPath("$.violations[0].message", is("Product cannot be empty")))
-                .andReturn();
+            mockMvc.perform(put("/api/orders/{id}", orderId)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(orderRequest)))
+                    .andExpect(status().isOk())
+                    .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_JSON_VALUE)))
+                    .andExpect(jsonPath("$.id", is(orderId), Long.class))
+                    .andExpect(jsonPath("$.status", is("COMPLETED")))
+                    .andExpect(jsonPath("$.orderItems[0].productCode", is("First Order")))
+                    .andExpect(jsonPath("$.orderItems[0].productPrice", is(10)))
+                    .andExpect(jsonPath("$.orderItems[0].quantity", is(100)));
+        }
+
+        @Test
+        void shouldReturn404WhenUpdatingNonExistingOrder() throws Exception {
+            Long orderId = 10_000L;
+            OrderRequest order = new OrderRequest(List.of(new OrderItemRequest("Product1", BigDecimal.TEN, 10)));
+
+            mockMvc.perform(put("/api/orders/{id}", orderId)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(order)))
+                    .andExpect(status().isNotFound())
+                    .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_PROBLEM_JSON_VALUE)))
+                    .andExpect(jsonPath("$.type", is("http://api.spring-modulith-outbox-pattern.com/errors/not-found")))
+                    .andExpect(jsonPath("$.title", is("Order Not Found")))
+                    .andExpect(jsonPath("$.status", is(404)))
+                    .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
+                    .andExpect(jsonPath("$.instance").value("/api/orders/10000"))
+                    .andExpect(jsonPath("$.errorCategory").value("Generic"));
+        }
     }
 
-    @Test
-    void shouldUpdateOrder() throws Exception {
-        Long orderId = orderList.getFirst().getId();
-        OrderRequest orderRequest = new OrderRequest("Updated Order");
+    @Nested
+    @DisplayName("delete methods")
+    class Delete {
+        @Test
+        void shouldDeleteOrder() throws Exception {
+            Order order = orderList.getFirst();
 
-        this.mockMvc
-                .perform(put("/api/orders/{id}", orderId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(orderRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(orderId), Long.class))
-                .andExpect(jsonPath("$.product", is(orderRequest.product())));
-    }
+            mockMvc.perform(delete("/api/orders/{id}", order.getId()))
+                    .andExpect(status().isOk())
+                    .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_JSON_VALUE)))
+                    .andExpect(jsonPath("$.id", is(order.getId()), Long.class))
+                    .andExpect(jsonPath(
+                            "$.orderItems[0].productCode",
+                            is(order.getItems().getFirst().getProductCode())));
+        }
 
-    @Test
-    void shouldDeleteOrder() throws Exception {
-        Order order = orderList.getFirst();
+        @Test
+        void shouldReturn404WhenDeletingNonExistingOrder() throws Exception {
+            Long orderId = 1L;
 
-        this.mockMvc
-                .perform(delete("/api/orders/{id}", order.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(order.getId()), Long.class))
-                .andExpect(jsonPath("$.product", is(order.getProduct())));
+            mockMvc.perform(delete("/api/orders/{id}", orderId))
+                    .andExpect(status().isNotFound())
+                    .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_PROBLEM_JSON_VALUE)))
+                    .andExpect(jsonPath("$.type", is("http://api.spring-modulith-outbox-pattern.com/errors/not-found")))
+                    .andExpect(jsonPath("$.title", is("Order Not Found")))
+                    .andExpect(jsonPath("$.status", is(404)))
+                    .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
+                    .andExpect(jsonPath("$.instance").value("/api/orders/1"))
+                    .andExpect(jsonPath("$.errorCategory").value("Generic"));
+        }
     }
 }

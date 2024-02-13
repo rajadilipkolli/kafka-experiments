@@ -26,7 +26,7 @@ class CloudKafkaSampleApplicationTest {
     private Receiver receiver;
 
     @Test
-    void testPublishingAndSubscribing() throws Exception {
+    void publishingAndSubscribing() throws Exception {
         this.mockMvc
                 .perform(
                         post("/messages")

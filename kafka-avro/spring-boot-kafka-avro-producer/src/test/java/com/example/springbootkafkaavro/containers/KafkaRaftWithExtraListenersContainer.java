@@ -21,23 +21,22 @@ public class KafkaRaftWithExtraListenersContainer extends KafkaContainer {
         super.configure();
         withEnv(
                 "KAFKA_LISTENERS",
-                String.format(
-                        "%s,%s", "INTERNAL://0.0.0.0:19092", getEnvMap().get("KAFKA_LISTENERS")));
+                "%s,%s".formatted("INTERNAL://0.0.0.0:19092", getEnvMap().get("KAFKA_LISTENERS")));
         withEnv(
                 "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP",
-                String.format(
-                        "%s,%s",
-                        "INTERNAL:PLAINTEXT",
-                        getEnvMap().get("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP")));
+                "%s,%s"
+                        .formatted(
+                                "INTERNAL:PLAINTEXT",
+                                getEnvMap().get("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP")));
         getEnvMap()
                 .put(
                         "KAFKA_CONTROLLER_QUORUM_VOTERS",
-                        String.format(
-                                "%s@%s:9094",
-                                getEnvMap().get("KAFKA_NODE_ID"),
-                                getNetwork() != null
-                                        ? listeners.getFirst().get().split(":")[0]
-                                        : "localhost"));
+                        "%s@%s:9094"
+                                .formatted(
+                                        getEnvMap().get("KAFKA_NODE_ID"),
+                                        getNetwork() != null
+                                                ? listeners.getFirst().get().split(":")[0]
+                                                : "localhost"));
     }
 
     @Override
@@ -45,11 +44,11 @@ public class KafkaRaftWithExtraListenersContainer extends KafkaContainer {
         String command = "#!/bin/bash\n";
         // exporting KAFKA_ADVERTISED_LISTENERS with the container hostname
         command +=
-                String.format(
-                        "export KAFKA_ADVERTISED_LISTENERS=%s,%s,%s\n",
-                        String.format("INTERNAL://%s", listeners.getFirst().get()),
-                        getBootstrapServers(),
-                        brokerAdvertisedListener(containerInfo));
+                "export KAFKA_ADVERTISED_LISTENERS=%s,%s,%s\n"
+                        .formatted(
+                                "INTERNAL://%s".formatted(listeners.getFirst().get()),
+                                getBootstrapServers(),
+                                brokerAdvertisedListener(containerInfo));
 
         command += "/etc/confluent/docker/run \n";
         copyFileToContainer(Transferable.of(command, 0777), "/testcontainers_start.sh");

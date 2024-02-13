@@ -51,7 +51,7 @@ class KafkaSampleApplicationTests {
     private MockMvc mockMvc;
 
     @BeforeAll
-    public void setUp() {
+    void setUp() {
         // wait until the partitions are assigned
         for (MessageListenerContainer messageListenerContainer :
                 kafkaListenerEndpointRegistry.getListenerContainers()) {
@@ -77,7 +77,7 @@ class KafkaSampleApplicationTests {
     }
 
     @Test
-    void testTopicsWithPartitionsCount() throws Exception {
+    void topicsWithPartitionsCount() throws Exception {
 
         String expectedJson =
                 """

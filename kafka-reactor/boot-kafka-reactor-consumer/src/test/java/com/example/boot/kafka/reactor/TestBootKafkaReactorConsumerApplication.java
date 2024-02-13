@@ -22,14 +22,14 @@ public class TestBootKafkaReactorConsumerApplication {
     @Bean
     @ServiceConnection
     PostgreSQLContainer<?> postgresContainer() {
-        return new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.1-alpine"));
+        return new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.2-alpine"));
     }
 
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer(DynamicPropertyRegistry propertyRegistry) {
         KafkaContainer kafkaContainer = new KafkaContainer(
-                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.3"))
+                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.6.0"))
                 .withKraft();
         propertyRegistry.add("spring.kafka.bootstrapServers", kafkaContainer::getBootstrapServers);
         return kafkaContainer;
@@ -38,7 +38,7 @@ public class TestBootKafkaReactorConsumerApplication {
     @Bean
     KafkaSender<Integer, MessageDTO> reactiveKafkaSender(KafkaProperties properties) {
         log.info("Creating Sender");
-        Map<String, Object> props = properties.buildProducerProperties();
+        Map<String, Object> props = properties.buildProducerProperties(null);
         return KafkaSender.create(SenderOptions.create(props));
     }
 

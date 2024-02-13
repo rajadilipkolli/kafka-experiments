@@ -1,11 +1,16 @@
-= Spring Modulith Outbox pattern
+= *_Spring Modulith Outbox pattern_*
 :modulith-docs: ../../../target/spring-modulith-docs
 
 == Overview
 
 plantuml::{modulith-docs}/components.puml[format="svg"]
 
-== Orders
+== _Orders_
 
 plantuml::{modulith-docs}/module-order.puml[format="svg"]
 include::{modulith-docs}/module-order.adoc[]
+
+== _Producer_
+
+plantuml::{modulith-docs}/module-producer.puml[format="svg"]
+include::{modulith-docs}/module-producer.adoc[]

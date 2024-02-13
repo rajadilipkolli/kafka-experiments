@@ -39,7 +39,7 @@ class KafkaSampleIntegrationTest {
 
     @Test
     @Order(1)
-    void testSendAndReceiveMessage() throws Exception {
+    void sendAndReceiveMessage() throws Exception {
         this.mockMvc
                 .perform(post("/messages")
                         .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", "junitTest")))
@@ -55,7 +55,7 @@ class KafkaSampleIntegrationTest {
 
     @Test
     @Order(2)
-    void testSendAndReceiveMessageInDeadLetter() throws Exception {
+    void sendAndReceiveMessageInDeadLetter() throws Exception {
         this.mockMvc
                 .perform(post("/messages")
                         .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", "")))
@@ -69,7 +69,7 @@ class KafkaSampleIntegrationTest {
     }
 
     @Test
-    void testTopicsWithPartitionsCount() throws Exception {
+    void topicsWithPartitionsCount() throws Exception {
         this.mockMvc
                 .perform(get("/topics").param("showInternalTopics", "true"))
                 .andExpect(status().isOk())

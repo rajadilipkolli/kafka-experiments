@@ -35,7 +35,7 @@ class SpringBootKafkaAvroConsumerApplicationTests {
     @Autowired KafkaProducer kafkaProducer;
 
     private static final Network KAFKA_NETWORK = Network.newNetwork();
-    private static final String CONFLUENT_PLATFORM_VERSION = "7.5.3";
+    private static final String CONFLUENT_PLATFORM_VERSION = "7.6.0";
     private static final DockerImageName KAFKA_IMAGE =
             DockerImageName.parse("confluentinc/cp-kafka").withTag(CONFLUENT_PLATFORM_VERSION);
     private static final KafkaContainer KAFKA =
@@ -96,7 +96,7 @@ class SpringBootKafkaAvroConsumerApplicationTests {
         }
 
         public String getSchemaUrl() {
-            return String.format("http://%s:%d", getHost(), getMappedPort(SCHEMA_REGISTRY_PORT));
+            return "http://%s:%d".formatted(getHost(), getMappedPort(SCHEMA_REGISTRY_PORT));
         }
     }
 
