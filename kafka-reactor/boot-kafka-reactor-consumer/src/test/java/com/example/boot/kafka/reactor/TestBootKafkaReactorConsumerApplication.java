@@ -22,7 +22,7 @@ public class TestBootKafkaReactorConsumerApplication {
     @Bean
     @ServiceConnection
     PostgreSQLContainer<?> postgresContainer() {
-        return new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.1-alpine"));
+        return new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.2-alpine"));
     }
 
     @Bean
