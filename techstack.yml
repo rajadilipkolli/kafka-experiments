@@ -1,0 +1,578 @@
+repo_name: rajadilipkolli/kafka-experiments
+report_id: 8455582d5a41cf717dec039541c8288c
+version: 0.1
+repo_type: Public
+timestamp: '2024-02-19T14:00:01+00:00'
+requested_by: renovate[bot]
+provider: github
+branch: main
+detected_tools_count: 46
+tools:
+- name: Java
+  description: A concurrent, class-based, object-oriented, language specifically designed
+    to have as few implementation dependencies as possible
+  website_url: https://www.java.com
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/995/K85ZWV2F.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments
+  detection_source: Repo Metadata
+- name: SQL
+  description: It is a domain-specific language used in programming
+  website_url: https://en.wikipedia.org/wiki/SQL
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/2271/default_068d33483bba6b81ee13fbd4dc7aab9780896a54.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/spring-modulith-outbox-pattern/src/main/resources/db/changelog/migration/01-create_event_publication.sql
+  detection_source: kafka-sample/spring-modulith-outbox-pattern/src/main/resources/db/changelog/migration/01-create_event_publication.sql
+  last_updated_by: Raja Kolli
+  last_updated_on: 2023-12-21 09:13:29.000000000 Z
+- name: Avro
+  description: A data serialization framework
+  website_url: https://avro.apache.org/
+  open_source: false
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Serialization Frameworks
+  image_url: https://img.stackshare.io/service/4265/avro.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2023-05-12 14:19:20.000000000 Z
+- name: Project Reactor
+  description: Library for building non-blocking applications on JVM
+  website_url: https://projectreactor.io/
+  open_source: false
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Java Tools
+  image_url: https://img.stackshare.io/service/5807/default_cbd8ab670309059d7e315252d307d409aa40d793.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  detection_source: kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2023-07-15 12:37:46.000000000 Z
+- name: Spring Framework
+  description: An application framework and inversion of control container for the
+    Java platform
+  website_url: https://spring.io/projects/spring-framework
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Frameworks (Full Stack)
+  image_url: https://img.stackshare.io/service/2006/spring-framework-project-logo.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2023-12-04 09:44:03.000000000 Z
+- name: H2 Database
+  description: A relational database management system written in Java
+  website_url: http://www.h2database.com/
+  open_source: false
+  hosted_saas: false
+  category: Data Stores
+  sub_category: Databases
+  image_url: https://img.stackshare.io/service/3105/h2-logo_square_400x400.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2023-05-12 14:19:20.000000000 Z
+- name: Kafdrop
+  description: A web UI for viewing Kafka topics and browsing consumer groups
+  website_url: https://github.com/obsidiandynamics/kafdrop
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Data Stores
+  sub_category: Kafka Tools
+  image_url: https://img.stackshare.io/service/12806/kafka-drop.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/docker-compose.yml
+  detection_source: docker-compose.yml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2022-12-28 12:31:06.000000000 Z
+- name: Kafka
+  description: Distributed, fault tolerant, high throughput pub-sub messaging system
+  website_url: http://kafka.apache.org/
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Data Stores
+  sub_category: Message Queue
+  image_url: https://img.stackshare.io/service/1063/kazUJooF_400x400.jpg
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/docker-compose.yml
+  detection_source: docker-compose.yml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2024-02-09 22:54:44.000000000 Z
+- name: Kafka REST
+  description: A RESTful interface to a Kafka cluster
+  website_url: https://github.com/confluentinc/kafka-rest
+  version: 7.6.0
+  open_source: true
+  hosted_saas: false
+  category: Data Stores
+  sub_category: Kafka Tools
+  image_url: https://img.stackshare.io/service/8938/default_952e19080b823dcfc14ef0508ae6a783d35224f6.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/docker-compose.yml
+  detection_source: docker-compose.yml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2024-02-09 22:54:44.000000000 Z
+- name: Kafka Streams
+  description: A client library for building applications and microservices
+  website_url: https://kafka.apache.org/documentation/streams/
+  open_source: false
+  hosted_saas: false
+  category: Data Stores
+  sub_category: Stream Processing
+  image_url: https://img.stackshare.io/service/9190/kazUJooF_400x400.jpg
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/java/pom.xml
+  detection_source: kafka-sample/java/pom.xml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2023-12-05 19:34:39.000000000 Z
+- name: Liquibase
+  description: Easily track, version &amp; deploy database changes
+  website_url: https://www.liquibase.com
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Data Stores
+  sub_category: Database Tools
+  image_url: https://img.stackshare.io/service/1398/y1As8_s5_400x400.jpg
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  detection_source: kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2023-07-15 12:37:46.000000000 Z
+- name: PostgreSQL
+  description: A powerful, open source object-relational database system
+  website_url: http://www.postgresql.org/
+  open_source: true
+  hosted_saas: false
+  category: Data Stores
+  sub_category: Databases
+  image_url: https://img.stackshare.io/service/1028/ASOhU5xJ.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-reactor/boot-kafka-reactor-consumer/docker/docker-compose.yml
+  detection_source: kafka-reactor/boot-kafka-reactor-consumer/docker/docker-compose.yml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2024-02-13 04:02:09.000000000 Z
+- name: Docker
+  description: Enterprise Container Platform for High-Velocity Innovation.
+  website_url: https://www.docker.com/
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Virtual Machine Platforms & Containers
+  image_url: https://img.stackshare.io/service/586/n4u37v9t_400x400.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments
+  detection_source: Repo Metadata
+- name: Git
+  description: Fast, scalable, distributed revision control system
+  website_url: http://git-scm.com/
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Version Control System
+  image_url: https://img.stackshare.io/service/1046/git.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments
+  detection_source: Repo Metadata
+- name: GitHub Actions
+  description: Automate your workflow from idea to production
+  website_url: https://github.com/features/actions
+  open_source: false
+  hosted_saas: true
+  category: Build, Test, Deploy
+  sub_category: Continuous Integration
+  image_url: https://img.stackshare.io/service/11563/actions.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/.github/workflows/analytics-spring-cloud-streams-kafka-consumer.yml
+  detection_source: ".github/workflows/analytics-spring-cloud-streams-kafka-consumer.yml"
+  last_updated_by: renovate[bot]
+  last_updated_on: 2023-12-01 08:44:33.000000000 Z
+- name: JUnit
+  description: A programmer-oriented testing framework for Java
+  website_url: http://junit.org/
+  license: EPL-1.0
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Testing Frameworks
+  image_url: https://img.stackshare.io/service/2020/874086.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/spring/pom.xml
+  detection_source: kafka-sample/spring/pom.xml
+  last_updated_by: Raja Dilip Kolli
+  last_updated_on: 2021-12-26 06:19:16.000000000 Z
+- name: Logback
+  description: A logging framework for Java applications
+  website_url: https://logback.qos.ch/
+  open_source: false
+  hosted_saas: false
+  category: Monitoring
+  sub_category: Log Management
+  image_url: https://img.stackshare.io/service/2923/05518ecaa42841e834421e9d6987b04f_400x400.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/spring-modulith-outbox-pattern/src/test/resources/logback-test.xml
+  detection_source: kafka-sample/spring-modulith-outbox-pattern/src/test/resources/logback-test.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2023-12-21 09:13:29.000000000 Z
+- name: SLF4J
+  description: Simple logging facade for Java
+  website_url: http://slf4j.org/
+  open_source: false
+  hosted_saas: false
+  category: Monitoring
+  sub_category: Log Management
+  image_url: https://img.stackshare.io/service/2805/05518ecaa42841e834421e9d6987b04f_400x400.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/java/pom.xml
+  detection_source: kafka-sample/java/pom.xml
+  last_updated_by: Raja Dilip Kolli
+  last_updated_on: 2021-12-26 06:19:16.000000000 Z
+- name: Zipkin
+  description: A distributed tracing system
+  website_url: https://zipkin.io/
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Monitoring
+  sub_category: Monitoring Tools
+  image_url: https://img.stackshare.io/service/2494/8leuukuhknbc8fj0eg42_400x400.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/docker-compose.yml
+  detection_source: docker-compose.yml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2023-12-13 19:32:32.000000000 Z
+- name: Apache Camel
+  description: A versatile open source integration framework
+  website_url: https://camel.apache.org/
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Application Hosting
+  sub_category: Platform as a Service
+  image_url: https://img.stackshare.io/service/3276/xWt1RFo6_400x400.jpg
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-consumer/src/main/resources/application.properties
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/src/main/resources/application.properties
+  last_updated_by: Raja Kolli
+  last_updated_on: 2023-05-12 14:19:20.000000000 Z
+- name: Alpine Linux
+  description: Security-oriented, lightweight Linux distribution based on musl libc
+    and busybox
+  website_url: https://www.alpinelinux.org/
+  open_source: false
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Operating Systems
+  image_url: https://img.stackshare.io/service/6429/alpine_linux.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-reactor/boot-kafka-reactor-consumer/docker/docker-compose.yml
+  detection_source: kafka-reactor/boot-kafka-reactor-consumer/docker/docker-compose.yml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2024-02-13 04:02:09.000000000 Z
+- name: ch.qos.logback:logback-classic
+  description: Logback-classic module
+  version: 1.5.0
+  license: EPL-1.0,LGPL-2.1+
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/spring/pom.xml
+  detection_source: kafka-sample/spring/pom.xml
+  last_updated_by: rajadilipkolli
+  last_updated_on: 2023-07-18 02:54:10.000000000 Z
+- name: com.h2database:h2
+  description: H2 Database Engine
+  license: MIT-feh
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2023-05-12 14:19:20.000000000 Z
+- name: io.projectreactor:reactor-test
+  description: Reactor Test support
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  detection_source: kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2023-07-15 12:37:46.000000000 Z
+- name: org.apache.avro:avro
+  description: Avro core components
+  version: 1.11.3
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2023-09-24 10:55:10.000000000 Z
+- name: org.apache.kafka:kafka-clients
+  version: 3.6.1
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/java/pom.xml
+  detection_source: kafka-sample/java/pom.xml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2023-12-05 19:34:39.000000000 Z
+- name: org.apache.kafka:kafka-streams
+  version: 3.6.1
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/java/pom.xml
+  detection_source: kafka-sample/java/pom.xml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2023-12-05 19:34:39.000000000 Z
+- name: org.assertj:assertj-core
+  description: Rich and fluent assertions for testing for Java
+  version: 3.25.3
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/spring/pom.xml
+  detection_source: kafka-sample/spring/pom.xml
+  last_updated_by: rajadilipkolli
+  last_updated_on: 2023-07-18 02:54:10.000000000 Z
+- name: org.awaitility:awaitility
+  description: A Java DSL for synchronizing asynchronous operations
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2023-05-12 14:19:20.000000000 Z
+- name: org.glassfish.jaxb:jaxb-runtime
+  description: JAXB
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-producer/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-producer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2024-01-06 14:32:59.000000000 Z
+- name: org.junit.jupiter:junit-jupiter-engine
+  description: Module "junit-jupiter-engine" of JUnit 5
+  version: 5.10.2
+  license: EPL-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/spring/pom.xml
+  detection_source: kafka-sample/spring/pom.xml
+  last_updated_by: rajadilipkolli
+  last_updated_on: 2023-07-18 02:54:10.000000000 Z
+- name: org.liquibase:liquibase-core
+  description: Liquibase is a tool for managing and executing database changes
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  detection_source: kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2024-01-06 14:32:59.000000000 Z
+- name: org.postgresql:postgresql
+  description: The PostgreSQL Driver JDBC4
+  license: BSD-2-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  detection_source: kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2024-01-06 14:32:59.000000000 Z
+- name: org.projectlombok:lombok
+  description: 'Spice up your java: Automatic Resource Management'
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2023-05-12 14:19:20.000000000 Z
+- name: org.slf4j:slf4j-simple
+  description: SLF4J Simple binding
+  version: 2.0.12
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/java/pom.xml
+  detection_source: kafka-sample/java/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2023-07-22 05:05:37.000000000 Z
+- name: org.springframework.boot:spring-boot-configuration-processor
+  description: Spring Boot Configuration Processor
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/spring-modulith-outbox-pattern/pom.xml
+  detection_source: kafka-sample/spring-modulith-outbox-pattern/pom.xml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2024-01-19 22:07:29.000000000 Z
+- name: org.springframework.boot:spring-boot-devtools
+  description: Spring Boot Developer Tools
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  detection_source: kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2024-01-06 14:32:59.000000000 Z
+- name: org.springframework.boot:spring-boot-starter-actuator
+  description: Starter for using Spring Boot's Actuator which provides production
+    ready features to help you monitor and manage your application
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2023-12-04 09:44:03.000000000 Z
+- name: org.springframework.boot:spring-boot-starter-data-jpa
+  description: Starter for using Spring Data JPA with Hibernate
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2023-12-04 09:44:03.000000000 Z
+- name: org.springframework.boot:spring-boot-starter-test
+  description: Starter for testing Spring Boot applications with libraries including
+    JUnit
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2023-12-04 09:44:03.000000000 Z
+- name: org.springframework.boot:spring-boot-starter-validation
+  description: Starter for using Java Bean Validation with Hibernate Validator
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2023-12-04 09:44:03.000000000 Z
+- name: org.springframework.boot:spring-boot-starter-web
+  description: Starter for building web, including RESTful, applications using Spring
+    MVC
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2023-12-04 09:44:03.000000000 Z
+- name: org.springframework.kafka:spring-kafka
+  description: Spring Kafka Support
+  version: 3.1.1
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/spring/pom.xml
+  detection_source: kafka-avro/spring-boot-kafka-avro-consumer/pom.xml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2023-12-04 09:44:03.000000000 Z
+- name: org.springframework:spring-jdbc
+  description: Spring JDBC
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  detection_source: kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2024-01-06 14:32:59.000000000 Z
+- name: org.springframework:spring-test
+  description: Spring TestContext Framework
+  version: 6.1.4
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-sample/spring/pom.xml
+  detection_source: kafka-sample/spring/pom.xml
+  last_updated_by: renovate[bot]
+  last_updated_on: 2023-12-19 01:37:01.000000000 Z
+- name: org.testcontainers:postgresql
+  description: Testcontainers is a Java library that supports JUnit tests
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: Maven Packages
+  image_url: https://img.stackshare.io/package/maven/image.png
+  detection_source_url: https://github.com/rajadilipkolli/kafka-experiments/blob/main/kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  detection_source: kafka-reactor/boot-kafka-reactor-consumer/pom.xml
+  last_updated_by: Raja Kolli
+  last_updated_on: 2024-01-06 14:32:59.000000000 Z
