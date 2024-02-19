@@ -3,11 +3,11 @@ name: spring-boot-multiple-producers-consumers
 on:
   push:
     paths:
-      - "kafka-sample/spring-boot-multiple-producers-consumers/**"
+      - "kafka-spring/spring-boot-multiple-producers-consumers/**"
     branches: [ main ]
   pull_request:
     paths:
-      - "kafka-sample/spring-boot-multiple-producers-consumers/**"
+      - "kafka-spring/spring-boot-multiple-producers-consumers/**"
     types:
       - opened
       - synchronize
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run: 
-          working-directory: kafka-sample/spring-boot-multiple-producers-consumers
+          working-directory: kafka-spring/spring-boot-multiple-producers-consumers
 
     steps:
     - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
