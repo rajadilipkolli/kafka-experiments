@@ -9,6 +9,11 @@ services:
       - POSTGRES_DB=appdb
     ports:
       - "5432:5432"
+    healthcheck:
+      test: "pg_isready -U appuser -d appdb"
+      interval: 2s
+      timeout: 20s
+      retries: 10
 
   pgadmin4:
     container_name: pgadmin4

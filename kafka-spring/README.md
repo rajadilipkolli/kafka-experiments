@@ -6,5 +6,5 @@ This folder contains sample kafka producer and consumer using java, spring & Spr
 | Type                                                                         | Description                                                                             |
 |------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
 | [Spring Boot](./spring-boot)                                                 | Producing and consuming Messages using Spring Boot                                      |
-| [Spring Cloud](./kafka-dsl-integration)                                               | Producing and consuming Messages using Spring Integration DSL                                     |
+| [Spring Integration using kafka DSL](./kafka-dsl-integration)                | Producing and consuming Messages using Spring Integration DSL                           |
 | [Multiple Producers & Consumers](./spring-boot-multiple-producers-consumers) | Producing and consuming Messages from Multiple Producer and consumers using Spring Boot |
