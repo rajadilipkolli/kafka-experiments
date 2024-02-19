@@ -17,107 +17,6 @@
         },
         {
             "type": "java",
-            "name": "Spring Boot-SpringBootKafkaMultiApplication<spring-boot-multiple-producers-consumers>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.springbootkafka.multi.SpringBootKafkaMultiApplication",
-            "projectName": "spring-boot-multiple-producers-consumers",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-BootKafkaSampleApplication<spring-boot-kafka-sample>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.springbootkafkasample.BootKafkaSampleApplication",
-            "projectName": "spring-boot-kafka-sample",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=44993 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=spring-boot-kafka-sample"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-SpringBootKafkaAvroConsumerApplication<spring-boot-kafka-avro-consumer>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.springbootkafkaavro.SpringBootKafkaAvroConsumerApplication",
-            "projectName": "spring-boot-kafka-avro-consumer",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-BootKafkaReactorConsumerApplication<boot-kafka-reactor-consumer>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.boot.kafka.reactor.BootKafkaReactorConsumerApplication",
-            "projectName": "boot-kafka-reactor-consumer",
-            "args": "--spring.profiles.active=local",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-SpringBootKafkaAvroProducerApplication<spring-boot-kafka-avro-producer>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.springbootkafkaavro.SpringBootKafkaAvroProducerApplication",
-            "projectName": "spring-boot-kafka-avro-producer",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-AnalyticsProducerApplication<analytics-spring-cloud-streams-kafka-producer>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.analytics.AnalyticsProducerApplication",
-            "projectName": "analytics-spring-cloud-streams-kafka-producer",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-AnalyticsConsumerApplication<analytics-spring-cloud-streams-kafka-consumer>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.analytics.AnalyticsConsumerApplication",
-            "projectName": "analytics-spring-cloud-streams-kafka-consumer",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-TestSpringBootKafkaMultiApplication<spring-boot-multiple-producers-consumers>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.springbootkafka.multi.TestSpringBootKafkaMultiApplication",
-            "projectName": "spring-boot-multiple-producers-consumers",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-Application<spring-modulith-outbox-pattern>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.outboxpattern.Application",
-            "projectName": "spring-modulith-outbox-pattern",
-            "args": "--spring.profiles.active=local",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-TestApplication<spring-modulith-outbox-pattern>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.outboxpattern.TestApplication",
-            "projectName": "spring-modulith-outbox-pattern",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
             "name": "Spring Boot-TestKafkaDslApplication<kafka-dsl-integration>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
@@ -134,6 +33,26 @@
             "mainClass": "com.example.integration.kafkadsl.KafkaDslApplication",
             "projectName": "kafka-dsl-integration",
             "args": "--spring.profiles.active=cluster",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-BootKafkaSampleApplication<spring-boot-kafka-sample>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.springbootkafkasample.BootKafkaSampleApplication",
+            "projectName": "spring-boot-kafka-sample",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-TestBootKafkaSampleApplication<spring-boot-kafka-sample>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.springbootkafkasample.TestBootKafkaSampleApplication",
+            "projectName": "spring-boot-kafka-sample",
+            "args": "",
             "envFile": "${workspaceFolder}/.env"
         }
     ]

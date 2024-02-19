@@ -1,7 +1,7 @@
 version: '3.8'
 services:
 
-  kafka-dsl-integration:
+  spring-boot:
     build: ..
     ports:
       - "18080:8080"
