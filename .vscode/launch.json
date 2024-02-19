@@ -133,7 +133,7 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "com.example.integration.kafkadsl.KafkaDslApplication",
             "projectName": "kafka-dsl-integration",
-            "args": "",
+            "args": "--spring.profiles.active=cluster",
             "envFile": "${workspaceFolder}/.env"
         }
     ]
