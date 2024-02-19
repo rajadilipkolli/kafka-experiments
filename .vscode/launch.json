@@ -115,6 +115,26 @@
             "projectName": "spring-modulith-outbox-pattern",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-TestKafkaDslApplication<kafka-dsl-integration>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.integration.kafkadsl.TestKafkaDslApplication",
+            "projectName": "kafka-dsl-integration",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-KafkaDslApplication<kafka-dsl-integration>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.integration.kafkadsl.KafkaDslApplication",
+            "projectName": "kafka-dsl-integration",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

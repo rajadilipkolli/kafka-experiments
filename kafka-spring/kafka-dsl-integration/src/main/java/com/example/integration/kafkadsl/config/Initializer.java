@@ -35,23 +35,23 @@ public class Initializer implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         log.info("Sending 10 messages...");
         for (int i = 0; i < 10; i++) {
             String message = "foo" + i;
             log.info("Send to Kafka: :{}", message);
-            kafkaGateway.sendToKafka(message, this.properties.getTopic());
+            kafkaGateway.sendToKafka(message, this.properties.topic());
         }
         for (int i = 0; i < 10; i++) {
             Message<?> received = kafkaGateway.receiveFromKafka();
             log.info("Received Message :{}", received);
         }
         log.info("Adding an adapter for a second topic and sending 10 messages...");
-        addAnotherListenerForTopics(this.properties.getNewTopic());
+        addAnotherListenerForTopics(this.properties.newTopic());
         for (int i = 0; i < 10; i++) {
             String message = "bar" + i;
             log.info("Send to Kafka: {}", message);
-            kafkaGateway.sendToKafka(message, this.properties.getNewTopic());
+            kafkaGateway.sendToKafka(message, this.properties.newTopic());
         }
         for (int i = 0; i < 10; i++) {
             Message<?> received = kafkaGateway.receiveFromKafka();

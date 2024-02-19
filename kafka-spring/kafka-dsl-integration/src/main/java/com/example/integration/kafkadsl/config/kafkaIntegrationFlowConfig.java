@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.kafka.dsl.Kafka;
 import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration(proxyBeanMethods = false)
@@ -18,23 +19,20 @@ public class kafkaIntegrationFlowConfig {
     }
 
     @Bean
-    public NewTopic topic(KafkaAppProperties properties) {
-        return new NewTopic(properties.getTopic(), 1, (short) 1);
+    KafkaAdmin.NewTopics topics() {
+        return new KafkaAdmin.NewTopics(
+                new NewTopic(properties.topic(), 1, (short) 1), new NewTopic(properties.newTopic(), 1, (short) 1));
     }
 
     @Bean
-    public NewTopic newTopic(KafkaAppProperties properties) {
-        return new NewTopic(properties.getNewTopic(), 1, (short) 1);
+    IntegrationFlow toKafka(KafkaTemplate<?, ?> kafkaTemplate) {
+        return flow ->
+                flow.handle(Kafka.outboundChannelAdapter(kafkaTemplate).messageKey(this.properties.messageKey()));
     }
 
     @Bean
-    public IntegrationFlow toKafka(KafkaTemplate<?, ?> kafkaTemplate) {
-        return f -> f.handle(Kafka.outboundChannelAdapter(kafkaTemplate).messageKey(this.properties.getMessageKey()));
-    }
-
-    @Bean
-    public IntegrationFlow fromKafkaFlow(ConsumerFactory<?, ?> consumerFactory) {
-        return IntegrationFlow.from(Kafka.messageDrivenChannelAdapter(consumerFactory, this.properties.getTopic()))
+    IntegrationFlow fromKafkaFlow(ConsumerFactory<?, ?> consumerFactory) {
+        return IntegrationFlow.from(Kafka.messageDrivenChannelAdapter(consumerFactory, this.properties.topic()))
                 .channel(c -> c.queue("fromKafka"))
                 .get();
     }
