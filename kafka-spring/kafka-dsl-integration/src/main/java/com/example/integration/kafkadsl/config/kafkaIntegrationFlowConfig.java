@@ -29,15 +29,12 @@ public class kafkaIntegrationFlowConfig {
 
     @Bean
     public IntegrationFlow toKafka(KafkaTemplate<?, ?> kafkaTemplate) {
-        return f -> f
-                .handle(Kafka.outboundChannelAdapter(kafkaTemplate)
-                        .messageKey(this.properties.getMessageKey()));
+        return f -> f.handle(Kafka.outboundChannelAdapter(kafkaTemplate).messageKey(this.properties.getMessageKey()));
     }
 
     @Bean
     public IntegrationFlow fromKafkaFlow(ConsumerFactory<?, ?> consumerFactory) {
-        return IntegrationFlow
-                .from(Kafka.messageDrivenChannelAdapter(consumerFactory, this.properties.getTopic()))
+        return IntegrationFlow.from(Kafka.messageDrivenChannelAdapter(consumerFactory, this.properties.getTopic()))
                 .channel(c -> c.queue("fromKafka"))
                 .get();
     }

@@ -14,5 +14,4 @@ public interface KafkaGateway {
 
     @Gateway(replyChannel = "fromKafka", replyTimeout = 10000)
     Message<?> receiveFromKafka();
-
 }

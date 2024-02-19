@@ -9,8 +9,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties(KafkaAppProperties.class)
 public class KafkaDslApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(KafkaDslApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(KafkaDslApplication.class, args);
+    }
 }
