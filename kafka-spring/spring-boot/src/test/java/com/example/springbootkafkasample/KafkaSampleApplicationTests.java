@@ -83,7 +83,7 @@ class KafkaSampleApplicationTests {
                 """
                 [
                     {"topicName":"test_2-dlt","partitionCount":1,"replicationCount":1},
-                    {"topicName":"test_3","partitionCount":1,"replicationCount":1},
+                    {"topicName":"test_3","partitionCount":2,"replicationCount":1},
                     {"topicName":"test_2","partitionCount":2,"replicationCount":1},
                     {"topicName":"test_1","partitionCount":2,"replicationCount":1},
                     {"topicName":"test_2-retry-0","partitionCount":1,"replicationCount":1},
