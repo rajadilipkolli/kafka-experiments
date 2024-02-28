@@ -50,12 +50,12 @@ public class Initializer implements CommandLineRunner {
         addAnotherListenerForTopics(this.properties.newTopic());
         for (int i = 0; i < 10; i++) {
             String message = "bar" + i;
-            log.info("Send to Kafka: {}", message);
+            log.info("Sent : {} to Kafka topic {}", message, properties.newTopic());
             kafkaGateway.sendToKafka(message, this.properties.newTopic());
         }
         for (int i = 0; i < 10; i++) {
             Message<?> received = kafkaGateway.receiveFromKafka();
-            log.info("Received Message :{}", received);
+            log.info("Received Message :{} in Kafka topic {}", received, properties.newTopic());
         }
     }
 

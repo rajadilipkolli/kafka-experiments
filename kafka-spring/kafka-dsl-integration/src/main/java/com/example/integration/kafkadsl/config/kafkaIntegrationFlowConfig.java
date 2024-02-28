@@ -21,7 +21,7 @@ public class kafkaIntegrationFlowConfig {
     @Bean
     KafkaAdmin.NewTopics topics() {
         return new KafkaAdmin.NewTopics(
-                new NewTopic(properties.topic(), 1, (short) 1), new NewTopic(properties.newTopic(), 1, (short) 1));
+                new NewTopic(properties.topic(), 32, (short) 3), new NewTopic(properties.newTopic(), 32, (short) 3));
     }
 
     @Bean
