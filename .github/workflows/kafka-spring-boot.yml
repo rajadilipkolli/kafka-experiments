@@ -1,0 +1,41 @@
+name: kafka-spring-boot
+
+on:
+  push:
+    paths:
+      - "kafka-spring/spring-boot/**"
+    branches: [ main ]
+  pull_request:
+    paths:
+      - "kafka-spring/spring-boot/**"
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "kafka-spring/spring-boot"
+    steps:
+    - uses: actions/checkout@v4
+      with:
+          fetch-depth: 0
+    - uses: graalvm/setup-graalvm@v1
+      with:
+        java-version: '21'
+        distribution: 'graalvm'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        cache: 'maven'
+        native-image-job-reports: 'true'
+      
+    - name: Printing versions
+      run: |
+        echo "GRAALVM_HOME: $GRAALVM_HOME"
+        echo "JAVA_HOME: $JAVA_HOME"
+        java --version
+        native-image --version
+    - name: Build with Maven
+      run: ./mvnw -B verify spring-boot:build-image --file pom.xml
