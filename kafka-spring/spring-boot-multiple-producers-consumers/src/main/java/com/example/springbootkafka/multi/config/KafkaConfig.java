@@ -68,6 +68,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
             ConsumerFactory<Integer, String> simpleKafkaConsumerFactory) {
         ConcurrentKafkaListenerContainerFactory<Integer, String> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
+        factory.getContainerProperties().setObservationEnabled(true);
         factory.setConsumerFactory(simpleKafkaConsumerFactory);
         return factory;
     }
@@ -87,6 +88,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
             ConsumerFactory<String, SimpleMessage> jsonKafkaConsumerFactory) {
         ConcurrentKafkaListenerContainerFactory<String, SimpleMessage> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
+        factory.getContainerProperties().setObservationEnabled(true);
         factory.setConsumerFactory(jsonKafkaConsumerFactory);
         return factory;
     }
