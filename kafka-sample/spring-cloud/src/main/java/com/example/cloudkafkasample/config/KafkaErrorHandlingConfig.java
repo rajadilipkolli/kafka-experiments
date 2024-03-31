@@ -10,14 +10,12 @@ import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 
 @Configuration(proxyBeanMethods = false)
-public class KafkaConfig {
+public class KafkaErrorHandlingConfig {
 
     @Bean
     ListenerContainerCustomizer<AbstractMessageListenerContainer<byte[], byte[]>> customizer(
             DefaultErrorHandler errorHandler) {
-        return (container, dest, group) -> {
-            container.setCommonErrorHandler(errorHandler);
-        };
+        return (container, dest, group) -> container.setCommonErrorHandler(errorHandler);
     }
 
     @Bean
