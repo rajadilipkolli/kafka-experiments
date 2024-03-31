@@ -8,8 +8,8 @@ import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.tracing.Tracer;
 import jakarta.validation.Valid;
 import java.util.concurrent.CountDownLatch;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
@@ -17,11 +17,11 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-@Getter
 @Component
-@Slf4j
 @Validated
 public class JsonReceiver {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonReceiver.class);
 
     private final Tracer tracer;
 
@@ -39,8 +39,12 @@ public class JsonReceiver {
             @Payload @Valid SimpleMessage simpleMessage, @Header(KafkaHeaders.RECEIVED_KEY) String receivedKey) {
 
         Observation.createNotStarted("jsonListener", this.observationRegistry)
-                .observe(() -> log.info(
+                .observe(() -> LOGGER.info(
                         "Received in jsonListener message {} with receivedKey :{}", simpleMessage, receivedKey));
         latch.countDown();
+    }
+
+    public CountDownLatch getLatch() {
+        return latch;
     }
 }

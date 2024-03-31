@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
@@ -32,12 +31,16 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
 @EnableKafka
-@RequiredArgsConstructor
 @EnableConfigurationProperties(KafkaProperties.class)
 public class KafkaConfig implements KafkaListenerConfigurer {
 
-    private final KafkaProperties properties;
+    private final KafkaProperties kafkaProperties;
     private final LocalValidatorFactoryBean validator;
+
+    public KafkaConfig(KafkaProperties properties, LocalValidatorFactoryBean validator) {
+        this.kafkaProperties = properties;
+        this.validator = validator;
+    }
 
     @Bean
     RoutingKafkaTemplate routingTemplate(GenericApplicationContext context, ProducerFactory<Object, Object> pf) {
@@ -57,7 +60,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
 
     @Bean
     ConsumerFactory<Integer, String> simpleKafkaConsumerFactory() {
-        Map<String, Object> consumerProperties = this.properties.buildConsumerProperties(null);
+        Map<String, Object> consumerProperties = this.kafkaProperties.buildConsumerProperties(null);
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class.getName());
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         return new DefaultKafkaConsumerFactory<>(consumerProperties);
@@ -68,6 +71,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
             ConsumerFactory<Integer, String> simpleKafkaConsumerFactory) {
         ConcurrentKafkaListenerContainerFactory<Integer, String> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
+        factory.getContainerProperties().setObservationEnabled(true);
         factory.setConsumerFactory(simpleKafkaConsumerFactory);
         return factory;
     }
@@ -75,7 +79,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
     // Second consumer config
     @Bean
     ConsumerFactory<String, SimpleMessage> jsonKafkaConsumerFactory() {
-        Map<String, Object> consumerProperties = this.properties.buildConsumerProperties(null);
+        Map<String, Object> consumerProperties = this.kafkaProperties.buildConsumerProperties(null);
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class.getName());
         consumerProperties.put(JsonDeserializer.TRUSTED_PACKAGES, "com.example.springbootkafka.multi.domain");
@@ -87,6 +91,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
             ConsumerFactory<String, SimpleMessage> jsonKafkaConsumerFactory) {
         ConcurrentKafkaListenerContainerFactory<String, SimpleMessage> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
+        factory.getContainerProperties().setObservationEnabled(true);
         factory.setConsumerFactory(jsonKafkaConsumerFactory);
         return factory;
     }
