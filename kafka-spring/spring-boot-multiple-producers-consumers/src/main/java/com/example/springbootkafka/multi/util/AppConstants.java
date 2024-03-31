@@ -1,10 +1,7 @@
 package com.example.springbootkafka.multi.util;
 
-import lombok.experimental.UtilityClass;
+public interface AppConstants {
 
-@UtilityClass
-public class AppConstants {
-
-    public static final String TOPIC_TEST_1 = "test_1";
-    public static final String TOPIC_TEST_2 = "test_2";
+    String TOPIC_TEST_1 = "test_1";
+    String TOPIC_TEST_2 = "test_2";
 }
