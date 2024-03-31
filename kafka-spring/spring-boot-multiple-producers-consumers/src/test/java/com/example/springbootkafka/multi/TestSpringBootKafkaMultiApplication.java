@@ -1,7 +1,6 @@
 package com.example.springbootkafka.multi;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.devtools.restart.RestartScope;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +13,6 @@ import org.testcontainers.utility.DockerImageName;
 public class TestSpringBootKafkaMultiApplication {
 
     @Bean
-    @RestartScope
     @ServiceConnection(name = "openzipkin/zipkin")
     GenericContainer<?> zipkinContainer() {
         return new GenericContainer<>(DockerImageName.parse("openzipkin/zipkin:latest")).withExposedPorts(9411);
@@ -22,7 +20,6 @@ public class TestSpringBootKafkaMultiApplication {
 
     @Bean
     @ServiceConnection
-    @RestartScope
     KafkaContainer kafkaContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
         KafkaContainer kafkaContainer = new KafkaContainer(
                         DockerImageName.parse("confluentinc/cp-kafka").withTag("7.6.0"))
