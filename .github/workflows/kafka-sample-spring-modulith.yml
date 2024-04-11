@@ -1,4 +1,4 @@
-name: kafka-sample-spring-modulith-outbox-pattern
+name: kafka-spring-modulith-outbox-pattern-sample
 
 on:
   push:
