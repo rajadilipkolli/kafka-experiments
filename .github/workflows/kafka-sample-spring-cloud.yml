@@ -1,13 +1,13 @@
-name: kafka-sample-spring-cloud
+name: kafka-spring-cloud-sample
 
 on:
   push:
     paths:
-      - "kafka-sample/spring-cloud/**"
+      - "spring-cloud/**"
     branches: [ main ]
   pull_request:
     paths:
-      - "kafka-sample/spring-cloud/**"
+      - "spring-cloud/**"
     types:
       - opened
       - synchronize
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "kafka-sample/spring-cloud"
+        working-directory: "spring-cloud"
     steps:
     - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       with:
