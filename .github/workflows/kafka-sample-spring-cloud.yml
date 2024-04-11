@@ -1,4 +1,4 @@
-name: kafka-sample-spring-cloud
+name: kafka-spring-cloud-sample
 
 on:
   push:
