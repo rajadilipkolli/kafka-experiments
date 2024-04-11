@@ -49,7 +49,7 @@ public class MessageService {
         topicDescriptionMap.forEach((topicName, topicDescription) -> {
             int partitionCount = topicDescription.partitions().size();
             int replicationCount =
-                    topicDescription.partitions().get(0).replicas().size();
+                    topicDescription.partitions().getFirst().replicas().size();
             topicPartitionCounts.add(new TopicInfo(topicName, partitionCount, replicationCount));
         });
 

@@ -18,10 +18,10 @@
       - any-glob-to-any-file: 'kafka-streams/**/*'
 "component : cloud":
   - changed-files:
-      - any-glob-to-any-file: 'kafka-cloud/**/*'
+      - any-glob-to-any-file: 'kafka-spring-cloud-sample/**/*'
 "component : modulith":
   - changed-files:
-      - any-glob-to-any-file: 'kafka-modulith-outbox-pattern/**/*'
+      - any-glob-to-any-file: 'spring-modulith-outbox-pattern/**/*'
 "type: documentation":
   - changed-files:
       - any-glob-to-any-file: 'docs/**/*'

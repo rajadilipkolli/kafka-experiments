@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>spring-cloud-kafka-sample</artifactId>
+    <artifactId>kafka-spring-cloud-sample</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>cloud-kafka-sample</name>
+    <name>kafka-cloud-sample</name>
     <description>Demo project for Spring Boot with test stream</description>
 
     <properties>

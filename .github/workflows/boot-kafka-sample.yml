@@ -1,13 +1,13 @@
-name: kafka-spring-boot
+name: spring-boot-kafka-sample
 
 on:
   push:
     paths:
-      - "kafka-spring-boot/spring-boot-sample/**"
+      - "kafka-spring-boot/boot-kafka-sample/**"
     branches: [ main ]
   pull_request:
     paths:
-      - "kafka-spring-boot/spring-boot-sample/**"
+      - "kafka-spring-boot/boot-kafka-sample/**"
     types:
       - opened
       - synchronize
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "kafka-spring-boot/spring-boot-sample"
+        working-directory: "kafka-spring-boot/boot-kafka-sample"
     steps:
     - uses: actions/checkout@v4
       with:
