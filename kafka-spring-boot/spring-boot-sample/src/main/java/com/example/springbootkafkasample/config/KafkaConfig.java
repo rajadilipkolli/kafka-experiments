@@ -14,7 +14,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @EnableKafka
 public class KafkaConfig implements KafkaListenerConfigurer {
 
-    private static final Logger logger = LoggerFactory.getLogger(KafkaConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConfig.class);
 
     private final LocalValidatorFactoryBean validator;
 
@@ -30,7 +30,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
     @Bean
     KafkaListenerErrorHandler validationErrorHandler() {
         return (m, e) -> {
-            logger.error("Error for message :{} ", m, e);
+            LOGGER.error("Error for message :{} ", m, e);
             return m;
         };
     }

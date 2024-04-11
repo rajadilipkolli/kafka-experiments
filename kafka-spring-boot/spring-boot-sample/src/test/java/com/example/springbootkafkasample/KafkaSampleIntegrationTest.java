@@ -79,7 +79,7 @@ class KafkaSampleIntegrationTest {
                 .andExpect(jsonPath("$[0].partitionCount").value(1))
                 .andExpect(jsonPath("$[0].replicationCount").value(1))
                 .andExpect(jsonPath("$[1].topicName").value("test_1"))
-                .andExpect(jsonPath("$[1].partitionCount").value(1))
+                .andExpect(jsonPath("$[1].partitionCount").value(32))
                 .andExpect(jsonPath("$[1].replicationCount").value(1))
                 .andExpect(jsonPath("$[2].topicName").value("test_2"))
                 .andExpect(jsonPath("$[2].partitionCount").value(1))
@@ -94,7 +94,7 @@ class KafkaSampleIntegrationTest {
                 .andExpect(jsonPath("$[5].partitionCount").value(1))
                 .andExpect(jsonPath("$[5].replicationCount").value(1))
                 .andExpect(jsonPath("$[6].topicName").value("test_3"))
-                .andExpect(jsonPath("$[6].partitionCount").value(1))
+                .andExpect(jsonPath("$[6].partitionCount").value(32))
                 .andExpect(jsonPath("$[6].replicationCount").value(1));
     }
 }

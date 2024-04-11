@@ -13,7 +13,11 @@ public class TestBootKafkaSampleApplication {
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer() {
-        return new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag("7.6.0")).withKraft();
+        KafkaContainer kafkaContainer = new KafkaContainer(
+                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.6.0"))
+                .withKraft();
+        kafkaContainer.addEnv("KAFKA_NUM_PARTITIONS", "32");
+        return kafkaContainer;
     }
 
     public static void main(String[] args) {
