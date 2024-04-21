@@ -96,6 +96,16 @@
             "projectName": "spring-boot-multiple-producers-consumers",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-TestCloudKafkaSampleApplication<kafka-spring-cloud-sample>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.cloudkafkasample.TestCloudKafkaSampleApplication",
+            "projectName": "kafka-spring-cloud-sample",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

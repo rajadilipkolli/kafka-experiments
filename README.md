@@ -20,16 +20,14 @@ Kafka has a number of key features that make it a popular choice for data proces
 
 This repository contains sample projects integrating with kafka using different mechanisms available
 
-  - [avro](./kafka-avro/README.md)
+  - [Kafka avro type](./kafka-avro/README.md)
   - [DSL integration](./kafka-dsl-integration/ReadMe.md)
   - [reactor](./kafka-reactor/README.md)
-  - [sample](./kafka-sample)
+  - [sample](./kafka-sample/README.md)
   - [Examples using spring boot](./kafka-spring-boot/README.md)
+  - [Kafka implementation using cloud bindings](./kafka-spring-cloud-sample/README.md)
   - [kafka streams implementation](./kafka-streams/README.md)
-  - [Kafka implementation using cloud bindings](./spring-cloud/README.md)
   - [Outbox Pattern Implementation using Modulith](./spring-modulith-outbox-pattern/README.md)
-
-
 
 
 ### Reference
