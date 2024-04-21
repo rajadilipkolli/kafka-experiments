@@ -14,7 +14,7 @@ Kafka has a number of key features that make it a popular choice for data proces
 
   - **Low latency**: Kafka is designed for low-latency processing, making it suitable for real-time applications.
 
-  - **High-throughput**: Kafka is able to handle high-throughput data streams, allowing it to process large amounts of data in real-time.
+  - **High-throughput**: Kafka can handle high-throughput data streams, allowing it to process large amounts of data in real-time.
 
   - **Flexibility**: Kafka is highly flexible and can be used for a wide range of data processing use cases, including real-time analytics, data pipelines, and event-driven architectures.
 
