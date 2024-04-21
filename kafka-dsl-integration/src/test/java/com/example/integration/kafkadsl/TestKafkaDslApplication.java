@@ -15,7 +15,7 @@ public class TestKafkaDslApplication {
     @ServiceConnection
     KafkaContainer kafkaContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
         KafkaContainer kafkaContainer = new KafkaContainer(
-                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.6.0"))
+                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.6.1"))
                 .withKraft();
         // Connect our Spring application to our Testcontainers Kafka instance
         dynamicPropertyRegistry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);

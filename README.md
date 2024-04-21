@@ -14,25 +14,23 @@ Kafka has a number of key features that make it a popular choice for data proces
 
   - **Low latency**: Kafka is designed for low-latency processing, making it suitable for real-time applications.
 
-  - **High-throughput**: Kafka is able to handle high-throughput data streams, allowing it to process large amounts of data in real-time.
+  - **High-throughput**: Kafka can handle high-throughput data streams, allowing it to process large amounts of data in real-time.
 
   - **Flexibility**: Kafka is highly flexible and can be used for a wide range of data processing use cases, including real-time analytics, data pipelines, and event-driven architectures.
 
-This repository contains sample projects integrating with kafka using different mechanisms available
+This repository contains sample projects integrating with Kafka using different mechanisms available
 
-  - [avro](./kafka-avro/README.md)
+  - [Kafka Avro type](./kafka-avro/README.md)
   - [DSL integration](./kafka-dsl-integration/ReadMe.md)
   - [reactor](./kafka-reactor/README.md)
-  - [sample](./kafka-sample)
+  - [sample](./kafka-sample/README.md)
   - [Examples using spring boot](./kafka-spring-boot/README.md)
-  - [kafka streams implementation](./kafka-streams/README.md)
-  - [Kafka implementation using cloud bindings](./spring-cloud/README.md)
+  - [Kafka implementation using cloud bindings](./kafka-spring-cloud-sample/README.md)
+  - [Kafka streams implementation](./kafka-streams/README.md)
   - [Outbox Pattern Implementation using Modulith](./spring-modulith-outbox-pattern/README.md)
 
 
-
-
-### Reference
+## Reference
 
 Copied and modified from 
  - [sivalabs](https://github.com/sivaprasadreddy/kafka-tutorial)

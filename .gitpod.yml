@@ -9,10 +9,10 @@ image:
 vscode:
   extensions:
     - vscjava.vscode-java-pack
-    - Vmware.vscode-boot-dev-pack
     - GabrielBB.vscode-lombok
     - ms-azuretools.vscode-docker
     - redhat.java
+    - Pivotal.vscode-boot-dev-pack
 
 ports:
   - port: 5050
@@ -33,4 +33,6 @@ ports:
     visibility: public
   - port: 9411
     visibility: public
+    onOpen: open-browser
+: public
     onOpen: open-browser
