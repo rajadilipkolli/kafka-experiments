@@ -18,7 +18,7 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<spring-cloud.version>2023.0.1</spring-cloud.version>
+		<spring-cloud.version>2023.0.2</spring-cloud.version>
 
 		<spotless.version>2.43.0</spotless.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
