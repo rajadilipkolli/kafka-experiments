@@ -1,4 +1,4 @@
-package com.example.outboxpattern.order.internal.request;
+package com.example.outboxpattern.order.internal.domain.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;

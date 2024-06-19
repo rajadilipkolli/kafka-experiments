@@ -2,10 +2,11 @@ package com.example.outboxpattern.order.internal;
 
 import com.example.outboxpattern.config.Loggable;
 import com.example.outboxpattern.order.OrderRecord;
+import com.example.outboxpattern.order.internal.domain.query.FindOrdersQuery;
+import com.example.outboxpattern.order.internal.domain.request.OrderRequest;
+import com.example.outboxpattern.order.internal.domain.response.PagedResult;
 import com.example.outboxpattern.order.internal.entities.Order;
-import com.example.outboxpattern.order.internal.query.FindOrdersQuery;
-import com.example.outboxpattern.order.internal.request.OrderRequest;
-import com.example.outboxpattern.order.internal.response.PagedResult;
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.Assert;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,6 +29,12 @@ class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final ApplicationEventPublisher events;
+    private final TransactionTemplate transactionTemplate;
+
+    @PostConstruct
+    void setPropagation() {
+        transactionTemplate.setPropagationBehaviorName("PROPAGATION_REQUIRES_NEW");
+    }
 
     PagedResult<OrderRecord> findAllOrders(FindOrdersQuery findOrdersQuery) {
 
@@ -61,7 +70,6 @@ class OrderService {
         return orderRecord;
     }
 
-    @Transactional
     OrderRecord updateOrder(Long id, OrderRequest orderRequest) {
         Order order = orderRepository.findOrderById(id).orElseThrow(() -> new OrderNotFoundException(id));
 
@@ -69,8 +77,9 @@ class OrderService {
         orderMapper.mapOrderWithRequest(order, orderRequest);
 
         // Save the updated order object
-        Order updatedOrder = orderRepository.save(order);
+        Order updatedOrder = transactionTemplate.execute(status -> orderRepository.save(order));
 
+        Assert.notNull(updatedOrder, () -> "UpdatedOrder cant be Null");
         return orderMapper.toResponse(updatedOrder);
     }
 

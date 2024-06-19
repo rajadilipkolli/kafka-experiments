@@ -7,4 +7,4 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
 @OpenAPIDefinition(info = @Info(title = "spring-modulith-outbox-pattern", version = "v1"), servers = @Server(url = "/"))
-public class SwaggerConfig {}
+class SwaggerConfig {}

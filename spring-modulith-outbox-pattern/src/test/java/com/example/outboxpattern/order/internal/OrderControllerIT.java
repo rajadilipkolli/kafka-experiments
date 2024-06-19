@@ -15,10 +15,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.outboxpattern.common.AbstractIntegrationTest;
 import com.example.outboxpattern.common.listener.OrderListener;
+import com.example.outboxpattern.order.internal.domain.request.OrderItemRequest;
+import com.example.outboxpattern.order.internal.domain.request.OrderRequest;
 import com.example.outboxpattern.order.internal.entities.Order;
 import com.example.outboxpattern.order.internal.entities.OrderItem;
-import com.example.outboxpattern.order.internal.request.OrderItemRequest;
-import com.example.outboxpattern.order.internal.request.OrderRequest;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
