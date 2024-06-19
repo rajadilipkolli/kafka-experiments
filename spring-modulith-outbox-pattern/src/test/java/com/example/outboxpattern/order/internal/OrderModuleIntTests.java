@@ -6,8 +6,8 @@ import static org.mockito.Mockito.when;
 
 import com.example.outboxpattern.common.ContainersConfig;
 import com.example.outboxpattern.order.OrderRecord;
-import com.example.outboxpattern.order.internal.request.OrderItemRequest;
-import com.example.outboxpattern.order.internal.request.OrderRequest;
+import com.example.outboxpattern.order.internal.domain.request.OrderItemRequest;
+import com.example.outboxpattern.order.internal.domain.request.OrderRequest;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

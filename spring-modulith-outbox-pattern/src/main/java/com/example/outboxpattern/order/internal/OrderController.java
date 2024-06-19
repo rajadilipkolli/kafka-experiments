@@ -2,9 +2,9 @@ package com.example.outboxpattern.order.internal;
 
 import com.example.outboxpattern.config.Loggable;
 import com.example.outboxpattern.order.OrderRecord;
-import com.example.outboxpattern.order.internal.query.FindOrdersQuery;
-import com.example.outboxpattern.order.internal.request.OrderRequest;
-import com.example.outboxpattern.order.internal.response.PagedResult;
+import com.example.outboxpattern.order.internal.domain.query.FindOrdersQuery;
+import com.example.outboxpattern.order.internal.domain.request.OrderRequest;
+import com.example.outboxpattern.order.internal.domain.response.PagedResult;
 import com.example.outboxpattern.utils.AppConstants;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -26,12 +26,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
 @Loggable
-public class OrderController {
+class OrderController {
 
     private final OrderService orderService;
 
     @GetMapping
-    public PagedResult<OrderRecord> getAllOrders(
+    PagedResult<OrderRecord> getAllOrders(
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
@@ -41,12 +41,12 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderRecord> getOrderById(@PathVariable Long id) {
+    ResponseEntity<OrderRecord> getOrderById(@PathVariable Long id) {
         return orderService.findOrderById(id).map(ResponseEntity::ok).orElseThrow(() -> new OrderNotFoundException(id));
     }
 
     @PostMapping
-    public ResponseEntity<OrderRecord> createOrder(@RequestBody @Validated OrderRequest orderRequest) {
+    ResponseEntity<OrderRecord> createOrder(@RequestBody @Validated OrderRequest orderRequest) {
         OrderRecord response = orderService.saveOrder(orderRequest);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/api/orders/{id}")
@@ -56,13 +56,12 @@ public class OrderController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OrderRecord> updateOrder(
-            @PathVariable Long id, @RequestBody @Valid OrderRequest orderRequest) {
+    ResponseEntity<OrderRecord> updateOrder(@PathVariable Long id, @RequestBody @Valid OrderRequest orderRequest) {
         return ResponseEntity.ok(orderService.updateOrder(id, orderRequest));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<OrderRecord> deleteOrder(@PathVariable Long id) {
+    ResponseEntity<OrderRecord> deleteOrder(@PathVariable Long id) {
         return orderService
                 .findOrderById(id)
                 .map(order -> {
