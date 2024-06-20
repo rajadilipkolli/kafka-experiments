@@ -61,13 +61,17 @@ class OrderService {
         return orderRepository.findOrderById(id).map(orderMapper::toResponse);
     }
 
-    @Transactional
     OrderRecord saveOrder(OrderRequest orderRequest) {
         Order order = orderMapper.toEntity(orderRequest);
-        Order savedOrder = orderRepository.save(order);
+        Order savedOrder = getSavedOrder(order);
+        Assert.notNull(savedOrder, () -> "SavedOrder can't be Null");
         OrderRecord orderRecord = orderMapper.toResponse(savedOrder);
         events.publishEvent(orderRecord);
         return orderRecord;
+    }
+
+    private Order getSavedOrder(Order order) {
+        return transactionTemplate.execute(status -> orderRepository.save(order));
     }
 
     OrderRecord updateOrder(Long id, OrderRequest orderRequest) {
@@ -77,9 +81,9 @@ class OrderService {
         orderMapper.mapOrderWithRequest(order, orderRequest);
 
         // Save the updated order object
-        Order updatedOrder = transactionTemplate.execute(status -> orderRepository.save(order));
+        Order updatedOrder = getSavedOrder(order);
 
-        Assert.notNull(updatedOrder, () -> "UpdatedOrder cant be Null");
+        Assert.notNull(updatedOrder, () -> "UpdatedOrder can't be Null");
         return orderMapper.toResponse(updatedOrder);
     }
 
