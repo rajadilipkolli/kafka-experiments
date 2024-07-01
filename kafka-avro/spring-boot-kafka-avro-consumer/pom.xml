@@ -19,7 +19,7 @@
         <java.version>17</java.version>
         <avro.version>1.11.3</avro.version>
         <confluent.version>7.6.1</confluent.version>
-        <springdoc-openapi.version>2.5.0</springdoc-openapi.version>
+        <springdoc-openapi.version>2.6.0</springdoc-openapi.version>
 
         <spotless.version>2.43.0</spotless.version>
     </properties>
