@@ -5,10 +5,11 @@ import com.example.boot.kafka.reactor.util.AppConstants;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,8 +24,9 @@ import reactor.test.StepVerifier;
 @SpringBootTest(classes = TestBootKafkaReactorConsumerApplication.class)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@Slf4j
 class BootKafkaReactorConsumerApplicationTests {
+
+    private static final Logger log = LoggerFactory.getLogger(BootKafkaReactorConsumerApplicationTests.class);
 
     @Autowired
     KafkaSender<Integer, MessageDTO> sender;
