@@ -2,7 +2,8 @@ package com.example.boot.kafka.reactor;
 
 import com.example.boot.kafka.reactor.entity.MessageDTO;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -16,8 +17,9 @@ import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderOptions;
 
 @TestConfiguration(proxyBeanMethods = false)
-@Slf4j
-public class TestBootKafkaReactorConsumerApplication {
+class TestBootKafkaReactorConsumerApplication {
+
+    private static final Logger log = LoggerFactory.getLogger(TestBootKafkaReactorConsumerApplication.class);
 
     @Bean
     @ServiceConnection
