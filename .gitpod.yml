@@ -1,0 +1,37 @@
+
+image: gitpod/workspace-java21
+
+# List the start up tasks. Learn more: https://www.gitpod.io/docs/configure/workspaces/tasks
+tasks:
+  - name: Script Task
+    init: echo 'init script' # runs during prebuild => https://www.gitpod.io/docs/configure/projects/prebuilds
+    command: echo 'start script'
+
+# List the ports to expose. Learn more: https://www.gitpod.io/docs/configure/workspaces/ports
+ports:
+  - name: Backend
+    description: Port 8080 for the backend
+    port: 8080
+    onOpen: open-browser
+  - port: 5050
+    visibility: public
+  - port: 9091-9093
+    visibility: public
+  - port: 8081
+    visibility: public
+  - port: 8085
+    visibility: public
+  - port: 9000
+    visibility: public
+    onOpen: open-browser
+  - port: 9101
+    visibility: public
+  - port: 9411
+    visibility: public
+    onOpen: open-browser
+
+# Learn more from ready-to-use templates: https://www.gitpod.io/docs/introduction/getting-started/quickstart
+
+vscode:
+  extensions:
+    - Pivotal.vscode-boot-dev-pack
