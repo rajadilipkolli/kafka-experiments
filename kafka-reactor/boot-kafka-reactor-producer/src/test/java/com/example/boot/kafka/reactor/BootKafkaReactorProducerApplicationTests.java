@@ -3,8 +3,9 @@ package com.example.boot.kafka.reactor;
 import com.example.boot.kafka.reactor.entity.MessageDTO;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,8 +21,9 @@ import reactor.test.StepVerifier;
 @SpringBootTest(classes = TestBootKafkaReactorProducerApplication.class)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@Slf4j
 class BootKafkaReactorProducerApplicationTests {
+
+    private static final Logger log = LoggerFactory.getLogger(BootKafkaReactorProducerApplicationTests.class);
 
     @Autowired
     KafkaReceiver<Integer, MessageDTO> receiver;
@@ -38,7 +40,7 @@ class BootKafkaReactorProducerApplicationTests {
                     "text": "hello1",
                     "sentAt": "2023-06-15T18:49:38.813Z"
                 }
-                    """;
+                """;
         this.webTestClient
                 .post()
                 .uri("/messages")

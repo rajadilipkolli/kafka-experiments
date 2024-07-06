@@ -4,7 +4,8 @@ import static com.example.boot.kafka.reactor.util.AppConstants.HELLO_TOPIC;
 
 import com.example.boot.kafka.reactor.entity.MessageDTO;
 import java.util.Collections;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -17,8 +18,9 @@ import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOptions;
 
 @TestConfiguration(proxyBeanMethods = false)
-@Slf4j
-public class TestBootKafkaReactorProducerApplication {
+class TestBootKafkaReactorProducerApplication {
+
+    private static final Logger log = LoggerFactory.getLogger(TestBootKafkaReactorProducerApplication.class);
 
     @Bean
     @ServiceConnection
@@ -34,7 +36,7 @@ public class TestBootKafkaReactorProducerApplication {
     KafkaReceiver<Integer, MessageDTO> receiver(KafkaProperties properties) {
         log.info("Creating receiver");
         ReceiverOptions<Integer, MessageDTO> receiverOptions = ReceiverOptions.<Integer, MessageDTO>create(
-                        properties.buildConsumerProperties())
+                        properties.buildConsumerProperties(null))
                 .subscription(Collections.singleton(HELLO_TOPIC))
                 .addAssignListener(partitions -> log.debug("onPartitionsAssigned {}", partitions))
                 .addRevokeListener(partitions -> log.debug("onPartitionsRevoked {}", partitions));
