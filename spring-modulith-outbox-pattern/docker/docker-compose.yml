@@ -42,7 +42,7 @@ services:
       - "9411:9411"
 
   broker:
-    image: confluentinc/cp-kafka:7.6.1
+    image: confluentinc/cp-kafka:7.6.2
     hostname: broker
     ports:
       - "9092:9092"
