@@ -40,5 +40,6 @@ jobs:
         native-image --version
     - name: Build with Maven
       run: ./mvnw -B verify --file pom.xml
-    - name: Build native Image
+    - if: ${{ github.ref == 'refs/heads/main' }}
+      name: Build native Image
       run: ./mvnw -Pnative spring-boot:build-image -DskipTests

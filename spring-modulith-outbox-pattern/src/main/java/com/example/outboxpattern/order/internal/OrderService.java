@@ -9,7 +9,6 @@ import com.example.outboxpattern.order.internal.entities.Order;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +21,6 @@ import org.springframework.util.Assert;
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
 @Loggable
 class OrderService {
 
@@ -30,6 +28,17 @@ class OrderService {
     private final OrderMapper orderMapper;
     private final ApplicationEventPublisher events;
     private final TransactionTemplate transactionTemplate;
+
+    OrderService(
+            OrderRepository orderRepository,
+            OrderMapper orderMapper,
+            ApplicationEventPublisher events,
+            TransactionTemplate transactionTemplate) {
+        this.orderRepository = orderRepository;
+        this.orderMapper = orderMapper;
+        this.events = events;
+        this.transactionTemplate = transactionTemplate;
+    }
 
     @PostConstruct
     void setPropagation() {

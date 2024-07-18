@@ -1,15 +1,15 @@
 package com.example.outboxpattern.producer;
 
 import com.example.outboxpattern.order.OrderRecord;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
-class Producer {
+class EventProducer {
+
+    private static final Logger log = LoggerFactory.getLogger(EventProducer.class);
 
     @ApplicationModuleListener
     void onOrderResponseEvent(OrderRecord orderRecord) {

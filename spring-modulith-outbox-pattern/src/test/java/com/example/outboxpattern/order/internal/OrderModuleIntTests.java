@@ -11,8 +11,9 @@ import com.example.outboxpattern.order.internal.domain.request.OrderRequest;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -21,10 +22,11 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.modulith.test.ApplicationModuleTest;
 import org.springframework.modulith.test.Scenario;
 
-@Slf4j
 @ApplicationModuleTest
 @Import(ContainersConfig.class)
 class OrderModuleIntTests {
+
+    private static final Logger log = LoggerFactory.getLogger(OrderModuleIntTests.class);
 
     @MockBean
     KafkaOperations<?, ?> kafkaOperations;
