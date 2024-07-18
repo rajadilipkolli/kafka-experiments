@@ -14,14 +14,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.Hibernate;
 
 @Entity
 @Table(name = "orders")
-@Getter
-@NoArgsConstructor
 public class Order {
 
     @Id
@@ -34,18 +30,38 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    @Getter
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
+
+    public Long getId() {
+        return id;
+    }
+
+    public Order setId(Long id) {
+        this.id = id;
+        return this;
+    }
+
+    public LocalDateTime getOrderedDate() {
+        return orderedDate;
+    }
 
     public Order setOrderedDate(LocalDateTime orderedDate) {
         this.orderedDate = orderedDate;
         return this;
     }
 
-    public Order setStatus(OrderStatus orderStatus) {
-        this.status = orderStatus;
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public Order setStatus(OrderStatus status) {
+        this.status = status;
         return this;
+    }
+
+    public List<OrderItem> getItems() {
+        return items;
     }
 
     public Order setItems(List<OrderItem> items) {

@@ -17,10 +17,8 @@ import jakarta.persistence.UniqueConstraint;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
-import lombok.Getter;
 import org.hibernate.proxy.HibernateProxy;
 
-@Getter
 @Entity
 @Table(
         name = "order_items",
@@ -46,9 +44,17 @@ public class OrderItem implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private Order order;
 
+    public Long getId() {
+        return id;
+    }
+
     public OrderItem setId(Long id) {
         this.id = id;
         return this;
+    }
+
+    public String getProductCode() {
+        return productCode;
     }
 
     public OrderItem setProductCode(String productCode) {
@@ -56,14 +62,26 @@ public class OrderItem implements Serializable {
         return this;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
     public OrderItem setQuantity(int quantity) {
         this.quantity = quantity;
         return this;
     }
 
+    public BigDecimal getProductPrice() {
+        return productPrice;
+    }
+
     public OrderItem setProductPrice(BigDecimal productPrice) {
         this.productPrice = productPrice;
         return this;
+    }
+
+    public Order getOrder() {
+        return order;
     }
 
     public OrderItem setOrder(Order order) {
