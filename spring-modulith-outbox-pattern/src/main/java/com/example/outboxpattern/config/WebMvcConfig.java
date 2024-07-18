@@ -9,14 +9,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @RequiredArgsConstructor
 class WebMvcConfig implements WebMvcConfigurer {
-    private final ApplicationProperties properties;
+    private final ApplicationProperties applicationProperties;
 
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
-        registry.addMapping(properties.getCors().getPathPattern())
-                .allowedMethods(properties.getCors().getAllowedMethods())
-                .allowedHeaders(properties.getCors().getAllowedHeaders())
-                .allowedOriginPatterns(properties.getCors().getAllowedOriginPatterns())
-                .allowCredentials(properties.getCors().isAllowCredentials());
+        ApplicationProperties.Cors propertiesCors = applicationProperties.getCors();
+        registry.addMapping(propertiesCors.getPathPattern())
+                .allowedMethods(propertiesCors.getAllowedMethods())
+                .allowedHeaders(propertiesCors.getAllowedHeaders())
+                .allowedOriginPatterns(propertiesCors.getAllowedOriginPatterns())
+                .allowCredentials(propertiesCors.isAllowCredentials());
     }
 }

@@ -19,15 +19,26 @@ jobs:
     defaults:
       run:
         working-directory: "spring-modulith-outbox-pattern"
+    strategy:
+      matrix:
+        java: ["21"]
     steps:
     - uses: actions/checkout@v4
       with:
           fetch-depth: 0
-    - name: Set up JDK
-      uses: actions/setup-java@v4.2.1
+    - uses: graalvm/setup-graalvm@v1
       with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: 'maven'
+        distribution: 'graalvm'
+        java-version: ${{ matrix.java }}
+        cache: "maven"
+  
+    - name: Printing versions
+      run: |
+        echo "GRAALVM_HOME: $GRAALVM_HOME"
+        echo "JAVA_HOME: $JAVA_HOME"
+        java --version
+        native-image --version
     - name: Build with Maven
-      run: mvn -B verify --file pom.xml
+      run: ./mvnw -B verify --file pom.xml
+    - name: Build native Image
+      run: ./mvnw -Pnative spring-boot:build-image -DskipTests
