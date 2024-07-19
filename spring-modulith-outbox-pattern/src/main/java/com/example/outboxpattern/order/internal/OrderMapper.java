@@ -11,13 +11,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 @Loggable
 class OrderMapper {
 
     Order toEntity(OrderRequest orderRequest) {
-        Order order = new Order().setOrderedDate(LocalDateTime.now()).setStatus(Order.OrderStatus.CREATED);
+        Order order = new Order().setOrderedDate(LocalDateTime.now());
+        if (StringUtils.hasText(orderRequest.status())) {
+            order.setStatus(Order.OrderStatus.valueOf(orderRequest.status()));
+        } else {
+            order.setStatus(Order.OrderStatus.CREATED);
+        }
         convertToOrderItemEntityList(orderRequest.itemsList()).forEach(order::addOrderItem);
         return order;
     }
@@ -34,7 +40,11 @@ class OrderMapper {
     }
 
     void mapOrderWithRequest(Order order, OrderRequest orderRequest) {
-        order.setStatus(Order.OrderStatus.COMPLETED);
+        if (StringUtils.hasText(orderRequest.status())) {
+            order.setStatus(Order.OrderStatus.valueOf(orderRequest.status()));
+        } else {
+            order.setStatus(Order.OrderStatus.COMPLETED);
+        }
         // Convert request to OrderItems
         List<OrderItem> detachedOrderItems = convertToOrderItemEntityList(orderRequest.itemsList());
 

@@ -135,7 +135,32 @@ class OrderControllerIT extends AbstractIntegrationTest {
         @Test
         void shouldCreateNewOrder() throws Exception {
             OrderRequest orderRequest =
-                    new OrderRequest(List.of(new OrderItemRequest("New Order", BigDecimal.TEN, 100)));
+                    new OrderRequest(null, List.of(new OrderItemRequest("New Order", BigDecimal.TEN, 100)));
+            mockMvc.perform(post("/api/orders")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(orderRequest)))
+                    .andExpect(status().isCreated())
+                    .andExpect(header().exists(HttpHeaders.LOCATION))
+                    .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_JSON_VALUE)))
+                    .andExpect(jsonPath("$.id", notNullValue()))
+                    .andExpect(jsonPath(
+                            "$.orderItems[0].productCode",
+                            is(orderRequest.itemsList().getFirst().productCode())));
+
+            long count = orderListener.getDlqLatch().getCount();
+            await().pollInterval(Duration.ofSeconds(1))
+                    .atMost(Duration.ofSeconds(15))
+                    .untilAsserted(() -> {
+                        assertThat(orderListener.getLatch().getCount()).isZero();
+                        assertThat(orderListener.getDlqLatch().getCount()).isEqualTo(count);
+                    });
+        }
+
+        @Test
+        void shouldCreateNewOrderWithFailedStatus() throws Exception {
+            long count = orderListener.getLatch().getCount();
+            OrderRequest orderRequest = new OrderRequest(
+                    Order.OrderStatus.FAILED.name(), List.of(new OrderItemRequest("New Order", BigDecimal.TEN, 100)));
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(orderRequest)))
@@ -149,13 +174,15 @@ class OrderControllerIT extends AbstractIntegrationTest {
 
             await().pollInterval(Duration.ofSeconds(1))
                     .atMost(Duration.ofSeconds(15))
-                    .untilAsserted(() ->
-                            assertThat(orderListener.getLatch().getCount()).isZero());
+                    .untilAsserted(() -> {
+                        assertThat(orderListener.getLatch().getCount()).isEqualTo(count);
+                        assertThat(orderListener.getDlqLatch().getCount()).isZero();
+                    });
         }
 
         @Test
         void shouldReturn400WhenCreateNewOrderWithoutItems() throws Exception {
-            OrderRequest orderRequest = new OrderRequest(null);
+            OrderRequest orderRequest = new OrderRequest(null, null);
 
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -180,8 +207,10 @@ class OrderControllerIT extends AbstractIntegrationTest {
         @Test
         void shouldUpdateOrder() throws Exception {
             Long orderId = orderList.getFirst().getId();
-            OrderRequest orderRequest = new OrderRequest(List.of(new OrderItemRequest(
-                    orderList.getFirst().getItems().getFirst().getProductCode(), BigDecimal.TEN, 100)));
+            OrderRequest orderRequest = new OrderRequest(
+                    null,
+                    List.of(new OrderItemRequest(
+                            orderList.getFirst().getItems().getFirst().getProductCode(), BigDecimal.TEN, 100)));
 
             mockMvc.perform(put("/api/orders/{id}", orderId)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -198,7 +227,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
         @Test
         void shouldReturn404WhenUpdatingNonExistingOrder() throws Exception {
             Long orderId = 10_000L;
-            OrderRequest order = new OrderRequest(List.of(new OrderItemRequest("Product1", BigDecimal.TEN, 10)));
+            OrderRequest order = new OrderRequest(null, List.of(new OrderItemRequest("Product1", BigDecimal.TEN, 10)));
 
             mockMvc.perform(put("/api/orders/{id}", orderId)
                             .contentType(MediaType.APPLICATION_JSON)
