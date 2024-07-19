@@ -47,7 +47,7 @@ class OrderModuleIntTests {
         });
 
         scenario.stimulate(() -> orders.saveOrder(
-                        new OrderRequest(List.of(new OrderItemRequest("Coffee", BigDecimal.TEN, 100)))))
+                        new OrderRequest(null, List.of(new OrderItemRequest("Coffee", BigDecimal.TEN, 100)))))
                 .andWaitForEventOfType(OrderRecord.class)
                 .toArriveAndVerify(event ->
                         assertThat(event.orderItems().getFirst().productCode()).isEqualTo("Coffee"));

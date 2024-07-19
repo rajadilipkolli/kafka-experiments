@@ -82,7 +82,8 @@ public class Order {
 
     public enum OrderStatus {
         CREATED,
-        COMPLETED
+        COMPLETED,
+        FAILED
     }
 
     @Override
