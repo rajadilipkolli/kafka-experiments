@@ -15,8 +15,8 @@ class TestCloudKafkaSampleApplication {
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
-        KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("apache/kafka").withTag("3.7.1"))
-                .withReuse(true);
+        KafkaContainer kafkaContainer =
+                new KafkaContainer(DockerImageName.parse("apache/kafka").withTag("3.7.1")).withReuse(true);
         dynamicPropertyRegistry.add("spring.cloud.stream.kafka.binder.brokers", kafkaContainer::getBootstrapServers);
         return kafkaContainer;
     }
