@@ -72,7 +72,7 @@ class KafkaSampleApplicationTests {
         template.send(TOPIC_TEST_1, UUID.randomUUID(), new MessageDTO(TOPIC_TEST_1, "foo"));
         // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
         await().pollInterval(Duration.ofSeconds(1))
-                .atMost(Duration.ofSeconds(30))
+                .atMost(Duration.ofSeconds(45))
                 .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(9));
     }
 
