@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example.kafka</groupId>
-    <artifactId>spring-boot-multiple-producers-consumers</artifactId>
+    <artifactId>boot-multiple-producers-consumers</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-boot-multiple-producers-consumers</name>
+    <name>boot-multiple-producers-consumers</name>
 
     <properties>
         <java.version>21</java.version>
@@ -106,7 +106,7 @@
                 <configuration>
                     <java>
                         <palantirJavaFormat>
-                            <version>2.40.0</version>
+                            <version>2.47.0</version>
                         </palantirJavaFormat>
                         <importOrder/>
                         <removeUnusedImports/>
