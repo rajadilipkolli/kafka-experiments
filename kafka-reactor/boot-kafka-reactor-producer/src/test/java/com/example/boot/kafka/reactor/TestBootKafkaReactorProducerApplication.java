@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.DynamicPropertyRegistry;
-import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOptions;
@@ -20,26 +20,25 @@ import reactor.kafka.receiver.ReceiverOptions;
 @TestConfiguration(proxyBeanMethods = false)
 class TestBootKafkaReactorProducerApplication {
 
-    private static final Logger log = LoggerFactory.getLogger(TestBootKafkaReactorProducerApplication.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestBootKafkaReactorProducerApplication.class);
 
     @Bean
     @ServiceConnection
-    KafkaContainer kafkaContainer(DynamicPropertyRegistry propertyRegistry) {
-        KafkaContainer kafkaContainer = new KafkaContainer(
-                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.6.2"))
-                .withKraft();
-        propertyRegistry.add("spring.kafka.bootstrapServers", kafkaContainer::getBootstrapServers);
+    KafkaContainer kafkaContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
+        KafkaContainer kafkaContainer =
+                new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("3.8.0"));
+        dynamicPropertyRegistry.add("spring.kafka.bootstrapServers", kafkaContainer::getBootstrapServers);
         return kafkaContainer;
     }
 
     @Bean
     KafkaReceiver<Integer, MessageDTO> receiver(KafkaProperties properties) {
-        log.info("Creating receiver");
+        LOGGER.info("Creating receiver");
         ReceiverOptions<Integer, MessageDTO> receiverOptions = ReceiverOptions.<Integer, MessageDTO>create(
                         properties.buildConsumerProperties(null))
                 .subscription(Collections.singleton(HELLO_TOPIC))
-                .addAssignListener(partitions -> log.debug("onPartitionsAssigned {}", partitions))
-                .addRevokeListener(partitions -> log.debug("onPartitionsRevoked {}", partitions));
+                .addAssignListener(partitions -> LOGGER.debug("onPartitionsAssigned {}", partitions))
+                .addRevokeListener(partitions -> LOGGER.debug("onPartitionsRevoked {}", partitions));
 
         return KafkaReceiver.create(receiverOptions);
     }
