@@ -7,7 +7,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Header;
 
 @MessagingGateway
-public interface KafkaGateway {
+interface KafkaGateway {
 
     @Gateway(requestChannel = "toKafka.input")
     void sendToKafka(String payload, @Header(KafkaHeaders.TOPIC) String topic);
