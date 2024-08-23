@@ -6,11 +6,11 @@ services:
     environment:
       - POSTGRES_USER=appuser
       - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=appdb
+      - POSTGRES_DB=modulithdb
     ports:
       - "5432:5432"
     healthcheck:
-      test: "pg_isready -U appuser -d appdb"
+      test: "pg_isready -U appuser -d modulithdb"
       interval: 2s
       timeout: 20s
       retries: 10
@@ -42,7 +42,7 @@ services:
       - "9411:9411"
 
   broker:
-    image: apache/kafka:3.8.0
+    image: apache/kafka-native:3.8.0
     hostname: broker
     ports:
       - "9092:9092"
