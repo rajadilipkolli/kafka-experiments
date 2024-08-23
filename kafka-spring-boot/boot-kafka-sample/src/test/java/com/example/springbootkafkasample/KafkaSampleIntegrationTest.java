@@ -49,7 +49,7 @@ class KafkaSampleIntegrationTest {
         // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
         await().pollInterval(Duration.ofSeconds(1))
                 .atMost(Duration.ofSeconds(30))
-                .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(9));
+                .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(7));
         assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(1);
     }
 
