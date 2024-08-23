@@ -6,19 +6,19 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.DynamicPropertyRegistry;
-import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @TestConfiguration(proxyBeanMethods = false)
 public class TestAnalyticsConsumerApplication {
 
     private static final DockerImageName KAFKA_IMAGE_NAME =
-            DockerImageName.parse("confluentinc/cp-kafka").withTag("7.6.2");
+            DockerImageName.parse("apache/kafka-native").withTag("3.8.0");
 
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer(DynamicPropertyRegistry registry) {
-        KafkaContainer kafkaContainer = new KafkaContainer(KAFKA_IMAGE_NAME).withKraft();
+        KafkaContainer kafkaContainer = new KafkaContainer(KAFKA_IMAGE_NAME);
         registry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
         return kafkaContainer;
     }
