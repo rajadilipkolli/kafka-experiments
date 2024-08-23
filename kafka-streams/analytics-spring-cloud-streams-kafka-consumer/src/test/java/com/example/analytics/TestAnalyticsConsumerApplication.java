@@ -13,7 +13,7 @@ import org.testcontainers.utility.DockerImageName;
 public class TestAnalyticsConsumerApplication {
 
     private static final DockerImageName KAFKA_IMAGE_NAME =
-            DockerImageName.parse("apache/kafka").withTag("3.7.1");
+            DockerImageName.parse("apache/kafka-native").withTag("3.8.0");
 
     @Bean
     @ServiceConnection
