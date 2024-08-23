@@ -14,7 +14,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Initializer implements CommandLineRunner {
+class Initializer implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(Initializer.class);
 
@@ -23,7 +23,7 @@ public class Initializer implements CommandLineRunner {
     private final IntegrationFlowContext flowContext;
     private final KafkaProperties kafkaProperties;
 
-    public Initializer(
+    Initializer(
             KafkaGateway kafkaGateway,
             KafkaAppProperties properties,
             IntegrationFlowContext flowContext,

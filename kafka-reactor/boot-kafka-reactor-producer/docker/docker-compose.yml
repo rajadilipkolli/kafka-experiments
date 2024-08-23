@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   broker:
-    image: confluentinc/cp-kafka:7.6.2
+    image: apache/kafka-native:3.8.0
     hostname: broker
     ports:
       - "9092:9092"

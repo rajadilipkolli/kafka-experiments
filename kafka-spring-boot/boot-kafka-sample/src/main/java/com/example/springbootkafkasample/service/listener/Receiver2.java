@@ -48,7 +48,7 @@ public class Receiver2 {
 
     @DltHandler
     public void dlt(MessageDTO messageDTO, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-        logger.error(messageDTO + " from " + topic);
+        logger.error("{} from {}", messageDTO, topic);
         deadLetterLatch.countDown();
     }
 }

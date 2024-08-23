@@ -21,10 +21,12 @@ public class Sender {
     public void send(MessageDTO messageDTO) {
         this.template.send(messageDTO.topic(), UUID.randomUUID(), messageDTO).whenComplete((result, ex) -> {
             if (ex == null) {
-                LOGGER.info("Sent message=[" + messageDTO + "] with offset=["
-                        + result.getRecordMetadata().offset() + "]");
+                LOGGER.info(
+                        "Sent message=[{}] with offset=[{}]",
+                        messageDTO,
+                        result.getRecordMetadata().offset());
             } else {
-                LOGGER.warn("Unable to send message=[" + messageDTO + "] due to : " + ex.getMessage());
+                LOGGER.warn("Unable to send message=[{}] due to : {}", messageDTO, ex.getMessage());
             }
         });
     }

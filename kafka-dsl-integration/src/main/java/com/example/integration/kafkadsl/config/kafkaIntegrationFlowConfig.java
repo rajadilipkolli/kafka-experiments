@@ -8,11 +8,11 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration(proxyBeanMethods = false)
-public class kafkaIntegrationFlowConfig {
+class kafkaIntegrationFlowConfig {
 
     private final KafkaAppProperties kafkaAppProperties;
 
-    public kafkaIntegrationFlowConfig(KafkaAppProperties kafkaAppProperties) {
+    kafkaIntegrationFlowConfig(KafkaAppProperties kafkaAppProperties) {
         this.kafkaAppProperties = kafkaAppProperties;
     }
 
