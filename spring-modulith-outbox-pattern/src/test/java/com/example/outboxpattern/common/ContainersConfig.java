@@ -15,14 +15,14 @@ public class ContainersConfig {
     @Bean
     @ServiceConnection
     PostgreSQLContainer<?> postgreSQLContainer() {
-        return new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.3-alpine"));
+        return new PostgreSQLContainer<>(DockerImageName.parse("postgres").withTag("16.4-alpine"));
     }
 
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
         KafkaContainer kafkaContainer = new KafkaContainer(
-                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.6.2"))
+                        DockerImageName.parse("confluentinc/cp-kafka").withTag("7.7.0"))
                 .withKraft();
         // Connect our Spring application to our Testcontainers Kafka instance
         dynamicPropertyRegistry.add("spring.kafka.consumer.bootstrap-servers", kafkaContainer::getBootstrapServers);

@@ -9,7 +9,7 @@ class ApplicationTest extends AbstractIntegrationTest {
 
     @Test
     void contextLoads() {
-        ApplicationModules applicationModules = ApplicationModules.of(Application.class);
+        ApplicationModules applicationModules = ApplicationModules.of(ModulithApplication.class);
 
         applicationModules.verify();
     }
@@ -17,6 +17,6 @@ class ApplicationTest extends AbstractIntegrationTest {
     @Test
     void createModulithsDocumentation() {
 
-        new Documenter(ApplicationModules.of(Application.class)).writeDocumentation();
+        new Documenter(ApplicationModules.of(ModulithApplication.class)).writeDocumentation();
     }
 }

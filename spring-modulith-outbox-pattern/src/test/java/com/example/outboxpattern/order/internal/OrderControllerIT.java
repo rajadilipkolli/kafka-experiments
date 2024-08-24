@@ -120,7 +120,8 @@ class OrderControllerIT extends AbstractIntegrationTest {
             mockMvc.perform(get("/api/orders/{id}", orderId))
                     .andExpect(status().isNotFound())
                     .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_PROBLEM_JSON_VALUE)))
-                    .andExpect(jsonPath("$.type", is("http://api.spring-modulith-outbox-pattern.com/errors/not-found")))
+                    .andExpect(
+                            jsonPath("$.type", is("https://api.spring-modulith-outbox-pattern.com/errors/not-found")))
                     .andExpect(jsonPath("$.title", is("Order Not Found")))
                     .andExpect(jsonPath("$.status", is(404)))
                     .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
@@ -234,7 +235,8 @@ class OrderControllerIT extends AbstractIntegrationTest {
                             .content(objectMapper.writeValueAsString(order)))
                     .andExpect(status().isNotFound())
                     .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_PROBLEM_JSON_VALUE)))
-                    .andExpect(jsonPath("$.type", is("http://api.spring-modulith-outbox-pattern.com/errors/not-found")))
+                    .andExpect(
+                            jsonPath("$.type", is("https://api.spring-modulith-outbox-pattern.com/errors/not-found")))
                     .andExpect(jsonPath("$.title", is("Order Not Found")))
                     .andExpect(jsonPath("$.status", is(404)))
                     .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
@@ -266,7 +268,8 @@ class OrderControllerIT extends AbstractIntegrationTest {
             mockMvc.perform(delete("/api/orders/{id}", orderId))
                     .andExpect(status().isNotFound())
                     .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_PROBLEM_JSON_VALUE)))
-                    .andExpect(jsonPath("$.type", is("http://api.spring-modulith-outbox-pattern.com/errors/not-found")))
+                    .andExpect(
+                            jsonPath("$.type", is("https://api.spring-modulith-outbox-pattern.com/errors/not-found")))
                     .andExpect(jsonPath("$.title", is("Order Not Found")))
                     .andExpect(jsonPath("$.status", is(404)))
                     .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
