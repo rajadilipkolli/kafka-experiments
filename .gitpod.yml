@@ -15,7 +15,7 @@ ports:
     onOpen: open-browser
   - port: 5050
     visibility: public
-  - port: 9091-9093
+  - port: 9091
     visibility: public
   - port: 8081
     visibility: public
