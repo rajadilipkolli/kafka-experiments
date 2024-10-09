@@ -14,12 +14,6 @@ public class ContainersConfig {
 
     @Bean
     @ServiceConnection
-    PostgreSQLContainer<?> postgreSQLContainer() {
-        return new PostgreSQLContainer<>(DockerImageName.parse("postgres").withTag("17.0-alpine"));
-    }
-
-    @Bean
-    @ServiceConnection
     KafkaContainer kafkaContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
         KafkaContainer kafkaContainer =
                 new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("3.8.0"));
