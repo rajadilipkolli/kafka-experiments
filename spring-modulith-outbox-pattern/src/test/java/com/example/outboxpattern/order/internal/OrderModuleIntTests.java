@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.example.outboxpattern.common.ContainersConfig;
+import com.example.outboxpattern.common.SQLContainerConfig;
 import com.example.outboxpattern.order.OrderRecord;
 import com.example.outboxpattern.order.internal.domain.request.OrderItemRequest;
 import com.example.outboxpattern.order.internal.domain.request.OrderRequest;
@@ -23,7 +24,7 @@ import org.springframework.modulith.test.ApplicationModuleTest;
 import org.springframework.modulith.test.Scenario;
 
 @ApplicationModuleTest
-@Import(ContainersConfig.class)
+@Import({ContainersConfig.class, SQLContainerConfig.class})
 class OrderModuleIntTests {
 
     private static final Logger log = LoggerFactory.getLogger(OrderModuleIntTests.class);
