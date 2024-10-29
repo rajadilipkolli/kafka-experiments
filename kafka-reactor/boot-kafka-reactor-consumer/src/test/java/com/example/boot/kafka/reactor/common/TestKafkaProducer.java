@@ -10,6 +10,11 @@ import org.springframework.context.annotation.Bean;
 import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderOptions;
 
+/**
+ * Test configuration class that provides a reactive Kafka producer for integration testing.
+ * This configuration creates a KafkaSender bean that can be used to send messages
+ * in a reactive manner during tests.
+ */
 @TestConfiguration(proxyBeanMethods = false)
 public class TestKafkaProducer {
 
@@ -17,8 +22,20 @@ public class TestKafkaProducer {
 
     @Bean
     KafkaSender<Integer, MessageDTO> reactiveKafkaSender(KafkaProperties properties) {
-        log.info("Creating Sender");
+        log.info("Creating reactive Kafka sender with properties: {}", properties.getProducer());
         Map<String, Object> props = properties.buildProducerProperties(null);
-        return KafkaSender.create(SenderOptions.create(props));
+        SenderOptions<Integer, MessageDTO> senderOptions = SenderOptions.create(props);
+        senderOptions.maxInFlight(1024);
+        senderOptions.stopOnError(false);
+
+        KafkaSender<Integer, MessageDTO> sender = KafkaSender.create(senderOptions);
+
+        // Register shutdown hook
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            log.info("Closing Kafka sender");
+            sender.close();
+        }));
+
+        return sender;
     }
 }

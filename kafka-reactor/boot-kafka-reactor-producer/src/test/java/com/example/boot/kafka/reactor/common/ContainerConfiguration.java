@@ -19,7 +19,7 @@ public class ContainerConfiguration {
     @Bean
     DynamicPropertyRegistrar kafkaProperties(KafkaContainer kafkaContainer) {
         return (properties) -> {
-            properties.add("spring.kafka.bootstrapServers", kafkaContainer::getBootstrapServers);
+            properties.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
         };
     }
 }
