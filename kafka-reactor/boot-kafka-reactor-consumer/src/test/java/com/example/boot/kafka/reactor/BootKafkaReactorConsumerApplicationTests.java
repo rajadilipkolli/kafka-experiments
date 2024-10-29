@@ -1,5 +1,7 @@
 package com.example.boot.kafka.reactor;
 
+import com.example.boot.kafka.reactor.common.ContainerConfiguration;
+import com.example.boot.kafka.reactor.common.TestKafkaProducer;
 import com.example.boot.kafka.reactor.entity.MessageDTO;
 import com.example.boot.kafka.reactor.util.AppConstants;
 import java.security.SecureRandom;
@@ -21,7 +23,7 @@ import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderRecord;
 import reactor.test.StepVerifier;
 
-@SpringBootTest(classes = TestBootKafkaReactorConsumerApplication.class)
+@SpringBootTest(classes = {ContainerConfiguration.class, TestKafkaProducer.class})
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 class BootKafkaReactorConsumerApplicationTests {

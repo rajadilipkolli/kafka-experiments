@@ -1,5 +1,7 @@
 package com.example.boot.kafka.reactor;
 
+import com.example.boot.kafka.reactor.common.ContainerConfiguration;
+import com.example.boot.kafka.reactor.common.TestKafkaConsumer;
 import com.example.boot.kafka.reactor.entity.MessageDTO;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +20,7 @@ import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOffset;
 import reactor.test.StepVerifier;
 
-@SpringBootTest(classes = TestBootKafkaReactorProducerApplication.class)
+@SpringBootTest(classes = {ContainerConfiguration.class, TestKafkaConsumer.class})
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 class BootKafkaReactorProducerApplicationTests {

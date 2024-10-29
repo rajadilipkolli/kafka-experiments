@@ -4,6 +4,7 @@ package com.example.analytics;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
+import com.example.analytics.common.ContainersConfiguration;
 import com.example.analytics.model.PageViewEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 
-@SpringBootTest(classes = TestAnalyticsProducerApplication.class)
+@SpringBootTest(classes = ContainersConfiguration.class)
 class AnalyticsProducerApplicationIntegrationTest {
 
     @Autowired KafkaTemplate<String, String> kafkaTemplate;
