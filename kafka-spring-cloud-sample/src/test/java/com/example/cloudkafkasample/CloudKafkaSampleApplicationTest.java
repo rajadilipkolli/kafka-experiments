@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
+import com.example.cloudkafkasample.common.ContainersConfig;
 import com.example.cloudkafkasample.sink.Receiver;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(classes = TestCloudKafkaSampleApplication.class)
+@SpringBootTest(classes = ContainersConfig.class)
 @AutoConfigureMockMvc
 class CloudKafkaSampleApplicationTest {
 
