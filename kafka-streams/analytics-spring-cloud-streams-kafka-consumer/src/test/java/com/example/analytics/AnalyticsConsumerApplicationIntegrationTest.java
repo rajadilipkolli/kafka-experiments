@@ -6,6 +6,7 @@ import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.analytics.common.ContainersConfiguration;
 import com.example.analytics.model.PageViewEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
             "spring.kafka.consumer.auto.offset.reset=earliest",
             "spring.kafka.consumer.group.id=pcs"
         },
-        classes = TestAnalyticsConsumerApplication.class)
+        classes = ContainersConfiguration.class)
 @AutoConfigureMockMvc
 class AnalyticsConsumerApplicationIntegrationTest {
 

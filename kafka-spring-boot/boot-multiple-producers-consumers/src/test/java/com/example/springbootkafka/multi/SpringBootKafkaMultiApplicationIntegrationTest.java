@@ -5,6 +5,7 @@ import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.springbootkafka.multi.common.ContainerConfiguration;
 import com.example.springbootkafka.multi.domain.SimpleMessage;
 import com.example.springbootkafka.multi.receiver.JsonReceiver;
 import com.example.springbootkafka.multi.receiver.SimpleReceiver;
@@ -17,9 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        classes = TestSpringBootKafkaMultiApplication.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ContainerConfiguration.class)
 @AutoConfigureMockMvc
 class SpringBootKafkaMultiApplicationIntegrationTest {
 
