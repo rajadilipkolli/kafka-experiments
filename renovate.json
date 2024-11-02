@@ -1,11 +1,17 @@
 {
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
-  "labels": ["dependencies"],
+  "labels": [
+    "dependencies"
+  ],
   "packageRules": [
     {
-      "updateTypes": ["minor", "patch", "pin"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin"
+      ],
       "automerge": true
     }
   ]
