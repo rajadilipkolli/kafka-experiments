@@ -14,7 +14,7 @@ public class TestBootKafkaSampleApplication {
     @ServiceConnection
     KafkaContainer kafkaContainer() {
         KafkaContainer kafkaContainer =
-                new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("3.8.0"));
+                new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("3.9.0"));
         kafkaContainer.addEnv("KAFKA_NUM_PARTITIONS", "32");
         return kafkaContainer;
     }
