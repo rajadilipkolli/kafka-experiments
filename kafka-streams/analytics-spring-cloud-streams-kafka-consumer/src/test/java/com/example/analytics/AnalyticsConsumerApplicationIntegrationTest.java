@@ -25,12 +25,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(
-        properties = {
-            "spring.kafka.consumer.auto.offset.reset=earliest",
-            "spring.kafka.consumer.group.id=pcs"
-        },
-        classes = ContainersConfiguration.class)
+@SpringBootTest(classes = ContainersConfiguration.class)
 @AutoConfigureMockMvc
 class AnalyticsConsumerApplicationIntegrationTest {
 
@@ -61,7 +56,7 @@ class AnalyticsConsumerApplicationIntegrationTest {
     void verifyProcessing() {
 
         await().pollInterval(Duration.ofSeconds(1))
-                .atMost(60, TimeUnit.SECONDS)
+                .atMost(30, TimeUnit.SECONDS)
                 .untilAsserted(
                         () -> {
                             MockHttpServletResponse response =
