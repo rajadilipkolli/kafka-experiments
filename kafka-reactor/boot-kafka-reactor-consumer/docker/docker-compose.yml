@@ -38,7 +38,7 @@ services:
       - broker
 
   postgresqldb:
-    image: postgres:17.1-alpine
+    image: postgres:17.2-alpine
     environment:
       - POSTGRES_USER=appuser
       - POSTGRES_PASSWORD=secret
