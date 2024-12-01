@@ -5,8 +5,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class WebMvcConfig implements WebMvcConfigurer {
+
     private final ApplicationProperties applicationProperties;
 
     WebMvcConfig(ApplicationProperties applicationProperties) {
