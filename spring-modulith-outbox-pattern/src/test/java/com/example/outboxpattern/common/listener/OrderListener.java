@@ -26,14 +26,18 @@ public class OrderListener {
                 event.id(),
                 event.orderItems().getFirst().productCode());
         if (event.status().equals(Order.OrderStatus.FAILED.name())) {
-            throw new RuntimeException("Simulating failure for order");
+            throw new RuntimeException("Simulating failure for order:" + event.id());
         }
         latch.countDown();
     }
 
     @DltHandler
     public void notifyDLT(OrderRecord event) {
-        log.info("Received from DLT: {}", event);
+        log.error(
+                "Order processing failed, received in DLT - OrderId: {}, Status: {}, Items: {}",
+                +event.id(),
+                event.status(),
+                event.orderItems());
         dlqLatch.countDown();
     }
 
