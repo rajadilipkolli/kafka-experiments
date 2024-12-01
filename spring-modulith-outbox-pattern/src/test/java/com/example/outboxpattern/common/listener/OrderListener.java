@@ -6,15 +6,11 @@ import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaOperations;
-import org.springframework.kafka.listener.CommonErrorHandler;
-import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
-import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.util.backoff.FixedBackOff;
+import org.springframework.kafka.annotation.RetryableTopic;
 
-@TestConfiguration
+@TestConfiguration(proxyBeanMethods = false)
 public class OrderListener {
 
     private static final Logger log = LoggerFactory.getLogger(OrderListener.class);
@@ -22,14 +18,7 @@ public class OrderListener {
     private final CountDownLatch latch = new CountDownLatch(1);
     private final CountDownLatch dlqLatch = new CountDownLatch(1);
 
-    /*
-     * Boot will autowire this into the container factory.
-     */
-    @Bean
-    CommonErrorHandler errorHandler(KafkaOperations<Object, Object> template) {
-        return new DefaultErrorHandler(new DeadLetterPublishingRecoverer(template), new FixedBackOff(1000L, 2));
-    }
-
+    @RetryableTopic
     @KafkaListener(topics = "order-created", groupId = "notification")
     public void notify(OrderRecord event) {
         log.info(
@@ -37,14 +26,18 @@ public class OrderListener {
                 event.id(),
                 event.orderItems().getFirst().productCode());
         if (event.status().equals(Order.OrderStatus.FAILED.name())) {
-            throw new RuntimeException("failed");
+            throw new RuntimeException("Simulating failure for order:" + event.id());
         }
         latch.countDown();
     }
 
-    @KafkaListener(id = "dltGroup", topics = "order-created.DLT")
-    public void dltListen(byte[] in) {
-        log.info("Received from DLT: {}", new String(in));
+    @DltHandler
+    public void notifyDLT(OrderRecord event) {
+        log.error(
+                "Order processing failed, received in DLT - OrderId: {}, Status: {}, Items: {}",
+                +event.id(),
+                event.status(),
+                event.orderItems());
         dlqLatch.countDown();
     }
 
