@@ -16,6 +16,7 @@ import com.example.springbootkafkasample.dto.Operation;
 import com.example.springbootkafkasample.service.listener.Receiver2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,7 @@ class KafkaSampleIntegrationTest {
     @Test
     @Order(1)
     void sendAndReceiveMessage() throws Exception {
+        long initialCount = receiver2.getLatch().getCount();
         this.mockMvc
                 .perform(post("/messages")
                         .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", "junitTest")))
@@ -52,7 +54,7 @@ class KafkaSampleIntegrationTest {
         // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
         await().pollInterval(Duration.ofSeconds(1))
                 .atMost(Duration.ofSeconds(15))
-                .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(7));
+                .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(initialCount - 1));
         assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(1);
     }
 
@@ -158,5 +160,33 @@ class KafkaSampleIntegrationTest {
                         .value(true))
                 .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#1-retry-1']")
                         .value(true));
+    }
+
+    @Test
+    void invalidContainerOperation() throws Exception {
+        this.mockMvc
+                .perform(post("/listeners")
+                        .content(objectMapper.writeValueAsString(
+                                new KafkaListenerRequest("invalid-container-id", Operation.STOP)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
+    }
+
+    @Test
+    void whenInvalidOperation_thenReturnsBadRequest() throws Exception {
+        String invalidRequest = "{ \"containerId\": \"myListener\", \"operation\": \"INVALID\" }";
+
+        mockMvc.perform(post("/listeners")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidRequest))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE))
+                .andExpect(jsonPath("$.type", CoreMatchers.is("about:blank")))
+                .andExpect(jsonPath("$.title", CoreMatchers.is("Bad Request")))
+                .andExpect(jsonPath("$.status", CoreMatchers.is(400)))
+                .andExpect(jsonPath(
+                        "$.detail", CoreMatchers.is("Invalid operation value. Allowed values are: START, STOP.")))
+                .andExpect(jsonPath("$.instance", CoreMatchers.is("/listeners")));
     }
 }

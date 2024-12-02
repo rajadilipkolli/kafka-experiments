@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -66,24 +65,28 @@ public class MessageService {
         return topicPartitionCounts;
     }
 
-    public Map<String, Boolean> getListeners() {
+    public Map<String, Boolean> getListenersState() {
         return kafkaListenerEndpointRegistry.getListenerContainers().stream()
                 .collect(
                         Collectors.toMap(MessageListenerContainer::getListenerId, MessageListenerContainer::isRunning));
     }
 
-    public Map<String, Boolean> getListeners(KafkaListenerRequest kafkaListenerRequest) {
-        if (kafkaListenerRequest.operation().equals(Operation.START)) {
-            Objects.requireNonNull(
-                            kafkaListenerEndpointRegistry.getListenerContainer(kafkaListenerRequest.containerId()))
-                    .start();
-        } else if (kafkaListenerRequest.operation().equals(Operation.STOP)) {
-            Objects.requireNonNull(
-                            kafkaListenerEndpointRegistry.getListenerContainer(kafkaListenerRequest.containerId()))
-                    .stop();
+    public Map<String, Boolean> updateListenerState(KafkaListenerRequest kafkaListenerRequest) {
+        MessageListenerContainer listenerContainer =
+                kafkaListenerEndpointRegistry.getListenerContainer(kafkaListenerRequest.containerId());
+        if (listenerContainer == null) {
+            throw new IllegalArgumentException(
+                    "Listener container with ID '" + kafkaListenerRequest.containerId() + "' not found");
         }
-        return kafkaListenerEndpointRegistry.getListenerContainers().stream()
-                .collect(
-                        Collectors.toMap(MessageListenerContainer::getListenerId, MessageListenerContainer::isRunning));
+        if (kafkaListenerRequest.operation().equals(Operation.START)) {
+            if (!listenerContainer.isRunning()) {
+                listenerContainer.start();
+            }
+        } else if (kafkaListenerRequest.operation().equals(Operation.STOP)) {
+            if (listenerContainer.isRunning()) {
+                listenerContainer.stop();
+            }
+        }
+        return getListenersState();
     }
 }
