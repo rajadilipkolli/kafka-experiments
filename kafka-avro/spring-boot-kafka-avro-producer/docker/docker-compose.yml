@@ -29,7 +29,7 @@ services:
       CLUSTER_ID: '4L6g3nShT-eMCtK--X86sw'
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:7.7.2
+    image: confluentinc/cp-schema-registry:7.8.0
     hostname: schema-registry
     container_name: schema-registry
     depends_on:
