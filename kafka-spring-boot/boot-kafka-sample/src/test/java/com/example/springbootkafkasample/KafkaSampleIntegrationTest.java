@@ -43,7 +43,6 @@ class KafkaSampleIntegrationTest {
     @Test
     @Order(1)
     void sendAndReceiveMessage() throws Exception {
-        long initialCount = receiver2.getLatch().getCount();
         this.mockMvc
                 .perform(post("/messages")
                         .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", "junitTest")))
@@ -52,8 +51,8 @@ class KafkaSampleIntegrationTest {
 
         // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
         await().pollInterval(Duration.ofSeconds(1))
-                .atMost(Duration.ofSeconds(30))
-                .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(initialCount + 3));
+                .atMost(Duration.ofSeconds(15))
+                .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(7));
         assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(1);
     }
 
