@@ -8,6 +8,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListenerConfigurer;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistrar;
 import org.springframework.kafka.listener.KafkaListenerErrorHandler;
+import org.springframework.lang.NonNull;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
@@ -23,7 +24,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
     }
 
     @Override
-    public void configureKafkaListeners(KafkaListenerEndpointRegistrar registrar) {
+    public void configureKafkaListeners(@NonNull KafkaListenerEndpointRegistrar registrar) {
         registrar.setValidator(this.validator);
     }
 

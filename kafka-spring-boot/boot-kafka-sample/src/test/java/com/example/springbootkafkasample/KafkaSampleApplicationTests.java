@@ -2,15 +2,12 @@ package com.example.springbootkafkasample;
 
 import static com.example.springbootkafkasample.config.Initializer.TOPIC_TEST_1;
 import static com.example.springbootkafkasample.config.Initializer.TOPIC_TEST_2;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.springbootkafkasample.dto.MessageDTO;
 import com.example.springbootkafkasample.service.listener.Receiver2;
-import java.time.Duration;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -65,15 +62,6 @@ class KafkaSampleApplicationTests {
                         messageListenerContainer, embeddedKafkaBroker.getPartitionsPerTopic());
             }
         }
-    }
-
-    @Test
-    void sendAndReceiveData() throws InterruptedException {
-        template.send(TOPIC_TEST_1, UUID.randomUUID(), new MessageDTO(TOPIC_TEST_1, "foo"));
-        // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
-        await().pollInterval(Duration.ofSeconds(1))
-                .atMost(Duration.ofSeconds(45))
-                .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(9));
     }
 
     @Test

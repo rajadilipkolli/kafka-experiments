@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.modulith.core.ApplicationModules;
 import org.springframework.modulith.docs.Documenter;
 
-class ApplicationTest extends AbstractIntegrationTest {
+class ApplicationIntTest extends AbstractIntegrationTest {
 
     @Test
     void contextLoads() {

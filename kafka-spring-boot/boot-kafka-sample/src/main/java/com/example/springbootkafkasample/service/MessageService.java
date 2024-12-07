@@ -1,5 +1,7 @@
 package com.example.springbootkafkasample.service;
 
+import com.example.springbootkafkasample.dto.KafkaListenerRequest;
+import com.example.springbootkafkasample.dto.Operation;
 import com.example.springbootkafkasample.dto.TopicInfo;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -8,20 +10,25 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsOptions;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.springframework.kafka.KafkaException;
+import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.core.KafkaAdmin;
+import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MessageService {
 
     private final KafkaAdmin kafkaAdmin;
+    private final KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
 
-    public MessageService(KafkaAdmin kafkaAdmin) {
+    public MessageService(KafkaAdmin kafkaAdmin, KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry) {
         this.kafkaAdmin = kafkaAdmin;
+        this.kafkaListenerEndpointRegistry = kafkaListenerEndpointRegistry;
     }
 
     public List<TopicInfo> getTopicsWithPartitions(boolean showInternalTopics) {
@@ -56,5 +63,30 @@ public class MessageService {
         // Sort the list by topicName
         topicPartitionCounts.sort(Comparator.comparing(TopicInfo::topicName));
         return topicPartitionCounts;
+    }
+
+    public Map<String, Boolean> getListenersState() {
+        return kafkaListenerEndpointRegistry.getListenerContainers().stream()
+                .collect(
+                        Collectors.toMap(MessageListenerContainer::getListenerId, MessageListenerContainer::isRunning));
+    }
+
+    public Map<String, Boolean> updateListenerState(KafkaListenerRequest kafkaListenerRequest) {
+        MessageListenerContainer listenerContainer =
+                kafkaListenerEndpointRegistry.getListenerContainer(kafkaListenerRequest.containerId());
+        if (listenerContainer == null) {
+            throw new IllegalArgumentException(
+                    "Listener container with ID '" + kafkaListenerRequest.containerId() + "' not found");
+        }
+        if (kafkaListenerRequest.operation().equals(Operation.START)) {
+            if (!listenerContainer.isRunning()) {
+                listenerContainer.start();
+            }
+        } else if (kafkaListenerRequest.operation().equals(Operation.STOP)) {
+            if (listenerContainer.isRunning()) {
+                listenerContainer.stop();
+            }
+        }
+        return getListenersState();
     }
 }

@@ -7,9 +7,9 @@ import org.springframework.boot.SpringApplication;
 public class TestModulithApplication {
 
     public static void main(String[] args) {
-        System.setProperty("spring.profiles.active", "local");
         SpringApplication.from(ModulithApplication::main)
                 .with(ContainersConfig.class, SQLContainerConfig.class)
+                .withAdditionalProfiles("local")
                 .run(args);
     }
 }

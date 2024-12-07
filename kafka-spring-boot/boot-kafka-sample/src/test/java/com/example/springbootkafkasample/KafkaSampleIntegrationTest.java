@@ -9,10 +9,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.springbootkafkasample.common.ContainerConfig;
+import com.example.springbootkafkasample.dto.KafkaListenerRequest;
 import com.example.springbootkafkasample.dto.MessageDTO;
+import com.example.springbootkafkasample.dto.Operation;
 import com.example.springbootkafkasample.service.listener.Receiver2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -23,7 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(classes = TestBootKafkaSampleApplication.class)
+@SpringBootTest(classes = ContainerConfig.class)
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class KafkaSampleIntegrationTest {
@@ -40,6 +44,7 @@ class KafkaSampleIntegrationTest {
     @Test
     @Order(1)
     void sendAndReceiveMessage() throws Exception {
+        long initialCount = receiver2.getLatch().getCount();
         this.mockMvc
                 .perform(post("/messages")
                         .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", "junitTest")))
@@ -48,8 +53,8 @@ class KafkaSampleIntegrationTest {
 
         // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
         await().pollInterval(Duration.ofSeconds(1))
-                .atMost(Duration.ofSeconds(30))
-                .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(7));
+                .atMost(Duration.ofSeconds(15))
+                .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(initialCount - 1));
         assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(1);
     }
 
@@ -96,5 +101,92 @@ class KafkaSampleIntegrationTest {
                 .andExpect(jsonPath("$[6].topicName").value("test_3"))
                 .andExpect(jsonPath("$[6].partitionCount").value(32))
                 .andExpect(jsonPath("$[6].replicationCount").value(1));
+    }
+
+    @Test
+    void getListOfContainers() throws Exception {
+        this.mockMvc
+                .perform(get("/listeners"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.size()").value(5))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#1-dlt']")
+                        .value(true))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#0']")
+                        .value(true))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#1']")
+                        .value(true))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#1-retry-0']")
+                        .value(true))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#1-retry-1']")
+                        .value(true));
+    }
+
+    @Test
+    void stopAndStartContainers() throws Exception {
+        this.mockMvc
+                .perform(post("/listeners")
+                        .content(this.objectMapper.writeValueAsString(new KafkaListenerRequest(
+                                "org.springframework.kafka.KafkaListenerEndpointContainer#1-dlt", Operation.STOP)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.size()").value(5))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#1-dlt']")
+                        .value(false))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#0']")
+                        .value(true))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#1']")
+                        .value(true))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#1-retry-0']")
+                        .value(true))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#1-retry-1']")
+                        .value(true));
+        this.mockMvc
+                .perform(post("/listeners")
+                        .content(this.objectMapper.writeValueAsString(new KafkaListenerRequest(
+                                "org.springframework.kafka.KafkaListenerEndpointContainer#1-dlt", Operation.START)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.size()").value(5))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#1-dlt']")
+                        .value(true))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#0']")
+                        .value(true))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#1']")
+                        .value(true))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#1-retry-0']")
+                        .value(true))
+                .andExpect(jsonPath("$.['org.springframework.kafka.KafkaListenerEndpointContainer#1-retry-1']")
+                        .value(true));
+    }
+
+    @Test
+    void invalidContainerOperation() throws Exception {
+        this.mockMvc
+                .perform(post("/listeners")
+                        .content(objectMapper.writeValueAsString(
+                                new KafkaListenerRequest("invalid-container-id", Operation.STOP)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
+    }
+
+    @Test
+    void whenInvalidOperation_thenReturnsBadRequest() throws Exception {
+        String invalidRequest = "{ \"containerId\": \"myListener\", \"operation\": \"INVALID\" }";
+
+        mockMvc.perform(post("/listeners")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidRequest))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE))
+                .andExpect(jsonPath("$.type", CoreMatchers.is("about:blank")))
+                .andExpect(jsonPath("$.title", CoreMatchers.is("Bad Request")))
+                .andExpect(jsonPath("$.status", CoreMatchers.is(400)))
+                .andExpect(jsonPath(
+                        "$.detail", CoreMatchers.is("Invalid operation value. Allowed values are: START, STOP.")))
+                .andExpect(jsonPath("$.instance", CoreMatchers.is("/listeners")));
     }
 }
