@@ -1,4 +1,4 @@
-package com.example.springbootkafkaavro.containers;
+package com.example.springbootkafkaavro.common;
 
 import java.time.Duration;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -21,38 +21,31 @@ public class KafkaContainersConfig {
     @Bean
     @ServiceConnection
     ConfluentKafkaContainer kafkaContainer() {
-        ConfluentKafkaContainer confluentKafkaContainer =
-                new ConfluentKafkaContainer(
-                                DockerImageName.parse("confluentinc/cp-kafka")
-                                        .withTag(CONFLUENT_VERSION))
-                        .withListener("tc-kafka:19092") // Internal alias and port
-                        .withNetwork(network) // Shared network for communication
-                        .withNetworkAliases("tc-kafka") // Alias to match Schema Registry
-                        .withReuse(true);
-        confluentKafkaContainer.start();
-        return confluentKafkaContainer;
+        return new ConfluentKafkaContainer(
+                        DockerImageName.parse("confluentinc/cp-kafka").withTag(CONFLUENT_VERSION))
+                .withListener("tc-kafka:19092") // Internal alias and port
+                .withNetwork(network) // Shared network for communication
+                .withNetworkAliases("tc-kafka") // Alias to match Schema Registry
+                .withReuse(true);
     }
 
     @Bean
     @DependsOn("kafkaContainer")
     GenericContainer<?> schemaRegistry() {
-        GenericContainer<?> schemaRegistry =
-                new GenericContainer<>(
-                                DockerImageName.parse("confluentinc/cp-schema-registry")
-                                        .withTag(CONFLUENT_VERSION))
-                        .withExposedPorts(8085)
-                        .withNetworkAliases("schemaregistry") // Alias for Schema Registry
-                        .withNetwork(network) // Use the same network as Kafka
-                        .withEnv(
-                                "SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS",
-                                "PLAINTEXT://tc-kafka:19092") // Match Kafka alias and port
-                        .withEnv("SCHEMA_REGISTRY_LISTENERS", "http://0.0.0.0:8085")
-                        .withEnv("SCHEMA_REGISTRY_HOST_NAME", "schemaregistry")
-                        .withEnv("SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL", "PLAINTEXT")
-                        .waitingFor(Wait.forHttp("/subjects").forStatusCode(200))
-                        .withStartupTimeout(Duration.ofSeconds(60));
-        schemaRegistry.start();
-        return schemaRegistry;
+        return new GenericContainer<>(
+                        DockerImageName.parse("confluentinc/cp-schema-registry")
+                                .withTag(CONFLUENT_VERSION))
+                .withExposedPorts(8085)
+                .withNetworkAliases("schemaregistry") // Alias for Schema Registry
+                .withNetwork(network) // Use the same network as Kafka
+                .withEnv(
+                        "SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS",
+                        "PLAINTEXT://tc-kafka:19092") // Match Kafka alias and port
+                .withEnv("SCHEMA_REGISTRY_LISTENERS", "http://0.0.0.0:8085")
+                .withEnv("SCHEMA_REGISTRY_HOST_NAME", "schemaregistry")
+                .withEnv("SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL", "PLAINTEXT")
+                .waitingFor(Wait.forHttp("/subjects").forStatusCode(200))
+                .withStartupTimeout(Duration.ofSeconds(60));
     }
 
     @Bean
