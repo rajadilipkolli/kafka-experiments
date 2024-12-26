@@ -13,11 +13,21 @@ sequenceDiagram
     participant P as ToUpperStringProcessor
 
     C->>C: Spring Boot initializes application
+    Note over C: Configure concurrent consumers
     C->>A: Kafka messages arrive, triggering onMessage()
+    par Thread 1
     A->>A: Retrieve or initialize ThreadLocal<ToUpperStringProcessor>
     A->>P: processString(value)
     P->>P: Converts to uppercase & enqueues result
+    and Thread 2
+    A->>A: Retrieve or initialize ThreadLocal<ToUpperStringProcessor>
+    A->>P: processString(value)
+    P->>P: Converts to uppercase & enqueues result
+    end
     Note over A,P: Additional messages handled similarly
+    alt Error occurs
+    A->>A: Handle error & retry/dead letter
+    end
     A->>A: onEvent(ConsumerStoppedEvent) -> Remove ThreadLocal processor
 ```
 
