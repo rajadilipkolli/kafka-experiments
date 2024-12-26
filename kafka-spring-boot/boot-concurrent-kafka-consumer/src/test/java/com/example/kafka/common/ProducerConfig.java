@@ -3,6 +3,7 @@ package com.example.kafka.common;
 import com.example.kafka.listener.AppListener;
 import com.example.kafka.processor.ToUpperStringProcessor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -20,7 +21,7 @@ public class ProducerConfig {
 
     @Bean("toUpperStringProcessors")
     List<ToUpperStringProcessor> toUpperStringProcessors() {
-        return new ArrayList<>();
+        return Collections.synchronizedList(new ArrayList<>());
     }
 
     @Bean

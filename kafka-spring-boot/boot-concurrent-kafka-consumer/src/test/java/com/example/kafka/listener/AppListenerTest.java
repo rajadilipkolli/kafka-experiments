@@ -48,8 +48,8 @@ class AppListenerTest {
 
     /**
      * Asserts specific behaviors of the StringProcessor instances.
-     * Verifies that there are exactly two StringProcessor instances, each with a non-empty queue,
-     * and that the data in the queues of these two processors are distinct.
+     * Verifies that there are exactly three toUpperStringProcessor instances, each with a non-empty queue,
+     * and that the data in the queues of these three processors are distinct.
      */
     private void assertStringProcessorsBehaviors() {
         await().untilAsserted(() -> assertThat(toUpperStringProcessors).hasSize(3));
