@@ -162,7 +162,6 @@ class KafkaSampleIntegrationTest {
                 .assertThat()
                 .hasStatusOk()
                 .hasContentType(MediaType.APPLICATION_JSON)
-                .hasContentType(MediaType.APPLICATION_JSON)
                 .bodyJson()
                 .isEqualTo(expectedJson.formatted(false));
         this.mockMvcTester
@@ -173,7 +172,6 @@ class KafkaSampleIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .assertThat()
                 .hasStatusOk()
-                .hasContentType(MediaType.APPLICATION_JSON)
                 .hasContentType(MediaType.APPLICATION_JSON)
                 .bodyJson()
                 .isEqualTo(expectedJson.formatted(true));
