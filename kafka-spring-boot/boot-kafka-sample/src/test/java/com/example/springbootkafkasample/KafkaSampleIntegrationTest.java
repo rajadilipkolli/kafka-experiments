@@ -126,10 +126,10 @@ class KafkaSampleIntegrationTest {
         String expectedJson =
                 """
                 {
-                	"org.springframework.kafka.KafkaListenerEndpointContainer#1-retry": true,
-                	"org.springframework.kafka.KafkaListenerEndpointContainer#1-dlt": true,
-                	"org.springframework.kafka.KafkaListenerEndpointContainer#0": true,
-                	"org.springframework.kafka.KafkaListenerEndpointContainer#1": true
+                    "topic_2_Listener": true,
+                    "topic_2_Listener-retry": true,
+                    "topic_1_Listener": true,
+                    "topic_2_Listener-dlt": true
                 }
                 """;
         this.mockMvcTester
@@ -147,17 +147,17 @@ class KafkaSampleIntegrationTest {
         String expectedJson =
                 """
                 {
-                	"org.springframework.kafka.KafkaListenerEndpointContainer#1-retry": true,
-                	"org.springframework.kafka.KafkaListenerEndpointContainer#1-dlt": %s,
-                	"org.springframework.kafka.KafkaListenerEndpointContainer#0": true,
-                	"org.springframework.kafka.KafkaListenerEndpointContainer#1": true
+                        "topic_2_Listener-dlt": %s,
+                        "topic_2_Listener": true,
+                        "topic_2_Listener-retry": true,
+                        "topic_1_Listener": true
                 }
                 """;
         this.mockMvcTester
                 .post()
                 .uri("/listeners")
-                .content(this.objectMapper.writeValueAsString(new KafkaListenerRequest(
-                        "org.springframework.kafka.KafkaListenerEndpointContainer#1-dlt", Operation.STOP)))
+                .content(this.objectMapper.writeValueAsString(
+                        new KafkaListenerRequest("topic_2_Listener-dlt", Operation.STOP)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .assertThat()
                 .hasStatusOk()
@@ -167,8 +167,8 @@ class KafkaSampleIntegrationTest {
         this.mockMvcTester
                 .post()
                 .uri("/listeners")
-                .content(this.objectMapper.writeValueAsString(new KafkaListenerRequest(
-                        "org.springframework.kafka.KafkaListenerEndpointContainer#1-dlt", Operation.START)))
+                .content(this.objectMapper.writeValueAsString(
+                        new KafkaListenerRequest(" topic_2_Listener-dlt", Operation.START)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .assertThat()
                 .hasStatusOk()

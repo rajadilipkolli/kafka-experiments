@@ -19,7 +19,11 @@ public class Receiver1 {
 
     private static final Logger logger = LoggerFactory.getLogger(Receiver1.class);
 
-    @KafkaListener(topics = TOPIC_TEST_1, groupId = "foo", errorHandler = "validationErrorHandler")
+    @KafkaListener(
+            id = "topic_1_Listener",
+            topics = TOPIC_TEST_1,
+            groupId = "foo",
+            errorHandler = "validationErrorHandler")
     @SendTo(TOPIC_TEST_2)
     public MessageDTO listen(@Header(KafkaHeaders.RECEIVED_KEY) UUID key, ConsumerRecord<String, MessageDTO> cr) {
         logger.info("Received message : {} with Key :{} in topic :{}", cr.toString(), key, cr.topic());

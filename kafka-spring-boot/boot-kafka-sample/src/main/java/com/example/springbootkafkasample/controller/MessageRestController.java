@@ -21,18 +21,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class MessageRestController {
+class MessageRestController {
 
     private final Sender sender;
     private final MessageService messageService;
 
-    public MessageRestController(Sender sender, MessageService messageService) {
+    MessageRestController(Sender sender, MessageService messageService) {
         this.sender = sender;
         this.messageService = messageService;
     }
 
     @GetMapping("/listeners")
-    public ResponseEntity<Map<String, Boolean>> getListeners() {
+    ResponseEntity<Map<String, Boolean>> getListeners() {
         return ResponseEntity.ok(messageService.getListenersState());
     }
 
@@ -48,18 +48,18 @@ public class MessageRestController {
                 @ApiResponse(responseCode = "404", description = "Listener not found", content = @Content)
             })
     @PostMapping("/listeners")
-    public ResponseEntity<Map<String, Boolean>> updateListenerState(
+    ResponseEntity<Map<String, Boolean>> updateListenerState(
             @RequestBody @Valid final KafkaListenerRequest kafkaListenerRequest) {
         return ResponseEntity.ok(messageService.updateListenerState(kafkaListenerRequest));
     }
 
     @PostMapping("/messages")
-    public void sendMessage(@RequestBody MessageDTO messageDTO) {
+    void sendMessage(@RequestBody MessageDTO messageDTO) {
         this.sender.send(messageDTO);
     }
 
     @GetMapping("/topics")
-    public List<TopicInfo> getTopicsWithPartitionsCount(
+    List<TopicInfo> getTopicsWithPartitionsCount(
             @RequestParam(required = false, defaultValue = "false") boolean showInternalTopics) {
         return messageService.getTopicsWithPartitions(showInternalTopics);
     }
