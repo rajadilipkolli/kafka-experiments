@@ -1,8 +1,10 @@
 package com.example.springbootkafkasample.service;
 
 import com.example.springbootkafkasample.dto.KafkaListenerRequest;
+import com.example.springbootkafkasample.dto.MessageDTO;
 import com.example.springbootkafkasample.dto.Operation;
 import com.example.springbootkafkasample.dto.TopicInfo;
+import com.example.springbootkafkasample.service.sender.Sender;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -25,10 +27,13 @@ public class MessageService {
 
     private final KafkaAdmin kafkaAdmin;
     private final KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
+    private final Sender sender;
 
-    public MessageService(KafkaAdmin kafkaAdmin, KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry) {
+    public MessageService(
+            KafkaAdmin kafkaAdmin, KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry, Sender sender) {
         this.kafkaAdmin = kafkaAdmin;
         this.kafkaListenerEndpointRegistry = kafkaListenerEndpointRegistry;
+        this.sender = sender;
     }
 
     public List<TopicInfo> getTopicsWithPartitions(boolean showInternalTopics) {
@@ -88,5 +93,9 @@ public class MessageService {
             }
         }
         return getListenersState();
+    }
+
+    public void send(MessageDTO messageDTO) {
+        sender.send(messageDTO);
     }
 }

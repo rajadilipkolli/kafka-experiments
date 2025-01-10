@@ -6,5 +6,5 @@ import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
-@OpenAPIDefinition(info = @Info(title = "spring-boot-sample", version = "v1"), servers = @Server(url = "/"))
-public class SwaggerConfig {}
+@OpenAPIDefinition(info = @Info(title = "boot-kafka-sample", version = "v1"), servers = @Server(url = "/"))
+class SwaggerConfig {}

@@ -13,13 +13,13 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration(proxyBeanMethods = false)
 @EnableKafka
-public class KafkaConfig implements KafkaListenerConfigurer {
+class KafkaConfig implements KafkaListenerConfigurer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConfig.class);
 
     private final LocalValidatorFactoryBean validator;
 
-    public KafkaConfig(LocalValidatorFactoryBean validator) {
+    KafkaConfig(LocalValidatorFactoryBean validator) {
         this.validator = validator;
     }
 

@@ -21,10 +21,10 @@ Exposed endpoint to start and stop kafka listener on demand
 Response Format (application/json):
 ```json
 {
-    "org.springframework.kafka.KafkaListenerEndpointContainer#0": true,
-    "org.springframework.kafka.KafkaListenerEndpointContainer#1": true,
-    "org.springframework.kafka.KafkaListenerEndpointContainer#1-retry": true,
-    "org.springframework.kafka.KafkaListenerEndpointContainer#1-dlt": true
+    "topic_2_Listener": true,
+    "topic_2_Listener-retry": true,
+    "topic_1_Listener": true,
+    "topic_2_Listener-dlt": true
 }
 ```
 #### POST
@@ -32,7 +32,7 @@ Request Format (application/json):
 
 ```json
 {
-  "containerId": "org.springframework.kafka.KafkaListenerEndpointContainer#1",
+  "containerId": "topic_2_Listener",
   "operation": "STOP"  // Allowed values: START, STOP
 }
 ```
@@ -51,14 +51,14 @@ curl -X GET http://localhost:8080/listeners
 ```shell
 curl -X POST http://localhost:8080/listeners \
 -H "Content-Type: application/json" \
--d '{"containerId":"org.springframework.kafka.KafkaListenerEndpointContainer#1","operation":"STOP"}'
+-d '{"containerId":"topic_2_Listener","operation":"STOP"}'
 ```
 
 #### Start a Listener
 ```shell
 curl -X POST http://localhost:8080/listeners \
 -H "Content-Type: application/json" \
--d '{"containerId":"org.springframework.kafka.KafkaListenerEndpointContainer#1","operation":"START"}'
+-d '{"containerId":"topic_2_Listener","operation":"START"}'
 ```
  
 ### Error Responses
