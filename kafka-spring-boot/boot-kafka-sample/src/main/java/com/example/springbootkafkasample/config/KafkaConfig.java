@@ -11,7 +11,7 @@ import org.springframework.kafka.listener.KafkaListenerErrorHandler;
 import org.springframework.lang.NonNull;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableKafka
 public class KafkaConfig implements KafkaListenerConfigurer {
 

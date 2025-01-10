@@ -36,7 +36,7 @@ public class Receiver2 {
     }
 
     @RetryableTopic(
-            attempts = "3",
+            attempts = "2",
             backoff = @Backoff(delay = 1000, multiplier = 2.0),
             exclude = {MethodArgumentNotValidException.class},
             topicSuffixingStrategy = TopicSuffixingStrategy.SUFFIX_WITH_INDEX_VALUE)
