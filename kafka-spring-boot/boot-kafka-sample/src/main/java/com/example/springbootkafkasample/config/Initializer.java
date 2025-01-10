@@ -7,9 +7,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Initializer implements CommandLineRunner {
-    public static final String TOPIC_TEST_1 = "test_1";
 
+    public static final String TOPIC_TEST_1 = "test_1";
     public static final String TOPIC_TEST_2 = "test_2";
+
     private static final String TOPIC_TEST_3 = "test_3";
 
     private final Sender sender;

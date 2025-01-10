@@ -6,9 +6,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.springbootkafkasample.dto.MessageDTO;
-import com.example.springbootkafkasample.service.listener.Receiver2;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -17,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -37,12 +33,6 @@ class KafkaSampleApplicationTests {
 
     @Autowired
     private EmbeddedKafkaBroker embeddedKafkaBroker;
-
-    @Autowired
-    private KafkaTemplate<UUID, MessageDTO> template;
-
-    @Autowired
-    private Receiver2 receiver2;
 
     @Autowired
     private MockMvc mockMvc;
@@ -70,12 +60,31 @@ class KafkaSampleApplicationTests {
         String expectedJson =
                 """
                 [
-                    {"topicName":"test_2-dlt","partitionCount":1,"replicationCount":1},
-                    {"topicName":"test_3","partitionCount":2,"replicationCount":1},
-                    {"topicName":"test_2","partitionCount":2,"replicationCount":1},
-                    {"topicName":"test_1","partitionCount":2,"replicationCount":1},
-                    {"topicName":"test_2-retry-0","partitionCount":1,"replicationCount":1},
-                    {"topicName":"test_2-retry-1","partitionCount":1,"replicationCount":1}
+                	{
+                		"topicName": "test_1",
+                		"partitionCount": 2,
+                		"replicationCount": 1
+                	},
+                	{
+                		"topicName": "test_2",
+                		"partitionCount": 2,
+                		"replicationCount": 1
+                	},
+                	{
+                		"topicName": "test_2-dlt",
+                		"partitionCount": 1,
+                		"replicationCount": 1
+                	},
+                	{
+                		"topicName": "test_2-retry",
+                		"partitionCount": 1,
+                		"replicationCount": 1
+                	},
+                	{
+                		"topicName": "test_3",
+                		"partitionCount": 2,
+                		"replicationCount": 1
+                	}
                 ]
                 """;
         this.mockMvc
