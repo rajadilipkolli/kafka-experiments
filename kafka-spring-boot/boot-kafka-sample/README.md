@@ -62,5 +62,5 @@ curl -X POST http://localhost:8080/listeners \
 ```
  
 ### Error Responses
-* `400 Bad Request`: Invalid operation value or malformed request
-* `404 Not Found`: Specified listener container ID not found
+- `400 Bad Request`: Invalid operation value or malformed request
+- `404 Not Found`: Specified listener container ID not found

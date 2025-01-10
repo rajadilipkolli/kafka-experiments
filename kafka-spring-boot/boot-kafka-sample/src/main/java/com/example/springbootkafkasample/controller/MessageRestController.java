@@ -31,6 +31,15 @@ class MessageRestController {
         this.messageService = messageService;
     }
 
+    @Operation(summary = "Get the state of all Kafka listeners")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Retrieved listeners state successfully",
+                        content =
+                                @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class)))
+            })
     @GetMapping("/listeners")
     ResponseEntity<Map<String, Boolean>> getListeners() {
         return ResponseEntity.ok(messageService.getListenersState());

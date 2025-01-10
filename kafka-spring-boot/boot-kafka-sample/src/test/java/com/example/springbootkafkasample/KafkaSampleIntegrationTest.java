@@ -147,10 +147,10 @@ class KafkaSampleIntegrationTest {
         String expectedJson =
                 """
                 {
-                        "topic_2_Listener-dlt": %s,
                         "topic_2_Listener": true,
                         "topic_2_Listener-retry": true,
-                        "topic_1_Listener": true
+                        "topic_1_Listener": true,
+                        "topic_2_Listener-dlt": %s
                 }
                 """;
         this.mockMvcTester
@@ -168,7 +168,7 @@ class KafkaSampleIntegrationTest {
                 .post()
                 .uri("/listeners")
                 .content(this.objectMapper.writeValueAsString(
-                        new KafkaListenerRequest(" topic_2_Listener-dlt", Operation.START)))
+                        new KafkaListenerRequest("topic_2_Listener-dlt", Operation.START)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .assertThat()
                 .hasStatusOk()
