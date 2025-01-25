@@ -38,7 +38,7 @@ class KafkaSampleIntegrationTest {
     private Receiver2 receiver2;
 
     @Test
-    @Order(1)
+    @Order(101)
     void sendAndReceiveMessage() throws Exception {
         long initialCount = receiver2.getLatch().getCount();
         this.mockMvcTester
@@ -57,7 +57,7 @@ class KafkaSampleIntegrationTest {
     }
 
     @Test
-    @Order(2)
+    @Order(102)
     void sendAndReceiveMessageInDeadLetter() throws Exception {
         this.mockMvcTester
                 .post()
@@ -74,6 +74,7 @@ class KafkaSampleIntegrationTest {
     }
 
     @Test
+    @Order(51)
     void topicsWithPartitionsCount() {
         String expectedJson =
                 """
@@ -122,6 +123,7 @@ class KafkaSampleIntegrationTest {
     }
 
     @Test
+    @Order(1)
     void getListOfContainers() {
         String expectedJson =
                 """
@@ -143,6 +145,7 @@ class KafkaSampleIntegrationTest {
     }
 
     @Test
+    @Order(2)
     void stopAndStartContainers() throws Exception {
         String expectedJson =
                 """
@@ -178,6 +181,7 @@ class KafkaSampleIntegrationTest {
     }
 
     @Test
+    @Order(3)
     void invalidContainerOperation() throws Exception {
         this.mockMvcTester
                 .post()
@@ -209,8 +213,15 @@ class KafkaSampleIntegrationTest {
     }
 
     @Test
+    @Order(4)
     void whenInvalidOperation_thenReturnsBadRequest() {
-        String invalidRequest = "{ \"containerId\": \"myListener\", \"operation\": \"INVALID\" }";
+        String invalidRequest =
+                """
+            {
+                "containerId": "topic_2_Listener-dlt",
+                 "operation": "INVALID"
+            }
+            """;
 
         this.mockMvcTester
                 .post()

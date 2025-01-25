@@ -9,6 +9,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
+import org.springframework.kafka.retrytopic.TopicSuffixingStrategy;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.retry.annotation.Backoff;
 
 @TestConfiguration(proxyBeanMethods = false)
 public class OrderListener {
@@ -18,7 +22,10 @@ public class OrderListener {
     private final CountDownLatch latch = new CountDownLatch(1);
     private final CountDownLatch dlqLatch = new CountDownLatch(1);
 
-    @RetryableTopic
+    @RetryableTopic(
+            attempts = "2",
+            backoff = @Backoff(delay = 1000, multiplier = 2.0),
+            topicSuffixingStrategy = TopicSuffixingStrategy.SUFFIX_WITH_INDEX_VALUE)
     @KafkaListener(topics = "order-created", groupId = "notification")
     public void notify(OrderRecord event) {
         log.info(
@@ -32,12 +39,13 @@ public class OrderListener {
     }
 
     @DltHandler
-    public void notifyDLT(OrderRecord event) {
+    public void notifyDLT(OrderRecord event, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
         log.error(
-                "Order processing failed, received in DLT - OrderId: {}, Status: {}, Items: {}",
-                +event.id(),
+                "Order processing failed, received in DLT - OrderId: {}, Status: {}, Items: {} from topic: {}",
+                event.id(),
                 event.status(),
-                event.orderItems());
+                event.orderItems(),
+                topic);
         dlqLatch.countDown();
     }
 
