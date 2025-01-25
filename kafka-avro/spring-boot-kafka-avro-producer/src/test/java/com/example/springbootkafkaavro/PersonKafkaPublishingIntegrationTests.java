@@ -68,7 +68,7 @@ class PersonKafkaPublishingIntegrationTests {
     }
 
     @Test
-    void concurrentPublishing(CapturedOutput output) throws Exception {
+    void concurrentPublishing(CapturedOutput output) {
         int numberOfRequests = 10;
         for (int i = 0; i < numberOfRequests; i++) {
             this.mockMvcTester
@@ -138,7 +138,7 @@ class PersonKafkaPublishingIntegrationTests {
                 .hasStatus(HttpStatus.BAD_REQUEST)
                 .bodyJson()
                 .convertTo(ProblemDetail.class)
-                .satisfies(problemDetail -> assertBadRequestProblem(problemDetail));
+                .satisfies(this::assertBadRequestProblem);
     }
 
     @Test
@@ -153,7 +153,7 @@ class PersonKafkaPublishingIntegrationTests {
                 .hasStatus(HttpStatus.BAD_REQUEST)
                 .bodyJson()
                 .convertTo(ProblemDetail.class)
-                .satisfies(problemDetail -> assertBadRequestProblem(problemDetail));
+                .satisfies(this::assertBadRequestProblem);
     }
 
     private void assertBadRequestProblem(ProblemDetail problemDetail, String expectedDetail) {

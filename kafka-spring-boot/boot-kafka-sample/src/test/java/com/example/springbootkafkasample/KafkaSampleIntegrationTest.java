@@ -38,7 +38,7 @@ class KafkaSampleIntegrationTest {
     private Receiver2 receiver2;
 
     @Test
-    @Order(1)
+    @Order(101)
     void sendAndReceiveMessage() throws Exception {
         long initialCount = receiver2.getLatch().getCount();
         this.mockMvcTester
@@ -46,18 +46,26 @@ class KafkaSampleIntegrationTest {
                 .uri("/messages")
                 .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", "junitTest")))
                 .contentType(MediaType.APPLICATION_JSON)
+                .exchange()
                 .assertThat()
                 .hasStatusOk();
 
         // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
         await().pollInterval(Duration.ofSeconds(1))
                 .atMost(Duration.ofSeconds(30))
-                .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(initialCount - 1));
+                .untilAsserted(() -> {
+                    long currentCount = receiver2.getLatch().getCount();
+                    assertThat(currentCount)
+                            .as(
+                                    "Expected message count to decrease by 1, initial: %d, current: %d",
+                                    initialCount, currentCount)
+                            .isEqualTo(initialCount - 1);
+                });
         assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(1);
     }
 
     @Test
-    @Order(2)
+    @Order(102)
     void sendAndReceiveMessageInDeadLetter() throws Exception {
         this.mockMvcTester
                 .post()
@@ -74,6 +82,7 @@ class KafkaSampleIntegrationTest {
     }
 
     @Test
+    @Order(51)
     void topicsWithPartitionsCount() {
         String expectedJson =
                 """
@@ -122,6 +131,7 @@ class KafkaSampleIntegrationTest {
     }
 
     @Test
+    @Order(1)
     void getListOfContainers() {
         String expectedJson =
                 """
@@ -143,6 +153,7 @@ class KafkaSampleIntegrationTest {
     }
 
     @Test
+    @Order(2)
     void stopAndStartContainers() throws Exception {
         String expectedJson =
                 """
@@ -178,6 +189,7 @@ class KafkaSampleIntegrationTest {
     }
 
     @Test
+    @Order(3)
     void invalidContainerOperation() throws Exception {
         this.mockMvcTester
                 .post()
@@ -209,8 +221,15 @@ class KafkaSampleIntegrationTest {
     }
 
     @Test
+    @Order(4)
     void whenInvalidOperation_thenReturnsBadRequest() {
-        String invalidRequest = "{ \"containerId\": \"myListener\", \"operation\": \"INVALID\" }";
+        String invalidRequest =
+                """
+            {
+                "containerId": "topic_2_Listener-dlt",
+                 "operation": "INVALID"
+            }
+            """;
 
         this.mockMvcTester
                 .post()
