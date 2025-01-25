@@ -16,20 +16,15 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-@SpringBootTest(
-        properties = {
-            "spring.kafka.consumer.group-id=group-1",
-            "spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer",
-            "spring.kafka.consumer.value-deserializer=io.confluent.kafka.serializers.KafkaAvroDeserializer",
-            "spring.kafka.properties.specific.avro.reader=true"
-        },
-        classes = {KafkaContainersConfig.class})
+@SpringBootTest(classes = {KafkaContainersConfig.class})
 @AutoConfigureMockMvc
 @Import(AvroKafkaListener.class)
 @ExtendWith(OutputCaptureExtension.class)
-class ApplicationIntTests {
+@ActiveProfiles("test")
+class PersonKafkaPublishingIntegrationTests {
 
     @Autowired MockMvcTester mockMvcTester;
 
@@ -143,12 +138,7 @@ class ApplicationIntTests {
                 .hasStatus(HttpStatus.BAD_REQUEST)
                 .bodyJson()
                 .convertTo(ProblemDetail.class)
-                .satisfies(
-                        problemDetail -> {
-                            assertThat(problemDetail.getStatus()).isEqualTo(400);
-                            assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
-                            assertThat(problemDetail.getDetail()).contains("Validation failure");
-                        });
+                .satisfies(problemDetail -> assertBadRequestProblem(problemDetail));
     }
 
     @Test
@@ -163,17 +153,18 @@ class ApplicationIntTests {
                 .hasStatus(HttpStatus.BAD_REQUEST)
                 .bodyJson()
                 .convertTo(ProblemDetail.class)
-                .satisfies(
-                        problemDetail -> {
-                            assertThat(problemDetail.getStatus()).isEqualTo(400);
-                            assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
-                            assertThat(problemDetail.getDetail()).contains("Validation failure");
-                        });
+                .satisfies(problemDetail -> assertBadRequestProblem(problemDetail));
     }
 
     private void assertBadRequestProblem(ProblemDetail problemDetail, String expectedDetail) {
         assertThat(problemDetail.getStatus()).isEqualTo(400);
         assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
         assertThat(problemDetail.getDetail()).contains(expectedDetail);
+    }
+
+    private void assertBadRequestProblem(ProblemDetail problemDetail) {
+        assertThat(problemDetail.getStatus()).isEqualTo(400);
+        assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
+        assertThat(problemDetail.getDetail()).isEqualTo("Validation failure");
     }
 }
