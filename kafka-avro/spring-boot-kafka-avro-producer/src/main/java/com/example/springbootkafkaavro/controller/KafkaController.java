@@ -2,9 +2,9 @@ package com.example.springbootkafkaavro.controller;
 
 import com.example.springbootkafkaavro.model.Person;
 import com.example.springbootkafkaavro.service.KafkaProducer;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/person")
-@Validated
+@Valid
 class KafkaController {
 
     private final KafkaProducer producer;

@@ -16,6 +16,10 @@ public class AvroKafkaListener {
     @KafkaListener(topics = ApplicationConstants.PERSONS_TOPIC, groupId = "group_id")
     public void handler(ConsumerRecord<String, Person> personConsumerRecord) {
         Person person = personConsumerRecord.value();
-        log.info("Person received : {} : {} ", person.getName(), person.getAge());
+        log.info(
+                "Person received : {} : {} : {}",
+                person.getName(),
+                person.getAge(),
+                person.getGender());
     }
 }

@@ -3,8 +3,6 @@ package com.example.springbootkafkaavro;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.springbootkafkaavro.containers.KafkaContainersConfig;
 import org.junit.jupiter.api.Test;
@@ -15,7 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 @SpringBootTest(
         properties = {
@@ -24,35 +24,121 @@ import org.springframework.test.web.servlet.MockMvc;
             "spring.kafka.consumer.value-deserializer=io.confluent.kafka.serializers.KafkaAvroDeserializer",
             "spring.kafka.properties.specific.avro.reader=true"
         },
-        classes = KafkaContainersConfig.class)
+        classes = {KafkaContainersConfig.class})
 @AutoConfigureMockMvc
 @Import(AvroKafkaListener.class)
 @ExtendWith(OutputCaptureExtension.class)
 class ApplicationIntTests {
 
-    @Autowired MockMvc mockMvc;
+    @Autowired MockMvcTester mockMvcTester;
 
     @Test
-    void publishPersonWithOutGender(CapturedOutput output) throws Exception {
-        this.mockMvc
-                .perform(post("/person/publish").param("name", "junit").param("age", "33"))
-                .andExpect(status().isOk());
-        await().atMost(30, SECONDS)
+    void publishPersonWithoutGender(CapturedOutput output) {
+        this.mockMvcTester
+                .post()
+                .uri("/person/publish")
+                .param("name", "junit")
+                .param("age", "33")
+                .exchange()
+                .assertThat()
+                .hasStatusOk();
+        await().atMost(10, SECONDS)
                 .untilAsserted(
-                        () -> assertThat(output.getOut()).contains("Person received : junit : 33"));
+                        () ->
+                                assertThat(output.getOut())
+                                        .contains("Person received : junit : 33 : "));
     }
 
     @Test
-    void publishPersonWithoutName() throws Exception {
-        this.mockMvc
-                .perform(post("/person/publish").param("age", "33"))
-                .andExpect(status().isBadRequest());
+    void publishPersonWithGender(CapturedOutput output) {
+        this.mockMvcTester
+                .post()
+                .uri("/person/publish")
+                .param("name", "junit")
+                .param("age", "33")
+                .param("gender", "male")
+                .assertThat()
+                .hasStatusOk();
+        await().atMost(10, SECONDS)
+                .untilAsserted(
+                        () ->
+                                assertThat(output.getOut())
+                                        .contains("Person received : junit : 33 : male"));
     }
 
     @Test
-    void publishPersonWithoutAge() throws Exception {
-        this.mockMvc
-                .perform(post("/person/publish").param("name", "junit"))
-                .andExpect(status().isBadRequest());
+    void publishPersonWithoutName() {
+        this.mockMvcTester
+                .post()
+                .uri("/person/publish")
+                .param("age", "33")
+                .assertThat()
+                .hasStatus(HttpStatus.BAD_REQUEST)
+                .bodyJson()
+                .convertTo(ProblemDetail.class)
+                .satisfies(
+                        problemDetail -> {
+                            assertThat(problemDetail.getStatus()).isEqualTo(400);
+                            assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
+                            assertThat(problemDetail.getDetail())
+                                    .contains("Required parameter 'name' is not present.");
+                        });
+    }
+
+    @Test
+    void publishPersonWithoutAge() {
+        this.mockMvcTester
+                .post()
+                .uri("/person/publish")
+                .param("name", "junit")
+                .assertThat()
+                .hasStatus(HttpStatus.BAD_REQUEST)
+                .bodyJson()
+                .convertTo(ProblemDetail.class)
+                .satisfies(
+                        problemDetail -> {
+                            assertThat(problemDetail.getStatus()).isEqualTo(400);
+                            assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
+                            assertThat(problemDetail.getDetail())
+                                    .contains("Required parameter 'age' is not present.");
+                        });
+    }
+
+    @Test
+    void publishPersonWithEmptyName() {
+        this.mockMvcTester
+                .post()
+                .uri("/person/publish")
+                .param("name", "")
+                .param("age", "33")
+                .assertThat()
+                .hasStatus(HttpStatus.BAD_REQUEST)
+                .bodyJson()
+                .convertTo(ProblemDetail.class)
+                .satisfies(
+                        problemDetail -> {
+                            assertThat(problemDetail.getStatus()).isEqualTo(400);
+                            assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
+                            assertThat(problemDetail.getDetail()).contains("Validation failure");
+                        });
+    }
+
+    @Test
+    void publishPersonWithNegativeAge() {
+        this.mockMvcTester
+                .post()
+                .uri("/person/publish")
+                .param("name", "junit")
+                .param("age", "-1")
+                .assertThat()
+                .hasStatus(HttpStatus.BAD_REQUEST)
+                .bodyJson()
+                .convertTo(ProblemDetail.class)
+                .satisfies(
+                        problemDetail -> {
+                            assertThat(problemDetail.getStatus()).isEqualTo(400);
+                            assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
+                            assertThat(problemDetail.getDetail()).contains("Validation failure");
+                        });
     }
 }
