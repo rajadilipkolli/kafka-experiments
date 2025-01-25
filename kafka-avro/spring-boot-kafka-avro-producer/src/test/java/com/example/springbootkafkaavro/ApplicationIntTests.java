@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 import com.example.springbootkafkaavro.containers.KafkaContainersConfig;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +43,12 @@ class ApplicationIntTests {
                 .exchange()
                 .assertThat()
                 .hasStatusOk();
-        await().atMost(10, SECONDS)
+        await().pollInterval(100, TimeUnit.MILLISECONDS)
+                .atMost(10, SECONDS)
                 .untilAsserted(
                         () ->
                                 assertThat(output.getOut())
+                                        .as("Should contain person details without gender")
                                         .contains("Person received : junit : 33 : "));
     }
 
@@ -59,10 +62,12 @@ class ApplicationIntTests {
                 .param("gender", "male")
                 .assertThat()
                 .hasStatusOk();
-        await().atMost(10, SECONDS)
+        await().pollInterval(100, TimeUnit.MILLISECONDS)
+                .atMost(10, SECONDS)
                 .untilAsserted(
                         () ->
                                 assertThat(output.getOut())
+                                        .as("Should contain person details with gender")
                                         .contains("Person received : junit : 33 : male"));
     }
 
@@ -77,12 +82,10 @@ class ApplicationIntTests {
                 .bodyJson()
                 .convertTo(ProblemDetail.class)
                 .satisfies(
-                        problemDetail -> {
-                            assertThat(problemDetail.getStatus()).isEqualTo(400);
-                            assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
-                            assertThat(problemDetail.getDetail())
-                                    .contains("Required parameter 'name' is not present.");
-                        });
+                        problemDetail ->
+                                assertBadRequestProblem(
+                                        problemDetail,
+                                        "Required parameter 'name' is not present."));
     }
 
     @Test
@@ -96,12 +99,9 @@ class ApplicationIntTests {
                 .bodyJson()
                 .convertTo(ProblemDetail.class)
                 .satisfies(
-                        problemDetail -> {
-                            assertThat(problemDetail.getStatus()).isEqualTo(400);
-                            assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
-                            assertThat(problemDetail.getDetail())
-                                    .contains("Required parameter 'age' is not present.");
-                        });
+                        problemDetail ->
+                                assertBadRequestProblem(
+                                        problemDetail, "Required parameter 'age' is not present."));
     }
 
     @Test
@@ -140,5 +140,11 @@ class ApplicationIntTests {
                             assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
                             assertThat(problemDetail.getDetail()).contains("Validation failure");
                         });
+    }
+
+    private void assertBadRequestProblem(ProblemDetail problemDetail, String expectedDetail) {
+        assertThat(problemDetail.getStatus()).isEqualTo(400);
+        assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
+        assertThat(problemDetail.getDetail()).contains(expectedDetail);
     }
 }
