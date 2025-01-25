@@ -60,6 +60,7 @@ class ApplicationIntTests {
                 .param("name", "junit")
                 .param("age", "33")
                 .param("gender", "male")
+                .exchange()
                 .assertThat()
                 .hasStatusOk();
         await().pollInterval(100, TimeUnit.MILLISECONDS)
@@ -72,11 +73,36 @@ class ApplicationIntTests {
     }
 
     @Test
+    void concurrentPublishing(CapturedOutput output) throws Exception {
+        int numberOfRequests = 10;
+        for (int i = 0; i < numberOfRequests; i++) {
+            this.mockMvcTester
+                    .post()
+                    .uri("/person/publish")
+                    .param("name", "user" + i)
+                    .param("age", String.valueOf(20 + i))
+                    .exchange()
+                    .assertThat()
+                    .hasStatusOk();
+        }
+        await().pollInterval(100, TimeUnit.MILLISECONDS)
+                .atMost(30, SECONDS)
+                .untilAsserted(
+                        () -> {
+                            for (int i = 0; i < numberOfRequests; i++) {
+                                assertThat(output.getOut())
+                                        .contains("Person received : user" + i + " : " + (20 + i));
+                            }
+                        });
+    }
+
+    @Test
     void publishPersonWithoutName() {
         this.mockMvcTester
                 .post()
                 .uri("/person/publish")
                 .param("age", "33")
+                .exchange()
                 .assertThat()
                 .hasStatus(HttpStatus.BAD_REQUEST)
                 .bodyJson()
@@ -94,6 +120,7 @@ class ApplicationIntTests {
                 .post()
                 .uri("/person/publish")
                 .param("name", "junit")
+                .exchange()
                 .assertThat()
                 .hasStatus(HttpStatus.BAD_REQUEST)
                 .bodyJson()
@@ -111,6 +138,7 @@ class ApplicationIntTests {
                 .uri("/person/publish")
                 .param("name", "")
                 .param("age", "33")
+                .exchange()
                 .assertThat()
                 .hasStatus(HttpStatus.BAD_REQUEST)
                 .bodyJson()
@@ -130,6 +158,7 @@ class ApplicationIntTests {
                 .uri("/person/publish")
                 .param("name", "junit")
                 .param("age", "-1")
+                .exchange()
                 .assertThat()
                 .hasStatus(HttpStatus.BAD_REQUEST)
                 .bodyJson()
