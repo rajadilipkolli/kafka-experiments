@@ -74,6 +74,10 @@ class OrderModuleIntTests {
                 .toArriveAndVerify(event -> {
                     assertThat(event.orderItems().get(0).productCode()).isEqualTo("Coffee");
                     assertThat(event.orderItems().get(1).productCode()).isEqualTo("Tea");
+                    assertThat(event.orderItems().get(0).quantity()).isEqualTo(100);
+                    assertThat(event.orderItems().get(1).quantity()).isEqualTo(50);
+                    assertThat(event.orderItems().get(0).productPrice()).isEqualTo(BigDecimal.TEN);
+                    assertThat(event.orderItems().get(1).productPrice()).isEqualTo(BigDecimal.valueOf(5));
                 });
     }
 }

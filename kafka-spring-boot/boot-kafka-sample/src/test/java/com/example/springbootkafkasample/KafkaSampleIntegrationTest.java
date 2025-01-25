@@ -46,13 +46,21 @@ class KafkaSampleIntegrationTest {
                 .uri("/messages")
                 .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", "junitTest")))
                 .contentType(MediaType.APPLICATION_JSON)
+                .exchange()
                 .assertThat()
                 .hasStatusOk();
 
         // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
         await().pollInterval(Duration.ofSeconds(1))
                 .atMost(Duration.ofSeconds(30))
-                .untilAsserted(() -> assertThat(receiver2.getLatch().getCount()).isEqualTo(initialCount - 1));
+                .untilAsserted(() -> {
+                    long currentCount = receiver2.getLatch().getCount();
+                    assertThat(currentCount)
+                            .as(
+                                    "Expected message count to decrease by 1, initial: %d, current: %d",
+                                    initialCount, currentCount)
+                            .isEqualTo(initialCount - 1);
+                });
         assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(1);
     }
 
