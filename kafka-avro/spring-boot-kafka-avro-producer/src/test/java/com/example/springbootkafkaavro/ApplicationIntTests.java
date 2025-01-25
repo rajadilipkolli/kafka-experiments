@@ -28,17 +28,31 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 @Import(AvroKafkaListener.class)
 @ExtendWith(OutputCaptureExtension.class)
-class SpringBootKafkaAvroProducerApplicationIntTests {
+class ApplicationIntTests {
 
     @Autowired MockMvc mockMvc;
 
     @Test
-    void contextLoads(CapturedOutput output) throws Exception {
+    void publishPersonWithOutGender(CapturedOutput output) throws Exception {
         this.mockMvc
                 .perform(post("/person/publish").param("name", "junit").param("age", "33"))
                 .andExpect(status().isOk());
         await().atMost(30, SECONDS)
                 .untilAsserted(
                         () -> assertThat(output.getOut()).contains("Person received : junit : 33"));
+    }
+
+    @Test
+    void publishPersonWithoutName() throws Exception {
+        this.mockMvc
+                .perform(post("/person/publish").param("age", "33"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void publishPersonWithoutAge() throws Exception {
+        this.mockMvc
+                .perform(post("/person/publish").param("name", "junit"))
+                .andExpect(status().isBadRequest());
     }
 }
