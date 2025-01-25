@@ -9,10 +9,8 @@ import com.example.springbootkafkaavro.model.Person;
 import com.example.springbootkafkaavro.repository.PersonRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest(
         properties = {
@@ -20,11 +18,9 @@ import org.springframework.test.web.servlet.MockMvc;
             "spring.kafka.producer.value-serializer=io.confluent.kafka.serializers.KafkaAvroSerializer"
         },
         classes = {KafkaContainersConfig.class})
-@AutoConfigureMockMvc
 @Import(KafkaProducer.class)
 class ApplicationIntTests {
 
-    @Autowired MockMvc mockMvc;
     @Autowired PersonRepository personRepository;
     @Autowired KafkaProducer kafkaProducer;
 
