@@ -16,7 +16,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   private static final long serialVersionUID = -1297658106841863798L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.example.springbootkafkaavro.model\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"name\",\"type\":\"string\",\"avro.java.string\":\"String\"},{\"name\":\"age\",\"type\":\"int\"},{\"name\":\"gender\",\"type\":[\"null\",\"string\"],\"avro.java.string\":\"String\"}],\"version\":\"2\"}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.example.springbootkafkaavro.model\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"name\",\"type\":\"string\",\"avro.java.string\":\"String\"},{\"name\":\"age\",\"type\":\"int\"},{\"name\":\"gender\",\"type\":[\"null\",\"string\"],\"default\":null,\"avro.java.string\":\"String\"}],\"version\":\"2\"}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();

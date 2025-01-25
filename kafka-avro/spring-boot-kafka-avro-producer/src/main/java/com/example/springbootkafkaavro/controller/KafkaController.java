@@ -2,7 +2,6 @@ package com.example.springbootkafkaavro.controller;
 
 import com.example.springbootkafkaavro.model.Person;
 import com.example.springbootkafkaavro.service.KafkaProducer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,13 +9,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/person")
-@RequiredArgsConstructor
-public class KafkaController {
+class KafkaController {
 
     private final KafkaProducer producer;
 
+    KafkaController(KafkaProducer producer) {
+        this.producer = producer;
+    }
+
     @PostMapping(value = "/publish")
-    public void sendMessageToKafkaTopic(
+    void sendMessageToKafkaTopic(
             @RequestParam String name,
             @RequestParam Integer age,
             @RequestParam(required = false) String gender) {
