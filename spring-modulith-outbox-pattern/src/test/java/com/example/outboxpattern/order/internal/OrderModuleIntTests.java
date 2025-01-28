@@ -72,12 +72,21 @@ class OrderModuleIntTests {
                                 new OrderItemRequest("Tea", BigDecimal.valueOf(5), 50)))))
                 .andWaitForEventOfType(OrderRecord.class)
                 .toArriveAndVerify(event -> {
-                    assertThat(event.orderItems().get(0).productCode()).isEqualTo("Coffee");
-                    assertThat(event.orderItems().get(1).productCode()).isEqualTo("Tea");
-                    assertThat(event.orderItems().get(0).quantity()).isEqualTo(100);
-                    assertThat(event.orderItems().get(1).quantity()).isEqualTo(50);
-                    assertThat(event.orderItems().get(0).productPrice()).isEqualTo(BigDecimal.TEN);
-                    assertThat(event.orderItems().get(1).productPrice()).isEqualTo(BigDecimal.valueOf(5));
+                    assertThat(event.orderItems()).hasSize(2);
+                    var coffeeItem = event.orderItems().stream()
+                            .filter(item -> item.productCode().equals("Coffee"))
+                            .findFirst()
+                            .orElseThrow();
+                    var teaItem = event.orderItems().stream()
+                            .filter(item -> item.productCode().equals("Tea"))
+                            .findFirst()
+                            .orElseThrow();
+                    assertThat(coffeeItem.productCode()).isEqualTo("Coffee");
+                    assertThat(coffeeItem.quantity()).isEqualTo(100);
+                    assertThat(coffeeItem.productPrice()).isEqualTo(BigDecimal.TEN);
+                    assertThat(teaItem.productCode()).isEqualTo("Tea");
+                    assertThat(teaItem.quantity()).isEqualTo(50);
+                    assertThat(teaItem.productPrice()).isEqualTo(BigDecimal.valueOf(5));
                 });
     }
 }
