@@ -2,7 +2,7 @@
 package com.example.analytics;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 
 import com.example.analytics.common.ContainersConfiguration;
 import com.example.analytics.model.PageViewEvent;
@@ -22,14 +22,18 @@ class AnalyticsProducerApplicationIntegrationTest {
 
     @Autowired KafkaTemplate<String, String> kafkaTemplate;
 
-    private final CountDownLatch messagesLatch = new CountDownLatch(100);
+    private final CountDownLatch messagesLatch = new CountDownLatch(10);
 
     @Test
     void contextLoads() {
-        assertThat(kafkaTemplate).isNotNull();
         await().pollDelay(1, TimeUnit.SECONDS)
                 .atMost(10, TimeUnit.SECONDS)
-                .untilAsserted(() -> assertThat(messagesLatch.getCount()).isLessThanOrEqualTo(99));
+                .untilAsserted(() -> assertThat(messagesLatch.getCount()).isLessThanOrEqualTo(9));
+    }
+
+    @Test
+    void kafkaTemplateShouldNotBeNull() {
+        assertThat(kafkaTemplate).isNotNull();
     }
 
     @KafkaListener(topics = "pvs", groupId = "pcs")
