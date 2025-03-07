@@ -1,10 +1,11 @@
-/* Licensed under Apache-2.0 2021-2023 */
+/* Licensed under Apache-2.0 2021-2025 */
 package com.example.analytics;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 import com.example.analytics.common.ContainersConfiguration;
+import com.example.analytics.configuration.AnalyticsApplicationProperties;
 import com.example.analytics.model.PageViewEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,14 +23,25 @@ class AnalyticsProducerApplicationIntegrationTest {
 
     @Autowired KafkaTemplate<String, String> kafkaTemplate;
 
-    private final CountDownLatch messagesLatch = new CountDownLatch(100);
+    @Autowired AnalyticsApplicationProperties analyticsApplicationProperties;
+
+    private final CountDownLatch messagesLatch = new CountDownLatch(10);
 
     @Test
     void contextLoads() {
-        assertThat(kafkaTemplate).isNotNull();
         await().pollDelay(1, TimeUnit.SECONDS)
                 .atMost(10, TimeUnit.SECONDS)
-                .untilAsserted(() -> assertThat(messagesLatch.getCount()).isLessThanOrEqualTo(99));
+                .untilAsserted(() -> assertThat(messagesLatch.getCount()).isLessThanOrEqualTo(9));
+    }
+
+    @Test
+    void kafkaTemplateShouldNotBeNull() {
+        assertThat(kafkaTemplate).isNotNull();
+    }
+
+    @Test
+    void analyticsApplicationPropertiesShouldReturnTopicName() {
+        assertThat(analyticsApplicationProperties.topicNamePvs()).isEqualTo("pvs");
     }
 
     @KafkaListener(topics = "pvs", groupId = "pcs")
