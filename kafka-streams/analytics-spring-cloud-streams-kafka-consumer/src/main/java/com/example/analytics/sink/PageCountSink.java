@@ -14,7 +14,7 @@ public class PageCountSink {
     private static final Logger log = LoggerFactory.getLogger(PageCountSink.class);
 
     @Bean
-    public Consumer<KTable<String, Long>> processStreamFromPcsTopic() {
+    Consumer<KTable<String, Long>> processStreamFromPcsTopic() {
         return kTableCounts ->
                 kTableCounts
                         .toStream()

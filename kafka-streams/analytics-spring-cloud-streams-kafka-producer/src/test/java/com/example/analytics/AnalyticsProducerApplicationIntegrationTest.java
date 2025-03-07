@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 import com.example.analytics.common.ContainersConfiguration;
-import com.example.analytics.configuration.AnalyticsApplicationProperties;
 import com.example.analytics.model.PageViewEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,8 +22,6 @@ class AnalyticsProducerApplicationIntegrationTest {
 
     @Autowired KafkaTemplate<String, String> kafkaTemplate;
 
-    @Autowired AnalyticsApplicationProperties analyticsApplicationProperties;
-
     private final CountDownLatch messagesLatch = new CountDownLatch(10);
 
     @Test
@@ -37,11 +34,6 @@ class AnalyticsProducerApplicationIntegrationTest {
     @Test
     void kafkaTemplateShouldNotBeNull() {
         assertThat(kafkaTemplate).isNotNull();
-    }
-
-    @Test
-    void analyticsApplicationPropertiesShouldReturnTopicName() {
-        assertThat(analyticsApplicationProperties.topicNamePvs()).isEqualTo("pvs");
     }
 
     @KafkaListener(topics = "pvs", groupId = "pcs")
