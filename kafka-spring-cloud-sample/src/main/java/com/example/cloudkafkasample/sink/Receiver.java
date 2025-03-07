@@ -24,7 +24,7 @@ public class Receiver {
     }
 
     @Bean
-    public Consumer<List<MessageDTO>> receive() {
+    Consumer<List<MessageDTO>> receive() {
         return batchMessages -> {
             AtomicInteger i = new AtomicInteger();
             logger.info("Number of messages in batch : {}", batchMessages.size());
