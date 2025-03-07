@@ -18,7 +18,7 @@ public class ContainersConfig {
     }
 
     @Bean
-    public DynamicPropertyRegistrar kafkaProperties(KafkaContainer kafkaContainer) {
+    DynamicPropertyRegistrar kafkaProperties(KafkaContainer kafkaContainer) {
         return (properties) -> {
             // Connect our Spring application to our Testcontainers Kafka instance
             properties.add("spring.cloud.stream.kafka.binder.brokers", kafkaContainer::getBootstrapServers);
