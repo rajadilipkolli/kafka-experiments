@@ -14,13 +14,13 @@ public class ContainerConfiguration {
     @Bean
     @ServiceConnection
     PostgreSQLContainer<?> postgresContainer() {
-        return new PostgreSQLContainer<>(DockerImageName.parse("postgres").withTag("17.0-alpine"));
+        return new PostgreSQLContainer<>(DockerImageName.parse("postgres").withTag("17.4-alpine"));
     }
 
     @ServiceConnection
     @Bean
     KafkaContainer kafkaContainer() {
-        return new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("3.8.1"));
+        return new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.0.0"));
     }
 
     @Bean
