@@ -23,7 +23,7 @@ public class CountRestController {
         this.interactiveQueryService = interactiveQueryService;
     }
 
-    @GetMapping("/counts")
+    @GetMapping("/api/page-counts")
     public Map<String, Long> counts() {
         Map<String, Long> counts = new HashMap<>();
         ReadOnlyKeyValueStore<String, Long> queryableStoreType =
