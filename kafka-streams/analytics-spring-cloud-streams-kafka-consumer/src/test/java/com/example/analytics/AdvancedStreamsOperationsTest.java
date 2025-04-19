@@ -16,12 +16,14 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.TopologyTestDriver;
+import org.apache.kafka.streams.errors.LogAndContinueExceptionHandler;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class AdvancedStreamsOperationsTest {
@@ -31,10 +33,12 @@ class AdvancedStreamsOperationsTest {
     private TestOutputTopic<String, Long> outputTopic;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    // Configure Kafka Streams for testing
+    Properties props;
+
     @BeforeEach
     void setUp() {
-        // Configure Kafka Streams for testing
-        Properties props = new Properties();
+        props = new Properties();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "advanced-operations-test");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         props.put(
@@ -42,6 +46,10 @@ class AdvancedStreamsOperationsTest {
         props.put(
                 StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
                 Serdes.String().getClass().getName());
+        props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 10); // Lower for tests
+        props.put(
+                StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
+                LogAndContinueExceptionHandler.class.getName());
 
         // Build the topology for testing
         StreamsBuilder builder = new StreamsBuilder();
@@ -103,9 +111,9 @@ class AdvancedStreamsOperationsTest {
         assertThat(outputTopic.readKeyValue()).isEqualTo(new KeyValue<>("user2", 90L)); // 40 + 50
     }
 
+    @Disabled("Time windowed tests are implemented in WindowingAndErrorHandlingTest")
     @Test
     void testTimeWindowedAggregation() {
-        // Running a time window test would be complex and involve time manipulation
         // This is a placeholder - see WindowingAndErrorHandlingTest for time window tests
     }
 
@@ -136,55 +144,55 @@ class AdvancedStreamsOperationsTest {
         branches[2].to("long-duration", Produced.with(Serdes.String(), pageViewSerde));
 
         // Create a new test driver with this topology
-        TopologyTestDriver branchTestDriver =
-                new TopologyTestDriver(builder.build(), new Properties());
+        TopologyTestDriver branchTestDriver = new TopologyTestDriver(builder.build(), props);
+        try {
+            // Create test topics
+            TestInputTopic<String, PageViewEvent> branchInputTopic =
+                    branchTestDriver.createInputTopic(
+                            "page-views", Serdes.String().serializer(), pageViewSerde.serializer());
 
-        // Create test topics
-        TestInputTopic<String, PageViewEvent> branchInputTopic =
-                branchTestDriver.createInputTopic(
-                        "page-views", Serdes.String().serializer(), pageViewSerde.serializer());
+            TestOutputTopic<String, PageViewEvent> shortDurationTopic =
+                    branchTestDriver.createOutputTopic(
+                            "short-duration",
+                            Serdes.String().deserializer(),
+                            pageViewSerde.deserializer());
 
-        TestOutputTopic<String, PageViewEvent> shortDurationTopic =
-                branchTestDriver.createOutputTopic(
-                        "short-duration",
-                        Serdes.String().deserializer(),
-                        pageViewSerde.deserializer());
+            TestOutputTopic<String, PageViewEvent> mediumDurationTopic =
+                    branchTestDriver.createOutputTopic(
+                            "medium-duration",
+                            Serdes.String().deserializer(),
+                            pageViewSerde.deserializer());
 
-        TestOutputTopic<String, PageViewEvent> mediumDurationTopic =
-                branchTestDriver.createOutputTopic(
-                        "medium-duration",
-                        Serdes.String().deserializer(),
-                        pageViewSerde.deserializer());
+            TestOutputTopic<String, PageViewEvent> longDurationTopic =
+                    branchTestDriver.createOutputTopic(
+                            "long-duration",
+                            Serdes.String().deserializer(),
+                            pageViewSerde.deserializer());
 
-        TestOutputTopic<String, PageViewEvent> longDurationTopic =
-                branchTestDriver.createOutputTopic(
-                        "long-duration",
-                        Serdes.String().deserializer(),
-                        pageViewSerde.deserializer());
+            // Test branching with different durations
+            PageViewEvent shortEvent = new PageViewEvent("user1", "home", 20);
+            PageViewEvent mediumEvent = new PageViewEvent("user2", "products", 45);
+            PageViewEvent longEvent = new PageViewEvent("user3", "checkout", 75);
 
-        // Test branching with different durations
-        PageViewEvent shortEvent = new PageViewEvent("user1", "home", 20);
-        PageViewEvent mediumEvent = new PageViewEvent("user2", "products", 45);
-        PageViewEvent longEvent = new PageViewEvent("user3", "checkout", 75);
+            branchInputTopic.pipeInput("1", shortEvent);
+            branchInputTopic.pipeInput("2", mediumEvent);
+            branchInputTopic.pipeInput("3", longEvent);
 
-        branchInputTopic.pipeInput("1", shortEvent);
-        branchInputTopic.pipeInput("2", mediumEvent);
-        branchInputTopic.pipeInput("3", longEvent);
+            // Verify each branch received the correct events
+            List<PageViewEvent> shortEvents = shortDurationTopic.readValuesToList();
+            List<PageViewEvent> mediumEvents = mediumDurationTopic.readValuesToList();
+            List<PageViewEvent> longEvents = longDurationTopic.readValuesToList();
 
-        // Verify each branch received the correct events
-        List<PageViewEvent> shortEvents = shortDurationTopic.readValuesToList();
-        List<PageViewEvent> mediumEvents = mediumDurationTopic.readValuesToList();
-        List<PageViewEvent> longEvents = longDurationTopic.readValuesToList();
+            assertThat(shortEvents).hasSize(1);
+            assertThat(shortEvents.getFirst().getDuration()).isEqualTo(20);
 
-        assertThat(shortEvents).hasSize(1);
-        assertThat(shortEvents.getFirst().getDuration()).isEqualTo(20);
+            assertThat(mediumEvents).hasSize(1);
+            assertThat(mediumEvents.getFirst().getDuration()).isEqualTo(45);
 
-        assertThat(mediumEvents).hasSize(1);
-        assertThat(mediumEvents.getFirst().getDuration()).isEqualTo(45);
-
-        assertThat(longEvents).hasSize(1);
-        assertThat(longEvents.getFirst().getDuration()).isEqualTo(75);
-
-        branchTestDriver.close();
+            assertThat(longEvents).hasSize(1);
+            assertThat(longEvents.getFirst().getDuration()).isEqualTo(75);
+        } finally {
+            branchTestDriver.close();
+        }
     }
 }

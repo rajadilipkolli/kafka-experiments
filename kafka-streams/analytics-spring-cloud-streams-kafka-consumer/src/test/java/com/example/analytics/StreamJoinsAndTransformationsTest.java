@@ -88,6 +88,7 @@ class StreamJoinsAndTransformationsTest {
         props.put(
                 StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
                 Serdes.String().getClass().getName());
+        props.put(StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, 0);
 
         // Create a StreamsBuilder
         StreamsBuilder builder = new StreamsBuilder();
@@ -121,8 +122,9 @@ class StreamJoinsAndTransformationsTest {
                         Joined.with(Serdes.String(), pageViewSerde, userProfileSerde));
 
         // Output the enriched page views
-        joinedStream.to(
-                "enriched-page-views", Produced.with(Serdes.String(), enrichedPageViewSerde));
+        joinedStream
+                .filter((key, value) -> value != null) // Filter out null values from the join
+                .to("enriched-page-views", Produced.with(Serdes.String(), enrichedPageViewSerde));
 
         // Create the test driver
         testDriver = new TopologyTestDriver(builder.build(), props);
@@ -203,5 +205,69 @@ class StreamJoinsAndTransformationsTest {
 
         // There should be no more records since user3 had no profile
         assertThat(enrichedPageViewTopic.isEmpty()).isTrue();
+    }
+
+    @Test
+    void testUpdatedUserProfile() {
+        // Add initial user profile
+        UserProfile user1 = new UserProfile("user1", "John Doe", "USA");
+        userProfileTopic.pipeInput(user1.getUserId(), user1);
+
+        // Send page view event
+        PageViewEvent page1 = new PageViewEvent("user1", "home", 60);
+        pageViewTopic.pipeInput(page1.getUserId(), page1);
+
+        // Verify initial join result
+        EnrichedPageView result1 = enrichedPageViewTopic.readValue();
+        assertThat(result1.getUserId()).isEqualTo("user1");
+        assertThat(result1.getUserName()).isEqualTo("John Doe");
+
+        // Update the user profile
+        UserProfile updatedUser1 = new UserProfile("user1", "John Updated", "Canada");
+        userProfileTopic.pipeInput(user1.getUserId(), updatedUser1);
+
+        // Send another page view
+        PageViewEvent page2 = new PageViewEvent("user1", "products", 30);
+        pageViewTopic.pipeInput(page2.getUserId(), page2);
+
+        // Verify updated join result
+        EnrichedPageView result2 = enrichedPageViewTopic.readValue();
+        assertThat(result2.getUserId()).isEqualTo("user1");
+        assertThat(result2.getUserName()).isEqualTo("John Updated");
+        assertThat(result2.getUserCountry()).isEqualTo("Canada");
+    }
+
+    @Test
+    void testUserProfileUpdate() {
+        // Add initial user profile
+        UserProfile user1 = new UserProfile("user1", "John Doe", "USA");
+        userProfileTopic.pipeInput(user1.getUserId(), user1);
+
+        // Send a page view event
+        PageViewEvent page1 = new PageViewEvent("user1", "home", 60);
+        pageViewTopic.pipeInput(page1.getUserId(), page1);
+
+        // Verify the initial join result
+        EnrichedPageView result1 = enrichedPageViewTopic.readValue();
+        assertThat(result1).isNotNull();
+        assertThat(result1.getUserId()).isEqualTo("user1");
+        assertThat(result1.getUserName()).isEqualTo("John Doe");
+        assertThat(result1.getUserCountry()).isEqualTo("USA");
+
+        // Update the user profile
+        UserProfile updatedUser1 = new UserProfile("user1", "John Smith", "Canada");
+        userProfileTopic.pipeInput(user1.getUserId(), updatedUser1);
+
+        // Send another page view event for the same user
+        PageViewEvent page2 = new PageViewEvent("user1", "products", 45);
+        pageViewTopic.pipeInput(page1.getUserId(), page2);
+
+        // Verify the updated profile is used in the join
+        EnrichedPageView result2 = enrichedPageViewTopic.readValue();
+        assertThat(result2).isNotNull();
+        assertThat(result2.getUserId()).isEqualTo("user1");
+        assertThat(result2.getUserName()).isEqualTo("John Smith");
+        assertThat(result2.getUserCountry()).isEqualTo("Canada");
+        assertThat(result2.getPageName()).isEqualTo("products");
     }
 }
