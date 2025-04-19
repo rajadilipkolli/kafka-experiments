@@ -23,7 +23,9 @@ import org.apache.kafka.streams.kstream.Produced;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class StreamTableJoinsTest {
 
     private TopologyTestDriver testDriver;
@@ -34,66 +36,74 @@ class StreamTableJoinsTest {
 
     @BeforeEach
     void setUp() {
-        // Configure Kafka Streams for testing
-        Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "stream-table-join-test");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
-        props.put(
-                StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        props.put(
-                StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
-                Serdes.String().getClass().getName());
+        try {
+            // Configure Kafka Streams for testing
+            Properties props = new Properties();
+            props.put(StreamsConfig.APPLICATION_ID_CONFIG, "stream-table-join-test");
+            props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
+            props.put(
+                    StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,
+                    Serdes.String().getClass().getName());
+            props.put(
+                    StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
+                    JsonSerdeUtils.getJsonClass().getName());
 
-        // Build the topology
-        StreamsBuilder builder = new StreamsBuilder();
-        Serde<PageViewEvent> pageViewSerde =
-                JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper);
+            // Build the topology
+            StreamsBuilder builder = new StreamsBuilder();
+            Serde<PageViewEvent> pageViewSerde =
+                    JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper);
 
-        // Create streams and tables
-        KStream<String, PageViewEvent> pageViews =
-                builder.stream("page-views", Consumed.with(Serdes.String(), pageViewSerde));
+            // Create streams and tables
+            KStream<String, PageViewEvent> pageViews =
+                    builder.stream("page-views", Consumed.with(Serdes.String(), pageViewSerde));
 
-        KTable<String, String> userProfiles =
-                builder.table(
-                        "user-profiles",
-                        Consumed.with(Serdes.String(), Serdes.String()),
-                        Materialized.as("user-profile-store"));
+            KTable<String, String> userProfiles =
+                    builder.table(
+                            "user-profiles",
+                            Consumed.with(Serdes.String(), Serdes.String()),
+                            Materialized.as("user-profile-store"));
 
-        // Join the stream with the table
-        pageViews
-                .selectKey((key, value) -> value.getUserId())
-                .leftJoin(
-                        userProfiles,
-                        (pageView, userProfile) -> {
-                            String region = userProfile != null ? userProfile : "unknown";
-                            return String.format(
-                                    "Page: %s, User: %s, Region: %s, Duration: %d",
-                                    pageView.getPage(),
-                                    pageView.getUserId(),
-                                    region,
-                                    pageView.getDuration());
-                        },
-                        Joined.with(Serdes.String(), pageViewSerde, Serdes.String()))
-                .to("enriched-page-views", Produced.with(Serdes.String(), Serdes.String()));
+            // Join the stream with the table
+            pageViews
+                    .selectKey((key, value) -> value.getUserId())
+                    .leftJoin(
+                            userProfiles,
+                            (pageView, userProfile) -> {
+                                String region = userProfile != null ? userProfile : "unknown";
+                                return String.format(
+                                        "Page: %s, User: %s, Region: %s, Duration: %d",
+                                        pageView.getPage(),
+                                        pageView.getUserId(),
+                                        region,
+                                        pageView.getDuration());
+                            },
+                            Joined.with(Serdes.String(), pageViewSerde, Serdes.String()))
+                    .to("enriched-page-views", Produced.with(Serdes.String(), Serdes.String()));
 
-        // Create test driver and topics
-        testDriver = new TopologyTestDriver(builder.build(), props);
+            // Create test driver and topics
+            testDriver = new TopologyTestDriver(builder.build(), props);
 
-        pageViewTopic =
-                testDriver.createInputTopic(
-                        "page-views", Serdes.String().serializer(), pageViewSerde.serializer());
+            pageViewTopic =
+                    testDriver.createInputTopic(
+                            "page-views", Serdes.String().serializer(), pageViewSerde.serializer());
 
-        userProfileTopic =
-                testDriver.createInputTopic(
-                        "user-profiles",
-                        Serdes.String().serializer(),
-                        Serdes.String().serializer());
+            userProfileTopic =
+                    testDriver.createInputTopic(
+                            "user-profiles",
+                            Serdes.String().serializer(),
+                            Serdes.String().serializer());
 
-        enrichedPageViewTopic =
-                testDriver.createOutputTopic(
-                        "enriched-page-views",
-                        Serdes.String().deserializer(),
-                        Serdes.String().deserializer());
+            enrichedPageViewTopic =
+                    testDriver.createOutputTopic(
+                            "enriched-page-views",
+                            Serdes.String().deserializer(),
+                            Serdes.String().deserializer());
+        } catch (Exception e) {
+            if (testDriver != null) {
+                testDriver.close();
+            }
+            throw e;
+        }
     }
 
     @AfterEach

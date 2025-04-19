@@ -26,7 +26,9 @@ import org.apache.kafka.streams.state.Stores;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ProcessorApiTest {
 
     private TopologyTestDriver testDriver;
@@ -37,53 +39,67 @@ class ProcessorApiTest {
 
     @BeforeEach
     void setUp() {
-        // Configure Kafka Streams for testing
-        Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "processor-api-test");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
+        try {
+            // Configure Kafka Streams for testing
+            Properties props = new Properties();
+            props.put(StreamsConfig.APPLICATION_ID_CONFIG, "processor-api-test");
+            props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
+            props.put(
+                    StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,
+                    Serdes.String().getClass().getName());
+            props.put(
+                    StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
+                    JsonSerdeUtils.getJsonClass().getName());
 
-        // Create topology with processor API
-        Topology topology = new Topology();
+            // Create topology with processor API
+            Topology topology = new Topology();
 
-        // Add source node
-        topology.addSource(
-                "PageViewSource",
-                Serdes.String().deserializer(),
-                JsonSerdeUtils.jsonSerde(PageViewEvent.class).deserializer(),
-                "page-views");
+            // Add source node
+            topology.addSource(
+                    "PageViewSource",
+                    Serdes.String().deserializer(),
+                    JsonSerdeUtils.jsonSerde(PageViewEvent.class).deserializer(),
+                    "page-views");
 
-        // Add processor node
-        topology.addProcessor("PageViewProcessor", () -> new PageViewProcessor(), "PageViewSource");
+            // Add processor node
+            topology.addProcessor(
+                    "PageViewProcessor", () -> new PageViewProcessor(), "PageViewSource");
 
-        // Add state store
-        topology.addStateStore(
-                Stores.keyValueStoreBuilder(
-                        Stores.persistentKeyValueStore(STATE_STORE_NAME),
-                        Serdes.String(),
-                        Serdes.Long()),
-                "PageViewProcessor");
+            // Add state store
+            topology.addStateStore(
+                    Stores.keyValueStoreBuilder(
+                            Stores.persistentKeyValueStore(STATE_STORE_NAME),
+                            Serdes.String(),
+                            Serdes.Long()),
+                    "PageViewProcessor");
 
-        // Add sink node
-        topology.addSink(
-                "PageCountSink",
-                "page-counts",
-                new StringSerializer(),
-                new LongSerializer(),
-                "PageViewProcessor");
+            // Add sink node
+            topology.addSink(
+                    "PageCountSink",
+                    "page-counts",
+                    new StringSerializer(),
+                    new LongSerializer(),
+                    "PageViewProcessor");
 
-        // Create the test driver
-        testDriver = new TopologyTestDriver(topology, props);
+            // Create the test driver
+            testDriver = new TopologyTestDriver(topology, props);
 
-        // Create test topics
-        inputTopic =
-                testDriver.createInputTopic(
-                        "page-views",
-                        new StringSerializer(),
-                        JsonSerdeUtils.jsonSerde(PageViewEvent.class).serializer());
+            // Create test topics
+            inputTopic =
+                    testDriver.createInputTopic(
+                            "page-views",
+                            new StringSerializer(),
+                            JsonSerdeUtils.jsonSerde(PageViewEvent.class).serializer());
 
-        outputTopic =
-                testDriver.createOutputTopic(
-                        "page-counts", new StringDeserializer(), new LongDeserializer());
+            outputTopic =
+                    testDriver.createOutputTopic(
+                            "page-counts", new StringDeserializer(), new LongDeserializer());
+        } catch (Exception e) {
+            if (testDriver != null) {
+                testDriver.close();
+            }
+            throw e;
+        }
     }
 
     @AfterEach

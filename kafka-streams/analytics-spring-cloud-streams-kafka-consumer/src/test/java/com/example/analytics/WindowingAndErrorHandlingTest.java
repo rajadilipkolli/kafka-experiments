@@ -26,7 +26,9 @@ import org.apache.kafka.streams.kstream.WindowedSerdes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WindowingAndErrorHandlingTest {
 
     private static final long ONE_MINUTE = 60 * 1000L;
@@ -37,57 +39,65 @@ class WindowingAndErrorHandlingTest {
 
     @BeforeEach
     void setUp() {
-        // Configure Kafka Streams for testing
-        Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "windowing-error-handling-test");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
-        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, JsonSerdeUtils.JsonSerde.class);
+        try {
+            // Configure Kafka Streams for testing
+            Properties props = new Properties();
+            props.put(StreamsConfig.APPLICATION_ID_CONFIG, "windowing-error-handling-test");
+            props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
+            props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+            props.put(
+                    StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, JsonSerdeUtils.getJsonClass());
 
-        // Set up DeserializationExceptionHandler to continue on errors
-        props.put(
-                StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
-                LogAndContinueExceptionHandler.class);
+            // Set up DeserializationExceptionHandler to continue on errors
+            props.put(
+                    StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
+                    LogAndContinueExceptionHandler.class);
 
-        // Build the topology
-        StreamsBuilder builder = new StreamsBuilder();
-        Serde<PageViewEvent> pageViewSerde =
-                JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper);
+            // Build the topology
+            StreamsBuilder builder = new StreamsBuilder();
+            Serde<PageViewEvent> pageViewSerde =
+                    JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper);
 
-        // Create a windowed count stream
-        builder.stream("page-views", Consumed.with(Serdes.String(), pageViewSerde))
-                .groupBy(
-                        (key, value) -> value.getPage(),
-                        Grouped.with(Serdes.String(), pageViewSerde))
-                .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(1)))
-                .count()
-                .toStream()
-                .to(
-                        "windowed-counts",
-                        Produced.with(
-                                WindowedSerdes.timeWindowedSerdeFrom(String.class, ONE_MINUTE),
-                                Serdes.Long()));
+            // Create a windowed count stream
+            builder.stream("page-views", Consumed.with(Serdes.String(), pageViewSerde))
+                    .groupBy(
+                            (key, value) -> value.getPage(),
+                            Grouped.with(Serdes.String(), pageViewSerde))
+                    .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(1)))
+                    .count()
+                    .toStream()
+                    .to(
+                            "windowed-counts",
+                            Produced.with(
+                                    WindowedSerdes.timeWindowedSerdeFrom(String.class, ONE_MINUTE),
+                                    Serdes.Long()));
 
-        testDriver = new TopologyTestDriver(builder.build(), props);
+            testDriver = new TopologyTestDriver(builder.build(), props);
 
-        // Use custom time function to control event time
-        Instant now = Instant.parse("2025-04-19T10:00:00Z");
+            // Use custom time function to control event time
+            Instant now = Instant.parse("2025-04-19T10:00:00Z");
 
-        // Create test input and output topics
-        inputTopic =
-                testDriver.createInputTopic(
-                        "page-views",
-                        Serdes.String().serializer(),
-                        pageViewSerde.serializer(),
-                        now,
-                        Duration.ZERO); // Added Duration.ZERO parameter
+            // Create test input and output topics
+            inputTopic =
+                    testDriver.createInputTopic(
+                            "page-views",
+                            Serdes.String().serializer(),
+                            pageViewSerde.serializer(),
+                            now,
+                            Duration.ZERO); // Added Duration.ZERO parameter
 
-        outputTopic =
-                testDriver.createOutputTopic(
-                        "windowed-counts",
-                        WindowedSerdes.timeWindowedSerdeFrom(String.class, ONE_MINUTE)
-                                .deserializer(),
-                        Serdes.Long().deserializer());
+            outputTopic =
+                    testDriver.createOutputTopic(
+                            "windowed-counts",
+                            WindowedSerdes.timeWindowedSerdeFrom(String.class, ONE_MINUTE)
+                                    .deserializer(),
+                            Serdes.Long().deserializer());
+        } catch (Exception e) {
+            if (testDriver != null) {
+                testDriver.close();
+            }
+            throw e;
+        }
     }
 
     @AfterEach

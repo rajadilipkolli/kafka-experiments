@@ -23,7 +23,9 @@ import org.apache.kafka.streams.state.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class StateStoreAndInteractiveQueriesTest {
 
     private TopologyTestDriver testDriver;
@@ -33,45 +35,54 @@ class StateStoreAndInteractiveQueriesTest {
 
     @BeforeEach
     void setUp() {
-        // Configure Kafka Streams for testing
-        Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "state-store-test");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
-        props.put(
-                StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        props.put(
-                StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
-                Serdes.String().getClass().getName());
+        try {
+            // Configure Kafka Streams for testing
+            Properties props = new Properties();
+            props.put(StreamsConfig.APPLICATION_ID_CONFIG, "state-store-test");
+            props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
+            props.put(
+                    StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,
+                    Serdes.String().getClass().getName());
+            props.put(
+                    StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
+                    JsonSerdeUtils.getJsonClass().getName());
 
-        // Create a topology that processes page views and maintains average duration per page
-        StreamsBuilder builder = new StreamsBuilder();
+            // Create a topology that processes page views and maintains average duration per page
+            StreamsBuilder builder = new StreamsBuilder();
 
-        // Create state store for average duration
-        StoreBuilder<KeyValueStore<String, AvgDuration>> storeBuilder =
-                Stores.keyValueStoreBuilder(
-                        Stores.persistentKeyValueStore(AVG_DURATION_STORE),
-                        Serdes.String(),
-                        new AvgDurationSerde());
+            // Create state store for average duration
+            StoreBuilder<KeyValueStore<String, AvgDuration>> storeBuilder =
+                    Stores.keyValueStoreBuilder(
+                            Stores.persistentKeyValueStore(AVG_DURATION_STORE),
+                            Serdes.String(),
+                            new AvgDurationSerde());
 
-        builder.addStateStore(storeBuilder);
+            builder.addStateStore(storeBuilder);
 
-        // Process the input stream with a custom processor
-        builder.stream(
-                        "page-views",
-                        Consumed.with(
-                                Serdes.String(),
-                                JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper)))
-                .process(PageViewAverageProcessor::new, AVG_DURATION_STORE);
+            // Process the input stream with a custom processor
+            builder.stream(
+                            "page-views",
+                            Consumed.with(
+                                    Serdes.String(),
+                                    JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper)))
+                    .process(PageViewAverageProcessor::new, AVG_DURATION_STORE);
 
-        // Build topology
-        testDriver = new TopologyTestDriver(builder.build(), props);
+            // Build topology
+            testDriver = new TopologyTestDriver(builder.build(), props);
 
-        // Create input topic
-        inputTopic =
-                testDriver.createInputTopic(
-                        "page-views",
-                        Serdes.String().serializer(),
-                        JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper).serializer());
+            // Create input topic
+            inputTopic =
+                    testDriver.createInputTopic(
+                            "page-views",
+                            Serdes.String().serializer(),
+                            JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper)
+                                    .serializer());
+        } catch (Exception e) {
+            if (testDriver != null) {
+                testDriver.close();
+            }
+            throw e;
+        }
     }
 
     @AfterEach

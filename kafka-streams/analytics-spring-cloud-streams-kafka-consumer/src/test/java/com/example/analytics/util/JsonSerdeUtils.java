@@ -10,6 +10,15 @@ import org.apache.kafka.common.serialization.Serializer;
 public class JsonSerdeUtils {
 
     /**
+     * Returns the class of the JsonSerde implementation for use in configuration.
+     *
+     * @return Class of JsonSerde implementation
+     */
+    public static Class<?> getJsonClass() {
+        return JsonSerde.class;
+    }
+
+    /**
      * Creates a JSON Serde for the specified class type.
      *
      * @param <T> The type for which to create the Serde

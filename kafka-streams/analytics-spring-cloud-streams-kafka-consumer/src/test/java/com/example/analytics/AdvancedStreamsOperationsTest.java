@@ -25,7 +25,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AdvancedStreamsOperationsTest {
 
     private TopologyTestDriver testDriver;
@@ -38,53 +40,61 @@ class AdvancedStreamsOperationsTest {
 
     @BeforeEach
     void setUp() {
-        props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "advanced-operations-test");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
-        props.put(
-                StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        props.put(
-                StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
-                Serdes.String().getClass().getName());
-        props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 10); // Lower for tests
-        props.put(
-                StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
-                LogAndContinueExceptionHandler.class.getName());
+        try {
+            props = new Properties();
+            props.put(StreamsConfig.APPLICATION_ID_CONFIG, "advanced-operations-test");
+            props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
+            props.put(
+                    StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,
+                    Serdes.String().getClass().getName());
+            props.put(
+                    StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
+                    JsonSerdeUtils.getJsonClass().getName());
+            props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 10); // Lower for tests
+            props.put(
+                    StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
+                    LogAndContinueExceptionHandler.class.getName());
 
-        // Build the topology for testing
-        StreamsBuilder builder = new StreamsBuilder();
+            // Build the topology for testing
+            StreamsBuilder builder = new StreamsBuilder();
 
-        // Use the common JsonSerdeUtils
-        Serde<PageViewEvent> pageViewSerde =
-                JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper);
+            // Use the common JsonSerdeUtils
+            Serde<PageViewEvent> pageViewSerde =
+                    JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper);
 
-        // Create a KStream from the input topic
-        KStream<String, PageViewEvent> pageViewStream =
-                builder.stream("page-views", Consumed.with(Serdes.String(), pageViewSerde));
+            // Create a KStream from the input topic
+            KStream<String, PageViewEvent> pageViewStream =
+                    builder.stream("page-views", Consumed.with(Serdes.String(), pageViewSerde));
 
-        // Perform grouping and aggregation (summing durations)
-        pageViewStream
-                .selectKey((key, value) -> value.getUserId())
-                .groupByKey()
-                .aggregate(
-                        () -> 0L, // Initial value
-                        (key, value, aggregate) -> aggregate + value.getDuration(),
-                        Materialized.with(Serdes.String(), Serdes.Long()))
-                .toStream()
-                .to("user-total-duration", Produced.with(Serdes.String(), Serdes.Long()));
+            // Perform grouping and aggregation (summing durations)
+            pageViewStream
+                    .selectKey((key, value) -> value.getUserId())
+                    .groupByKey()
+                    .aggregate(
+                            () -> 0L, // Initial value
+                            (key, value, aggregate) -> aggregate + value.getDuration(),
+                            Materialized.with(Serdes.String(), Serdes.Long()))
+                    .toStream()
+                    .to("user-total-duration", Produced.with(Serdes.String(), Serdes.Long()));
 
-        // Create test driver and topics
-        testDriver = new TopologyTestDriver(builder.build(), props);
+            // Create test driver and topics
+            testDriver = new TopologyTestDriver(builder.build(), props);
 
-        inputTopic =
-                testDriver.createInputTopic(
-                        "page-views", Serdes.String().serializer(), pageViewSerde.serializer());
+            inputTopic =
+                    testDriver.createInputTopic(
+                            "page-views", Serdes.String().serializer(), pageViewSerde.serializer());
 
-        outputTopic =
-                testDriver.createOutputTopic(
-                        "user-total-duration",
-                        Serdes.String().deserializer(),
-                        Serdes.Long().deserializer());
+            outputTopic =
+                    testDriver.createOutputTopic(
+                            "user-total-duration",
+                            Serdes.String().deserializer(),
+                            Serdes.Long().deserializer());
+        } catch (Exception e) {
+            if (testDriver != null) {
+                testDriver.close();
+            }
+            throw e;
+        }
     }
 
     @AfterEach
@@ -144,8 +154,10 @@ class AdvancedStreamsOperationsTest {
         branches[2].to("long-duration", Produced.with(Serdes.String(), pageViewSerde));
 
         // Create a new test driver with this topology
-        TopologyTestDriver branchTestDriver = new TopologyTestDriver(builder.build(), props);
+        TopologyTestDriver branchTestDriver = null;
         try {
+            branchTestDriver = new TopologyTestDriver(builder.build(), props);
+
             // Create test topics
             TestInputTopic<String, PageViewEvent> branchInputTopic =
                     branchTestDriver.createInputTopic(
@@ -191,8 +203,15 @@ class AdvancedStreamsOperationsTest {
 
             assertThat(longEvents).hasSize(1);
             assertThat(longEvents.getFirst().getDuration()).isEqualTo(75);
+        } catch (Exception e) {
+            if (branchTestDriver != null) {
+                branchTestDriver.close();
+            }
+            throw e;
         } finally {
-            branchTestDriver.close();
+            if (branchTestDriver != null) {
+                branchTestDriver.close();
+            }
         }
     }
 }
