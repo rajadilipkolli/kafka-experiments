@@ -1,8 +1,10 @@
 package com.sivalabs.sample;
 
-import org.junit.jupiter.api.BeforeAll;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.listener.MessageListenerContainer;
@@ -10,16 +12,14 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import java.util.concurrent.TimeUnit;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@ContextConfiguration(classes = KafkaConfig.class)
+@SpringJUnitConfig(classes = KafkaConfig.class)
 @EmbeddedKafka(
-    bootstrapServersProperty = "spring.kafka.bootstrap-servers")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+        partitions = 1,
+        kraft = true,
+        topics = {KafkaConfig.TOPIC})
+@DirtiesContext
 class SpringKafkaDemoTest {
 
     @Autowired
@@ -31,22 +31,24 @@ class SpringKafkaDemoTest {
     @Autowired
     private KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
 
-    @Autowired private EmbeddedKafkaBroker embeddedKafkaBroker;
+    @Autowired
+    private EmbeddedKafkaBroker embeddedKafkaBroker;
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
+
         // wait until the partitions are assigned
         for (MessageListenerContainer messageListenerContainer :
                 kafkaListenerEndpointRegistry.getListenerContainers()) {
-            ContainerTestUtils.waitForAssignment(
-                    messageListenerContainer, embeddedKafkaBroker.getPartitionsPerTopic());
+            ContainerTestUtils.waitForAssignment(messageListenerContainer, embeddedKafkaBroker.getPartitionsPerTopic());
         }
     }
 
     @Test
     void sendMessage() throws InterruptedException {
-        messageSender.send("test-key","test-value");
-        messageListener.getLatch().await(10, TimeUnit.SECONDS);
+        messageSender.send("test-key", "test-value");
+        boolean messageReceived = messageListener.getLatch().await(10, TimeUnit.SECONDS);
+        assertThat(messageReceived).isTrue();
         assertThat(messageListener.getLatch().getCount()).isEqualTo(0);
     }
 }
