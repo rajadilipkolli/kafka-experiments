@@ -3,15 +3,25 @@ package com.example.analytics;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.example.analytics.StreamJoinsAndTransformationsTest.EnrichedPageView;
 import com.example.analytics.model.PageViewEvent;
 import com.example.analytics.util.JsonSerdeUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.kafka.common.serialization.*;
-import org.apache.kafka.streams.*;
-import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.common.serialization.Serde;
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.TestInputTopic;
+import org.apache.kafka.streams.TestOutputTopic;
+import org.apache.kafka.streams.TopologyTestDriver;
+import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.Joined;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Produced;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

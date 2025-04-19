@@ -1,4 +1,4 @@
-/* Licensed under Apache-2.0 2019-2023 */
+/* Licensed under Apache-2.0 2019-2025 */
 package com.example.analytics;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,6 +62,11 @@ class AnalyticsConsumerApplicationIntegrationTest extends AbstractIntegrationTes
                             String content = response.getContentAsString();
                             assertThat(content).isNotEmpty();
                             // Further assertions based on expected data structure
+                            assertThat(content).contains("\"about\"");
+                            assertThat(content).contains("\"checkout\"");
+                            assertThat(content).contains("\"cart\"");
+                            assertThat(content).contains("\"home\"");
+                            assertThat(content).contains("\"products\"");
                         });
     }
 }

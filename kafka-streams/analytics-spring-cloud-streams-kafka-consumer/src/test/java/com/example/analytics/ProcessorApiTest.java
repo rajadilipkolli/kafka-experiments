@@ -3,11 +3,21 @@ package com.example.analytics;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.example.analytics.ProcessorApiTest.PageViewProcessor;
 import com.example.analytics.model.PageViewEvent;
 import com.example.analytics.util.JsonSerdeUtils;
 import java.util.Properties;
-import org.apache.kafka.common.serialization.*;
-import org.apache.kafka.streams.*;
+import org.apache.kafka.common.serialization.LongDeserializer;
+import org.apache.kafka.common.serialization.LongSerializer;
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.TestInputTopic;
+import org.apache.kafka.streams.TestOutputTopic;
+import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
