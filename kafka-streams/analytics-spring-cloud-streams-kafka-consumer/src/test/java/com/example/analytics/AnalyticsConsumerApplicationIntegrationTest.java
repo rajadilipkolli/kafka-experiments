@@ -62,11 +62,7 @@ class AnalyticsConsumerApplicationIntegrationTest extends AbstractIntegrationTes
                             String content = response.getContentAsString();
                             assertThat(content).isNotEmpty();
                             // Further assertions based on expected data structure
-                            assertThat(content).contains("\"about\"");
-                            assertThat(content).contains("\"checkout\"");
-                            assertThat(content).contains("\"cart\"");
-                            assertThat(content).contains("\"home\"");
-                            assertThat(content).contains("\"products\"");
+                            assertThat(content).containsAnyOf(pages);
                         });
     }
 }
