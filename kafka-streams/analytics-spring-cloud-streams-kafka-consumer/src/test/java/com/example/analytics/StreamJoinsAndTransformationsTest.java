@@ -4,8 +4,11 @@ package com.example.analytics;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.analytics.model.PageViewEvent;
+import com.example.analytics.util.JsonSerdeUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Properties;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.kafka.common.serialization.*;
 import org.apache.kafka.streams.*;
 import org.apache.kafka.streams.kstream.*;
@@ -22,6 +25,8 @@ class StreamJoinsAndTransformationsTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // User profile model for join demonstration
+    @Setter
+    @Getter
     static class UserProfile {
         private String userId;
         private String name;
@@ -34,88 +39,30 @@ class StreamJoinsAndTransformationsTest {
             this.name = name;
             this.country = country;
         }
-
-        public String getUserId() {
-            return userId;
-        }
-
-        public void setUserId(String userId) {
-            this.userId = userId;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getCountry() {
-            return country;
-        }
-
-        public void setCountry(String country) {
-            this.country = country;
-        }
     }
 
     // Enriched page view model after join operation
+    @Setter
+    @Getter
     static class EnrichedPageView {
         private String userId;
         private String userName;
-        private String country;
-        private String page;
+        private String userCountry;
+        private String pageName;
         private long duration;
 
         public EnrichedPageView() {}
 
         public EnrichedPageView(
-                String userId, String userName, String country, String page, long duration) {
+                String userId,
+                String userName,
+                String userCountry,
+                String pageName,
+                long duration) {
             this.userId = userId;
             this.userName = userName;
-            this.country = country;
-            this.page = page;
-            this.duration = duration;
-        }
-
-        public String getUserId() {
-            return userId;
-        }
-
-        public void setUserId(String userId) {
-            this.userId = userId;
-        }
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }
-
-        public String getCountry() {
-            return country;
-        }
-
-        public void setCountry(String country) {
-            this.country = country;
-        }
-
-        public String getPage() {
-            return page;
-        }
-
-        public void setPage(String page) {
-            this.page = page;
-        }
-
-        public long getDuration() {
-            return duration;
-        }
-
-        public void setDuration(long duration) {
+            this.userCountry = userCountry;
+            this.pageName = pageName;
             this.duration = duration;
         }
     }
@@ -136,10 +83,12 @@ class StreamJoinsAndTransformationsTest {
         StreamsBuilder builder = new StreamsBuilder();
 
         // Create serde instances for custom types
-        JsonSerde<PageViewEvent> pageViewSerde = new JsonSerde<>(PageViewEvent.class, objectMapper);
-        JsonSerde<UserProfile> userProfileSerde = new JsonSerde<>(UserProfile.class, objectMapper);
-        JsonSerde<EnrichedPageView> enrichedPageViewSerde =
-                new JsonSerde<>(EnrichedPageView.class, objectMapper);
+        Serde<PageViewEvent> pageViewSerde =
+                JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper);
+        Serde<UserProfile> userProfileSerde =
+                JsonSerdeUtils.jsonSerde(UserProfile.class, objectMapper);
+        Serde<EnrichedPageView> enrichedPageViewSerde =
+                JsonSerdeUtils.jsonSerde(EnrichedPageView.class, objectMapper);
 
         // Create streams for page views and user profiles
         KStream<String, PageViewEvent> pageViewStream =
@@ -158,17 +107,17 @@ class StreamJoinsAndTransformationsTest {
                                         profile.getName(),
                                         profile.getCountry(),
                                         pageView.getPage(),
-                                        pageView.getDuration()));
+                                        pageView.getDuration()),
+                        Joined.with(Serdes.String(), pageViewSerde, userProfileSerde));
 
-        // Output the joined stream
+        // Output the enriched page views
         joinedStream.to(
                 "enriched-page-views", Produced.with(Serdes.String(), enrichedPageViewSerde));
 
-        // Create the topology and test driver
-        Topology topology = builder.build();
-        testDriver = new TopologyTestDriver(topology, props);
+        // Create the test driver
+        testDriver = new TopologyTestDriver(builder.build(), props);
 
-        // Setup test topics
+        // Create test topics
         pageViewTopic =
                 testDriver.createInputTopic(
                         "page-views", Serdes.String().serializer(), pageViewSerde.serializer());
@@ -195,91 +144,54 @@ class StreamJoinsAndTransformationsTest {
 
     @Test
     void testPageViewUserProfileJoin() {
-        // First add user profiles to the KTable
-        userProfileTopic.pipeInput("user1", new UserProfile("user1", "Alice", "USA"));
-        userProfileTopic.pipeInput("user2", new UserProfile("user2", "Bob", "Canada"));
+        // Add user profiles to the table
+        UserProfile user1 = new UserProfile("user1", "John Doe", "USA");
+        UserProfile user2 = new UserProfile("user2", "Jane Smith", "Canada");
+        userProfileTopic.pipeInput(user1.getUserId(), user1);
+        userProfileTopic.pipeInput(user2.getUserId(), user2);
 
-        // Then send page view events
-        pageViewTopic.pipeInput("user1", new PageViewEvent("user1", "home", 30));
-        pageViewTopic.pipeInput("user2", new PageViewEvent("user2", "products", 45));
-        pageViewTopic.pipeInput("user1", new PageViewEvent("user1", "checkout", 60));
+        // Send page view events
+        PageViewEvent page1 = new PageViewEvent("user1", "home", 60);
+        PageViewEvent page2 = new PageViewEvent("user2", "products", 120);
+        pageViewTopic.pipeInput(page1.getUserId(), page1);
+        pageViewTopic.pipeInput(page2.getUserId(), page2);
 
-        // Verify the join results
+        // Verify the joined results
         EnrichedPageView result1 = enrichedPageViewTopic.readValue();
+        assertThat(result1).isNotNull();
         assertThat(result1.getUserId()).isEqualTo("user1");
-        assertThat(result1.getUserName()).isEqualTo("Alice");
-        assertThat(result1.getCountry()).isEqualTo("USA");
-        assertThat(result1.getPage()).isEqualTo("home");
-        assertThat(result1.getDuration()).isEqualTo(30);
+        assertThat(result1.getUserName()).isEqualTo("John Doe");
+        assertThat(result1.getUserCountry()).isEqualTo("USA");
+        assertThat(result1.getPageName()).isEqualTo("home");
+        assertThat(result1.getDuration()).isEqualTo(60);
 
         EnrichedPageView result2 = enrichedPageViewTopic.readValue();
+        assertThat(result2).isNotNull();
         assertThat(result2.getUserId()).isEqualTo("user2");
-        assertThat(result2.getUserName()).isEqualTo("Bob");
-        assertThat(result2.getCountry()).isEqualTo("Canada");
-        assertThat(result2.getPage()).isEqualTo("products");
-        assertThat(result2.getDuration()).isEqualTo(45);
-
-        EnrichedPageView result3 = enrichedPageViewTopic.readValue();
-        assertThat(result3.getUserId()).isEqualTo("user1");
-        assertThat(result3.getUserName()).isEqualTo("Alice");
-        assertThat(result3.getCountry()).isEqualTo("USA");
-        assertThat(result3.getPage()).isEqualTo("checkout");
-        assertThat(result3.getDuration()).isEqualTo(60);
+        assertThat(result2.getUserName()).isEqualTo("Jane Smith");
+        assertThat(result2.getUserCountry()).isEqualTo("Canada");
+        assertThat(result2.getPageName()).isEqualTo("products");
+        assertThat(result2.getDuration()).isEqualTo(120);
     }
 
     @Test
     void testMissingUserProfile() {
-        // Add only one user profile
-        userProfileTopic.pipeInput("user1", new UserProfile("user1", "Alice", "USA"));
+        // Add just one user profile
+        UserProfile user1 = new UserProfile("user1", "John Doe", "USA");
+        userProfileTopic.pipeInput(user1.getUserId(), user1);
 
-        // Send page views for both a known and unknown user
-        pageViewTopic.pipeInput("user1", new PageViewEvent("user1", "home", 30));
-        pageViewTopic.pipeInput("unknown", new PageViewEvent("unknown", "home", 20));
-        pageViewTopic.pipeInput("user1", new PageViewEvent("user1", "about", 15));
+        // Send two page views but only one has a matching profile
+        PageViewEvent page1 = new PageViewEvent("user1", "home", 60);
+        PageViewEvent page2 = new PageViewEvent("user3", "cart", 90); // no profile for user3
+        pageViewTopic.pipeInput(page1.getUserId(), page1);
+        pageViewTopic.pipeInput(page2.getUserId(), page2);
 
-        // Verify the join results - should only see results for user1
-        EnrichedPageView result1 = enrichedPageViewTopic.readValue();
-        assertThat(result1.getUserId()).isEqualTo("user1");
-        assertThat(result1.getPage()).isEqualTo("home");
+        // Only one result should be produced (inner join)
+        EnrichedPageView result = enrichedPageViewTopic.readValue();
+        assertThat(result).isNotNull();
+        assertThat(result.getUserId()).isEqualTo("user1");
 
-        EnrichedPageView result2 = enrichedPageViewTopic.readValue();
-        assertThat(result2.getUserId()).isEqualTo("user1");
-        assertThat(result2.getPage()).isEqualTo("about");
-
-        // Should have no more results since "unknown" user didn't match
+        // There should be no more records since user3 had no profile
         assertThat(enrichedPageViewTopic.isEmpty()).isTrue();
-    }
-
-    // Helper class for JSON serialization/deserialization
-    private static class JsonSerde<T> implements Serde<T> {
-        private final ObjectMapper mapper;
-        private final Class<T> cls;
-
-        public JsonSerde(Class<T> cls, ObjectMapper mapper) {
-            this.cls = cls;
-            this.mapper = mapper;
-        }
-
-        @Override
-        public Serializer<T> serializer() {
-            return (topic, data) -> {
-                try {
-                    return mapper.writeValueAsBytes(data);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            };
-        }
-
-        @Override
-        public Deserializer<T> deserializer() {
-            return (topic, data) -> {
-                try {
-                    return mapper.readValue(data, cls);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            };
-        }
     }
 }

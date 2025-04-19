@@ -4,8 +4,9 @@ package com.example.analytics;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.analytics.model.PageViewEvent;
+import com.example.analytics.util.JsonSerdeUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Duration;
+import java.util.List;
 import java.util.Properties;
 import org.apache.kafka.common.serialization.*;
 import org.apache.kafka.streams.*;
@@ -19,12 +20,13 @@ class AdvancedStreamsOperationsTest {
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, PageViewEvent> inputTopic;
     private TestOutputTopic<String, Long> outputTopic;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
         // Configure Kafka Streams for testing
         Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "advanced-streams-test");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "advanced-operations-test");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         props.put(
                 StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
@@ -32,81 +34,34 @@ class AdvancedStreamsOperationsTest {
                 StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
                 Serdes.String().getClass().getName());
 
-        // Build the topology
+        // Build the topology for testing
         StreamsBuilder builder = new StreamsBuilder();
 
-        // Create an input topic for PageViewEvents
+        // Use the common JsonSerdeUtils
+        Serde<PageViewEvent> pageViewSerde =
+                JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper);
+
+        // Create a KStream from the input topic
         KStream<String, PageViewEvent> pageViewStream =
-                builder.stream(
-                        "page-views",
-                        Consumed.with(Serdes.String(), new JsonSerde<>(PageViewEvent.class)));
+                builder.stream("page-views", Consumed.with(Serdes.String(), pageViewSerde));
 
-        // 1. Demonstrate time windowing aggregation
+        // Perform grouping and aggregation (summing durations)
         pageViewStream
-                .groupBy(
-                        (key, value) -> value.getPage(),
-                        Grouped.with(Serdes.String(), new JsonSerde<>(PageViewEvent.class)))
-                .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(5)))
-                .count()
-                .toStream()
-                .map(
-                        (windowedKey, count) ->
-                                KeyValue.pair(
-                                        windowedKey.key()
-                                                + "@"
-                                                + windowedKey.window().start()
-                                                + "-"
-                                                + windowedKey.window().end(),
-                                        count))
-                .to("page-counts-windowed", Produced.with(Serdes.String(), Serdes.Long()));
-
-        // 2. Filtering and branching example
-        KStream<String, PageViewEvent>[] branches =
-                pageViewStream.branch(
-                        (key, event) -> event.getDuration() > 60, // Long visits (>1 min)
-                        (key, event) ->
-                                event.getDuration() > 10
-                                        && event.getDuration() <= 60, // Medium visits
-                        (key, event) -> event.getDuration() <= 10 // Short visits
-                        );
-
-        // Long visits
-        branches[0]
-                .mapValues(event -> event.getDuration())
-                .to("long-visits", Produced.with(Serdes.String(), Serdes.Long()));
-
-        // Medium visits
-        branches[1]
-                .mapValues(event -> event.getDuration())
-                .to("medium-visits", Produced.with(Serdes.String(), Serdes.Long()));
-
-        // Short visits
-        branches[2]
-                .mapValues(event -> event.getDuration())
-                .to("short-visits", Produced.with(Serdes.String(), Serdes.Long()));
-
-        // 3. Aggregating total duration per user
-        pageViewStream
-                .groupBy(
-                        (key, value) -> value.getUserId(),
-                        Grouped.with(Serdes.String(), new JsonSerde<>(PageViewEvent.class)))
+                .selectKey((key, value) -> value.getUserId())
+                .groupByKey()
                 .aggregate(
-                        () -> 0L, // initializer
-                        (userId, event, total) -> total + event.getDuration(), // aggregator
+                        () -> 0L, // Initial value
+                        (key, value, aggregate) -> aggregate + value.getDuration(),
                         Materialized.with(Serdes.String(), Serdes.Long()))
                 .toStream()
                 .to("user-total-duration", Produced.with(Serdes.String(), Serdes.Long()));
 
-        // Create the topology and test driver
-        Topology topology = builder.build();
-        testDriver = new TopologyTestDriver(topology, props);
+        // Create test driver and topics
+        testDriver = new TopologyTestDriver(builder.build(), props);
 
-        // Setup input and output topics
         inputTopic =
                 testDriver.createInputTopic(
-                        "page-views",
-                        Serdes.String().serializer(),
-                        new JsonSerde<>(PageViewEvent.class).serializer());
+                        "page-views", Serdes.String().serializer(), pageViewSerde.serializer());
 
         outputTopic =
                 testDriver.createOutputTopic(
@@ -124,83 +79,103 @@ class AdvancedStreamsOperationsTest {
 
     @Test
     void testUserDurationAggregation() {
-        // Send page views for the same user
-        String userId = "user123";
+        // Send page view events for different users
+        inputTopic.pipeInput("1", new PageViewEvent("user1", "home", 30));
+        inputTopic.pipeInput("2", new PageViewEvent("user2", "products", 40));
+        inputTopic.pipeInput("3", new PageViewEvent("user1", "cart", 20));
+        inputTopic.pipeInput("4", new PageViewEvent("user3", "home", 60));
+        inputTopic.pipeInput("5", new PageViewEvent("user2", "checkout", 50));
 
-        inputTopic.pipeInput(userId, new PageViewEvent(userId, "home", 30));
-        inputTopic.pipeInput(userId, new PageViewEvent(userId, "products", 45));
-        inputTopic.pipeInput(userId, new PageViewEvent(userId, "cart", 15));
-
-        // Verify the user's total duration is calculated correctly
-        KeyValue<String, Long> output = outputTopic.readKeyValue();
-        assertThat(output.key).isEqualTo(userId);
-        assertThat(output.value).isEqualTo(30L);
-
-        output = outputTopic.readKeyValue();
-        assertThat(output.key).isEqualTo(userId);
-        assertThat(output.value).isEqualTo(75L);
-
-        output = outputTopic.readKeyValue();
-        assertThat(output.key).isEqualTo(userId);
-        assertThat(output.value).isEqualTo(90L);
+        // Verify aggregated durations for each user
+        assertThat(outputTopic.readKeyValue()).isEqualTo(new KeyValue<>("user1", 30L));
+        assertThat(outputTopic.readKeyValue()).isEqualTo(new KeyValue<>("user2", 40L));
+        assertThat(outputTopic.readKeyValue()).isEqualTo(new KeyValue<>("user1", 50L)); // 30 + 20
+        assertThat(outputTopic.readKeyValue()).isEqualTo(new KeyValue<>("user3", 60L));
+        assertThat(outputTopic.readKeyValue()).isEqualTo(new KeyValue<>("user2", 90L)); // 40 + 50
     }
 
-    // Helper class for JSON serialization/deserialization
-    public static class JsonSerde<T> implements Serde<T> {
-        private final JsonSerializer<T> serializer;
-        private final JsonDeserializer<T> deserializer;
-
-        public JsonSerde(Class<T> cls) {
-            this.serializer = new JsonSerializer<>(cls);
-            this.deserializer = new JsonDeserializer<>(cls);
-        }
-
-        @Override
-        public Serializer<T> serializer() {
-            return serializer;
-        }
-
-        @Override
-        public Deserializer<T> deserializer() {
-            return deserializer;
-        }
+    @Test
+    void testTimeWindowedAggregation() {
+        // Running a time window test would be complex and involve time manipulation
+        // This is a placeholder - see WindowingAndErrorHandlingTest for time window tests
     }
 
-    public static class JsonSerializer<T> implements Serializer<T> {
-        private final ObjectMapper mapper = new ObjectMapper();
-        private final Class<T> cls;
+    @Test
+    void testBranchingOperations() {
+        // Create a new topology with branch operations
+        StreamsBuilder builder = new StreamsBuilder();
+        Serde<PageViewEvent> pageViewSerde =
+                JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper);
 
-        public JsonSerializer(Class<T> cls) {
-            this.cls = cls;
-        }
+        // Get the page view stream
+        KStream<String, PageViewEvent> pageViewStream =
+                builder.stream("page-views", Consumed.with(Serdes.String(), pageViewSerde));
 
-        @Override
-        public byte[] serialize(String topic, T data) {
-            if (data == null) return null;
-            try {
-                return mapper.writeValueAsBytes(data);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
+        // Split into branches based on duration:
+        // Branch 0: duration < 30
+        // Branch 1: duration >= 30 && duration < 60
+        // Branch 2: duration >= 60
+        KStream<String, PageViewEvent>[] branches =
+                pageViewStream.branch(
+                        (key, value) -> value.getDuration() < 30,
+                        (key, value) -> value.getDuration() >= 30 && value.getDuration() < 60,
+                        (key, value) -> value.getDuration() >= 60);
 
-    public static class JsonDeserializer<T> implements Deserializer<T> {
-        private final ObjectMapper mapper = new ObjectMapper();
-        private final Class<T> cls;
+        // Process each branch by sending to different topics
+        branches[0].to("short-duration", Produced.with(Serdes.String(), pageViewSerde));
+        branches[1].to("medium-duration", Produced.with(Serdes.String(), pageViewSerde));
+        branches[2].to("long-duration", Produced.with(Serdes.String(), pageViewSerde));
 
-        public JsonDeserializer(Class<T> cls) {
-            this.cls = cls;
-        }
+        // Create a new test driver with this topology
+        TopologyTestDriver branchTestDriver =
+                new TopologyTestDriver(builder.build(), new Properties());
 
-        @Override
-        public T deserialize(String topic, byte[] data) {
-            if (data == null) return null;
-            try {
-                return mapper.readValue(data, cls);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
+        // Create test topics
+        TestInputTopic<String, PageViewEvent> branchInputTopic =
+                branchTestDriver.createInputTopic(
+                        "page-views", Serdes.String().serializer(), pageViewSerde.serializer());
+
+        TestOutputTopic<String, PageViewEvent> shortDurationTopic =
+                branchTestDriver.createOutputTopic(
+                        "short-duration",
+                        Serdes.String().deserializer(),
+                        pageViewSerde.deserializer());
+
+        TestOutputTopic<String, PageViewEvent> mediumDurationTopic =
+                branchTestDriver.createOutputTopic(
+                        "medium-duration",
+                        Serdes.String().deserializer(),
+                        pageViewSerde.deserializer());
+
+        TestOutputTopic<String, PageViewEvent> longDurationTopic =
+                branchTestDriver.createOutputTopic(
+                        "long-duration",
+                        Serdes.String().deserializer(),
+                        pageViewSerde.deserializer());
+
+        // Test branching with different durations
+        PageViewEvent shortEvent = new PageViewEvent("user1", "home", 20);
+        PageViewEvent mediumEvent = new PageViewEvent("user2", "products", 45);
+        PageViewEvent longEvent = new PageViewEvent("user3", "checkout", 75);
+
+        branchInputTopic.pipeInput("1", shortEvent);
+        branchInputTopic.pipeInput("2", mediumEvent);
+        branchInputTopic.pipeInput("3", longEvent);
+
+        // Verify each branch received the correct events
+        List<PageViewEvent> shortEvents = shortDurationTopic.readValuesToList();
+        List<PageViewEvent> mediumEvents = mediumDurationTopic.readValuesToList();
+        List<PageViewEvent> longEvents = longDurationTopic.readValuesToList();
+
+        assertThat(shortEvents).hasSize(1);
+        assertThat(shortEvents.getFirst().getDuration()).isEqualTo(20);
+
+        assertThat(mediumEvents).hasSize(1);
+        assertThat(mediumEvents.getFirst().getDuration()).isEqualTo(45);
+
+        assertThat(longEvents).hasSize(1);
+        assertThat(longEvents.getFirst().getDuration()).isEqualTo(75);
+
+        branchTestDriver.close();
     }
 }

@@ -4,6 +4,7 @@ package com.example.analytics;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.analytics.model.PageViewEvent;
+import com.example.analytics.util.JsonSerdeUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Properties;
 import org.apache.kafka.common.serialization.*;
@@ -35,54 +36,39 @@ class StreamTableJoinsTest {
 
         // Build the topology
         StreamsBuilder builder = new StreamsBuilder();
+        Serde<PageViewEvent> pageViewSerde =
+                JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper);
 
-        // Create a JsonSerde for PageViewEvent
-        JsonSerde<PageViewEvent> pageViewSerde = new JsonSerde<>(PageViewEvent.class);
-
-        // Create a KStream for page views
+        // Create streams and tables
         KStream<String, PageViewEvent> pageViews =
                 builder.stream("page-views", Consumed.with(Serdes.String(), pageViewSerde));
 
-        // Create a KTable for user profiles - a simple mapping of userId to user region/category
         KTable<String, String> userProfiles =
                 builder.table(
                         "user-profiles",
                         Consumed.with(Serdes.String(), Serdes.String()),
                         Materialized.as("user-profile-store"));
 
-        // Join the stream of page views with the table of user profiles
-        KStream<String, String> enrichedPageViews =
-                pageViews
-                        .selectKey(
-                                (key, value) ->
-                                        value.getUserId()) // Repartition by userId for the join
-                        .leftJoin(
-                                userProfiles,
-                                (pageView, userProfile) -> {
-                                    // Combine page view with user profile information
-                                    String region = userProfile != null ? userProfile : "unknown";
-                                    return String.format(
-                                            "Page: %s, User: %s, Region: %s, Duration: %d",
-                                            pageView.getPage(),
-                                            pageView.getUserId(),
-                                            region,
-                                            pageView.getDuration());
-                                },
-                                Joined.with(
-                                        Serdes.String(), // Join key serde
-                                        pageViewSerde, // Page view serde
-                                        Serdes.String() // User profile serde
-                                        ));
+        // Join the stream with the table
+        pageViews
+                .selectKey((key, value) -> value.getUserId())
+                .leftJoin(
+                        userProfiles,
+                        (pageView, userProfile) -> {
+                            String region = userProfile != null ? userProfile : "unknown";
+                            return String.format(
+                                    "Page: %s, User: %s, Region: %s, Duration: %d",
+                                    pageView.getPage(),
+                                    pageView.getUserId(),
+                                    region,
+                                    pageView.getDuration());
+                        },
+                        Joined.with(Serdes.String(), pageViewSerde, Serdes.String()))
+                .to("enriched-page-views", Produced.with(Serdes.String(), Serdes.String()));
 
-        // Output the enriched page views to a topic
-        enrichedPageViews.to(
-                "enriched-page-views", Produced.with(Serdes.String(), Serdes.String()));
+        // Create test driver and topics
+        testDriver = new TopologyTestDriver(builder.build(), props);
 
-        // Build the topology and the test driver
-        Topology topology = builder.build();
-        testDriver = new TopologyTestDriver(topology, props);
-
-        // Create test input and output topics
         pageViewTopic =
                 testDriver.createInputTopic(
                         "page-views", Serdes.String().serializer(), pageViewSerde.serializer());
@@ -124,13 +110,10 @@ class StreamTableJoinsTest {
         // 3. Read and validate the enriched output - we should have four records
         assertThat(enrichedPageViewTopic.readValue())
                 .contains("Page: homepage, User: user1, Region: North America, Duration: 30");
-
         assertThat(enrichedPageViewTopic.readValue())
                 .contains("Page: products, User: user2, Region: Europe, Duration: 45");
-
         assertThat(enrichedPageViewTopic.readValue())
                 .contains("Page: cart, User: user3, Region: Asia, Duration: 60");
-
         assertThat(enrichedPageViewTopic.readValue())
                 .contains("Page: checkout, User: user4, Region: unknown, Duration: 90");
     }
@@ -179,64 +162,5 @@ class StreamTableJoinsTest {
         // 6. Verify the updated join result shows the profile is now unknown
         assertThat(enrichedPageViewTopic.readValue())
                 .contains("Page: products, User: user1, Region: unknown, Duration: 45");
-    }
-
-    // Helper JSON serde classes
-    public static class JsonSerde<T> implements Serde<T> {
-        private final JsonSerializer<T> serializer;
-        private final JsonDeserializer<T> deserializer;
-
-        public JsonSerde(Class<T> cls) {
-            this.serializer = new JsonSerializer<>(cls);
-            this.deserializer = new JsonDeserializer<>(cls);
-        }
-
-        @Override
-        public Serializer<T> serializer() {
-            return serializer;
-        }
-
-        @Override
-        public Deserializer<T> deserializer() {
-            return deserializer;
-        }
-    }
-
-    public static class JsonSerializer<T> implements Serializer<T> {
-        private final ObjectMapper mapper = new ObjectMapper();
-        private final Class<T> cls;
-
-        public JsonSerializer(Class<T> cls) {
-            this.cls = cls;
-        }
-
-        @Override
-        public byte[] serialize(String topic, T data) {
-            if (data == null) return null;
-            try {
-                return mapper.writeValueAsBytes(data);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public static class JsonDeserializer<T> implements Deserializer<T> {
-        private final ObjectMapper mapper = new ObjectMapper();
-        private final Class<T> cls;
-
-        public JsonDeserializer(Class<T> cls) {
-            this.cls = cls;
-        }
-
-        @Override
-        public T deserialize(String topic, byte[] data) {
-            if (data == null) return null;
-            try {
-                return mapper.readValue(data, cls);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 }
