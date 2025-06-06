@@ -1,7 +1,7 @@
 package com.example.outboxpattern.config;
 
+import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.modulith.events.core.EventPublicationRegistry;
@@ -22,13 +22,11 @@ public class OutboxAdminController {
     @GetMapping("/stats")
     public ResponseEntity<Map<String, Object>> getStats() {
         // Get the count by collecting to a list and counting
-        long incomplete = registry.findIncompletePublications().stream().count();
+        long incomplete = registry.findIncompletePublications().size();
 
         // We need to filter publications by date manually
-        Instant threshold = Instant.now().minus(10, ChronoUnit.MINUTES);
-        long failed = registry.findIncompletePublications().stream()
-                .filter(pub -> pub.getPublicationDate().isBefore(threshold))
-                .count();
+        Duration duration = Duration.ofDays(-1);
+        long failed = registry.findIncompletePublicationsOlderThan(duration).size();
 
         return ResponseEntity.ok(Map.of(
                 "pendingCount", incomplete,
