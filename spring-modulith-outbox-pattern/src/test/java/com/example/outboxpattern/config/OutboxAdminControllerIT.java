@@ -1,6 +1,7 @@
 package com.example.outboxpattern.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -10,9 +11,11 @@ import com.example.outboxpattern.common.AbstractIntegrationTest;
 import com.example.outboxpattern.order.OrderItemRecord;
 import com.example.outboxpattern.order.OrderRecord;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -35,14 +38,17 @@ class OutboxAdminControllerIT extends AbstractIntegrationTest {
         Map<String, Object> initialStats =
                 objectMapper.readValue(initialResult.getResponse().getContentAsString(), Map.class);
         int initialPendingCount = ((Number) initialStats.get("pendingCount")).intValue();
-
         // Publish some events that will be processed by event listeners
         OrderItemRecord item = new OrderItemRecord("Test Product", BigDecimal.TEN, 1);
         OrderRecord order = new OrderRecord(999L, LocalDateTime.now(), "TEST", List.of(item));
         eventPublisher.publishEvent(order);
 
-        // Wait briefly for any async event processing
-        Thread.sleep(100);
+        // Use Awaitility to wait for event processing to complete
+        // Wait for up to 2 seconds until event processing completes or timeout
+        await().atMost(2, TimeUnit.SECONDS).pollInterval(Duration.ofMillis(100)).untilAsserted(() -> {
+            // Poll the outbox stats endpoint until event processing is done
+            mockMvc.perform(get("/api/admin/outbox/stats")).andExpect(status().isOk());
+        });
 
         // Get stats after publishing events
         MvcResult afterResult = mockMvc.perform(get("/api/admin/outbox/stats"))
