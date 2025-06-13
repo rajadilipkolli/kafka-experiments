@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   kafka:
-    image: confluentinc/cp-kafka:7.9.1
+    image: confluentinc/cp-kafka:7.9.2
     hostname: broker
     container_name: broker
     ports:
