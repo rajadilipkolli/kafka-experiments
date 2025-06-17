@@ -27,10 +27,34 @@ class KafkaController {
             @RequestParam @Positive Integer age,
             @RequestParam(required = false) String gender) {
         Person person = new Person();
+        person.setId(System.currentTimeMillis()); // Set ID for demo
         person.setAge(age);
         person.setName(name);
         if (gender != null) {
             person.setGender(gender);
+        }
+        this.producer.sendMessage(person);
+    }
+
+    @PostMapping(value = "/publish/v2")
+    void sendV2MessageToKafkaTopic(
+            @RequestParam @NotBlank String name,
+            @RequestParam @Positive Integer age,
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phoneNumber) {
+        Person person = new Person();
+        person.setId(System.currentTimeMillis()); // Set ID for demo
+        person.setAge(age);
+        person.setName(name);
+        if (gender != null) {
+            person.setGender(gender);
+        }
+        if (email != null) {
+            person.setEmail(email);
+        }
+        if (phoneNumber != null) {
+            person.setPhoneNumber(phoneNumber);
         }
         this.producer.sendMessage(person);
     }
