@@ -1,9 +1,10 @@
 spring:
   kafka:
     consumer:
-      group-id: group-1
+      group-id: test-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      auto-offset-reset: earliest
     properties:
       specific:
         avro:

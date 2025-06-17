@@ -49,8 +49,18 @@ public class KafkaContainersConfig {
     }
 
     @Bean
-    DynamicPropertyRegistrar dynamicPropertyRegistrar(GenericContainer<?> schemaRegistry) {
+    DynamicPropertyRegistrar dynamicPropertyRegistrar(
+            ConfluentKafkaContainer kafkaContainer, GenericContainer<?> schemaRegistry) {
         return dynamicProperty -> {
+            // Configure Kafka bootstrap servers
+            dynamicProperty.add(
+                    "spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
+            dynamicProperty.add(
+                    "spring.kafka.consumer.bootstrap-servers", kafkaContainer::getBootstrapServers);
+            dynamicProperty.add(
+                    "spring.kafka.producer.bootstrap-servers", kafkaContainer::getBootstrapServers);
+
+            // Configure Schema Registry URLs
             dynamicProperty.add(
                     "spring.kafka.producer.properties.schema.registry.url",
                     () ->
