@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 import com.example.springbootkafkaavro.common.KafkaContainersConfig;
+import com.example.springbootkafkaavro.config.KafkaProducer;
 import com.example.springbootkafkaavro.entity.PersonEntity;
 import com.example.springbootkafkaavro.model.Person;
 import com.example.springbootkafkaavro.repository.PersonRepository;
 import com.example.springbootkafkaavro.util.ApplicationConstants;
 import java.time.Duration;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -73,8 +73,7 @@ class ApplicationIntTests {
         kafkaTemplate.send(recordV2);
 
         // Wait for messages to be processed
-        Awaitility.await()
-                .atMost(Duration.ofSeconds(30))
+        await().atMost(Duration.ofSeconds(30))
                 .untilAsserted(
                         () -> {
                             assertThat(personRepository.count()).isEqualTo(2);

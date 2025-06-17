@@ -52,13 +52,6 @@ public class KafkaContainersConfig {
     DynamicPropertyRegistrar dynamicPropertyRegistrar(GenericContainer<?> schemaRegistry) {
         return dynamicProperty -> {
             dynamicProperty.add(
-                    "spring.kafka.producer.properties.schema.registry.url",
-                    () ->
-                            "http://%s:%d"
-                                    .formatted(
-                                            schemaRegistry.getHost(),
-                                            schemaRegistry.getMappedPort(8085)));
-            dynamicProperty.add(
                     "spring.kafka.properties.schema.registry.url",
                     () ->
                             "http://%s:%d"

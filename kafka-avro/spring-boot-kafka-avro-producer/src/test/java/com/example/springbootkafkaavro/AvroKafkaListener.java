@@ -13,7 +13,7 @@ public class AvroKafkaListener {
 
     private static final Logger log = LoggerFactory.getLogger(AvroKafkaListener.class);
 
-    @KafkaListener(topics = ApplicationConstants.PERSONS_TOPIC, groupId = "group_id")
+    @KafkaListener(topics = ApplicationConstants.PERSONS_TOPIC, groupId = "avro-group")
     public void handler(ConsumerRecord<String, Person> personConsumerRecord) {
         Person person = personConsumerRecord.value();
 

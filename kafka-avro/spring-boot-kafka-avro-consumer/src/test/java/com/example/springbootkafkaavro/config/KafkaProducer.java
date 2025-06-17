@@ -1,4 +1,4 @@
-package com.example.springbootkafkaavro;
+package com.example.springbootkafkaavro.config;
 
 import com.example.springbootkafkaavro.model.Person;
 import com.example.springbootkafkaavro.util.ApplicationConstants;
