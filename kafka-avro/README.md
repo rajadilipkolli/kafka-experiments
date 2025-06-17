@@ -56,7 +56,7 @@ This example demonstrates how Apache Kafka with Avro can handle schema evolution
 ## Producer Endpoints
 
 ### Version 1 Compatible Endpoint
-```
+```bash
 POST /person/publish
 ```
 Parameters:
@@ -65,7 +65,7 @@ Parameters:
 - `gender` (optional): Person's gender
 
 ### Version 2 Extended Endpoint
-```
+```bash
 POST /person/publish/v2
 ```
 Parameters:
@@ -124,7 +124,7 @@ curl -X POST "http://localhost:8080/person/publish/v2" \
 ```
 
 3. **Check the consumer logs** to see schema evolution in action:
-```
+```console
 === SCHEMA EVOLUTION DEMO ===
 Received Person with Version 1 schema (basic fields only)
 Person received - Name: John Doe, Age: 30, Gender: Male

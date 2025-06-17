@@ -6,8 +6,12 @@ import static org.awaitility.Awaitility.await;
 
 import com.example.springbootkafkaavro.containers.KafkaContainersConfig;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -156,104 +160,102 @@ class PersonKafkaPublishingIntegrationTests {
                 .satisfies(this::assertBadRequestProblem);
     }
 
-    @Test
-    void publishV2PersonWithAllFields(CapturedOutput output) {
-        this.mockMvcTester
-                .post()
-                .uri("/person/publish/v2")
-                .param("name", "jane")
-                .param("age", "25")
-                .param("gender", "female")
-                .param("email", "jane@example.com")
-                .param("phoneNumber", "+1-555-0123")
-                .exchange()
-                .assertThat()
-                .hasStatusOk();
+    @ParameterizedTest
+    @MethodSource("v2PersonTestParameters")
+    void publishV2PersonVariations(
+            String testName,
+            String name,
+            String age,
+            String gender,
+            String email,
+            String phoneNumber,
+            String expectedBasicOutput,
+            String expectedV2Output,
+            boolean shouldContainV2Output,
+            CapturedOutput output) {
+
+        var requestBuilder =
+                this.mockMvcTester
+                        .post()
+                        .uri("/person/publish/v2")
+                        .param("name", name)
+                        .param("age", age);
+
+        if (gender != null) {
+            requestBuilder.param("gender", gender);
+        }
+        if (email != null) {
+            requestBuilder.param("email", email);
+        }
+        if (phoneNumber != null) {
+            requestBuilder.param("phoneNumber", phoneNumber);
+        }
+
+        requestBuilder.exchange().assertThat().hasStatusOk();
+
         await().pollInterval(100, TimeUnit.MILLISECONDS)
                 .atMost(10, SECONDS)
                 .untilAsserted(
                         () -> {
                             assertThat(output.getOut())
                                     .as("Should contain basic person details")
-                                    .contains("Person received : jane : 25 : female");
-                            assertThat(output.getOut())
-                                    .as("Should contain V2 fields")
-                                    .contains(
-                                            "V2 Person details - Email: jane@example.com, Phone: +1-555-0123");
+                                    .contains(expectedBasicOutput);
+
+                            if (shouldContainV2Output) {
+                                assertThat(output.getOut())
+                                        .as("Should contain V2 fields")
+                                        .contains(expectedV2Output);
+                            } else {
+                                assertThat(output.getOut())
+                                        .as(
+                                                "Should not contain V2 field logging for minimal fields")
+                                        .doesNotContain("V2 Person details");
+                            }
                         });
     }
 
-    @Test
-    void publishV2PersonWithMinimalFields(CapturedOutput output) {
-        this.mockMvcTester
-                .post()
-                .uri("/person/publish/v2")
-                .param("name", "john")
-                .param("age", "30")
-                .exchange()
-                .assertThat()
-                .hasStatusOk();
-        await().pollInterval(100, TimeUnit.MILLISECONDS)
-                .atMost(10, SECONDS)
-                .untilAsserted(
-                        () -> {
-                            assertThat(output.getOut())
-                                    .as("Should contain basic person details")
-                                    .contains("Person received : john : 30 : ");
-                            assertThat(output.getOut())
-                                    .as("Should not contain V2 field logging for minimal fields")
-                                    .doesNotContain("V2 Person details");
-                        });
-    }
-
-    @Test
-    void publishV2PersonWithEmailOnly(CapturedOutput output) {
-        this.mockMvcTester
-                .post()
-                .uri("/person/publish/v2")
-                .param("name", "alice")
-                .param("age", "28")
-                .param("email", "alice@test.com")
-                .exchange()
-                .assertThat()
-                .hasStatusOk();
-        await().pollInterval(100, TimeUnit.MILLISECONDS)
-                .atMost(10, SECONDS)
-                .untilAsserted(
-                        () -> {
-                            assertThat(output.getOut())
-                                    .as("Should contain basic person details")
-                                    .contains("Person received : alice : 28 : ");
-                            assertThat(output.getOut())
-                                    .as("Should contain V2 fields with email only")
-                                    .contains(
-                                            "V2 Person details - Email: alice@test.com, Phone: null");
-                        });
-    }
-
-    @Test
-    void publishV2PersonWithPhoneOnly(CapturedOutput output) {
-        this.mockMvcTester
-                .post()
-                .uri("/person/publish/v2")
-                .param("name", "bob")
-                .param("age", "35")
-                .param("phoneNumber", "+1-555-9876")
-                .exchange()
-                .assertThat()
-                .hasStatusOk();
-        await().pollInterval(100, TimeUnit.MILLISECONDS)
-                .atMost(10, SECONDS)
-                .untilAsserted(
-                        () -> {
-                            assertThat(output.getOut())
-                                    .as("Should contain basic person details")
-                                    .contains("Person received : bob : 35 : ");
-                            assertThat(output.getOut())
-                                    .as("Should contain V2 fields with phone only")
-                                    .contains(
-                                            "V2 Person details - Email: null, Phone: +1-555-9876");
-                        });
+    static Stream<Arguments> v2PersonTestParameters() {
+        return Stream.of(
+                Arguments.of(
+                        "All fields",
+                        "jane",
+                        "25",
+                        "female",
+                        "jane@example.com",
+                        "+1-555-0123",
+                        "Person received : jane : 25 : female",
+                        "V2 Person details - Email: jane@example.com, Phone: +1-555-0123",
+                        true),
+                Arguments.of(
+                        "Minimal fields",
+                        "john",
+                        "30",
+                        null,
+                        null,
+                        null,
+                        "Person received : john : 30 : ",
+                        null,
+                        false),
+                Arguments.of(
+                        "Email only",
+                        "alice",
+                        "28",
+                        null,
+                        "alice@test.com",
+                        null,
+                        "Person received : alice : 28 : ",
+                        "V2 Person details - Email: alice@test.com, Phone: null",
+                        true),
+                Arguments.of(
+                        "Phone only",
+                        "bob",
+                        "35",
+                        null,
+                        null,
+                        "+1-555-9876",
+                        "Person received : bob : 35 : ",
+                        "V2 Person details - Email: null, Phone: +1-555-9876",
+                        true));
     }
 
     @Test
