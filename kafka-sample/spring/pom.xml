@@ -13,7 +13,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.kafka.version>3.3.7</spring.kafka.version>
-        <spotless.version>2.44.5</spotless.version>
+        <spotless.version>2.45.0</spotless.version>
         <junit.version>5.13.3</junit.version>
     </properties>
 
