@@ -11,8 +11,8 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
@@ -60,7 +60,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
 
     @Bean
     ConsumerFactory<Integer, String> simpleKafkaConsumerFactory() {
-        Map<String, Object> consumerProperties = this.kafkaProperties.buildConsumerProperties(null);
+        Map<String, Object> consumerProperties = this.kafkaProperties.buildConsumerProperties();
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class.getName());
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         return new DefaultKafkaConsumerFactory<>(consumerProperties);
@@ -79,7 +79,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
     // Second consumer config
     @Bean
     ConsumerFactory<String, SimpleMessage> jsonKafkaConsumerFactory() {
-        Map<String, Object> consumerProperties = this.kafkaProperties.buildConsumerProperties(null);
+        Map<String, Object> consumerProperties = this.kafkaProperties.buildConsumerProperties();
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class.getName());
         consumerProperties.put(JsonDeserializer.TRUSTED_PACKAGES, "com.example.springbootkafka.multi.domain");
