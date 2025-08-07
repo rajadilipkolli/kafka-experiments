@@ -33,5 +33,5 @@ ports:
 # Learn more from ready-to-use templates: https://www.gitpod.io/docs/introduction/getting-started/quickstart
 vscode:
   extensions:
-    - Pivotal.vscode-boot-dev-pack
+    - vmware.vscode-boot-dev-pack
     - vscjava.vscode-java-pack

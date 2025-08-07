@@ -17,6 +17,7 @@ import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.errors.LogAndContinueExceptionHandler;
+import org.apache.kafka.streams.kstream.Branched;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Materialized;
@@ -129,7 +130,7 @@ class AdvancedStreamsOperationsTest {
 
     @Test
     void testBranchingOperations() {
-        // Create a new topology with branch operations
+        // Create a new topology with split/branch operations (replacement for deprecated branch())
         StreamsBuilder builder = new StreamsBuilder();
         Serde<PageViewEvent> pageViewSerde =
                 JsonSerdeUtils.jsonSerde(PageViewEvent.class, objectMapper);
@@ -138,20 +139,36 @@ class AdvancedStreamsOperationsTest {
         KStream<String, PageViewEvent> pageViewStream =
                 builder.stream("page-views", Consumed.with(Serdes.String(), pageViewSerde));
 
-        // Split into branches based on duration:
-        // Branch 0: duration < 30
-        // Branch 1: duration >= 30 && duration < 60
-        // Branch 2: duration >= 60
-        KStream<String, PageViewEvent>[] branches =
-                pageViewStream.branch(
-                        (key, value) -> value.getDuration() < 30,
-                        (key, value) -> value.getDuration() >= 30 && value.getDuration() < 60,
-                        (key, value) -> value.getDuration() >= 60);
-
-        // Process each branch by sending to different topics
-        branches[0].to("short-duration", Produced.with(Serdes.String(), pageViewSerde));
-        branches[1].to("medium-duration", Produced.with(Serdes.String(), pageViewSerde));
-        branches[2].to("long-duration", Produced.with(Serdes.String(), pageViewSerde));
+        // Use split() and branch mapping
+        var branched =
+                pageViewStream
+                        .split()
+                        .branch(
+                                (key, value) -> value.getDuration() < 30,
+                                Branched.withConsumer(
+                                        ks ->
+                                                ks.to(
+                                                        "short-duration",
+                                                        Produced.with(
+                                                                Serdes.String(), pageViewSerde))))
+                        .branch(
+                                (key, value) ->
+                                        value.getDuration() >= 30 && value.getDuration() < 60,
+                                Branched.withConsumer(
+                                        ks ->
+                                                ks.to(
+                                                        "medium-duration",
+                                                        Produced.with(
+                                                                Serdes.String(), pageViewSerde))))
+                        .branch(
+                                (key, value) -> value.getDuration() >= 60,
+                                Branched.withConsumer(
+                                        ks ->
+                                                ks.to(
+                                                        "long-duration",
+                                                        Produced.with(
+                                                                Serdes.String(), pageViewSerde))))
+                        .noDefaultBranch();
 
         // Create a new test driver with this topology
         TopologyTestDriver branchTestDriver = null;
