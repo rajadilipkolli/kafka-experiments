@@ -103,7 +103,7 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
-            <version>1.9.24</version>
+            <version>1.9.25</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
