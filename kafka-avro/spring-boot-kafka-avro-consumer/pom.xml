@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.4</version>
+        <version>4.0.0-M1</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
@@ -44,8 +44,8 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-kafka</artifactId>
         </dependency>
 
         <dependency>
@@ -148,7 +148,7 @@
                 <configuration>
                     <java>
                         <googleJavaFormat>
-                            <version>1.27.0</version>
+                            <version>1.28.0</version>
                             <style>AOSP</style>
                         </googleJavaFormat>
                     </java>
