@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.example.outboxpattern.common.ContainersConfig;
 import com.example.outboxpattern.common.SQLContainerConfig;
 import com.example.outboxpattern.order.OrderRecord;
 import com.example.outboxpattern.order.internal.domain.request.OrderItemRequest;
@@ -12,6 +11,7 @@ import com.example.outboxpattern.order.internal.domain.request.OrderRequest;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,20 +24,19 @@ import org.springframework.modulith.test.Scenario;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ApplicationModuleTest
-@Import({ContainersConfig.class, SQLContainerConfig.class})
+@Import({SQLContainerConfig.class})
 class OrderModuleIntTests {
 
     private static final Logger log = LoggerFactory.getLogger(OrderModuleIntTests.class);
 
     @MockitoBean
-    KafkaOperations<?, ?> kafkaOperations;
+    KafkaOperations<String, Object> kafkaOperations;
 
     @Autowired
     OrderService orders;
 
-    @Test
-    void shouldTriggerOrderCreatedEvent(Scenario scenario) {
-
+    @BeforeEach
+    void setUp() {
         when(kafkaOperations.send(any(), any(), any())).then(invocation -> {
             log.info(
                     "Sending message key {}, value {} to {}.",
@@ -46,7 +45,10 @@ class OrderModuleIntTests {
                     invocation.getArguments()[0]);
             return CompletableFuture.completedFuture(new SendResult<>(null, null));
         });
+    }
 
+    @Test
+    void shouldTriggerOrderCreatedEvent(Scenario scenario) {
         scenario.stimulate(() -> orders.saveOrder(
                         new OrderRequest(null, List.of(new OrderItemRequest("Coffee", BigDecimal.TEN, 100)))))
                 .andWaitForEventOfType(OrderRecord.class)
@@ -56,15 +58,6 @@ class OrderModuleIntTests {
 
     @Test
     void shouldCreateOrderWithMultipleItems(Scenario scenario) {
-        when(kafkaOperations.send(any(), any(), any())).then(invocation -> {
-            log.info(
-                    "Sending message key {}, value {} to {}.",
-                    invocation.getArguments()[1],
-                    invocation.getArguments()[2],
-                    invocation.getArguments()[0]);
-            return CompletableFuture.completedFuture(new SendResult<>(null, null));
-        });
-
         scenario.stimulate(() -> orders.saveOrder(new OrderRequest(
                         null,
                         List.of(
