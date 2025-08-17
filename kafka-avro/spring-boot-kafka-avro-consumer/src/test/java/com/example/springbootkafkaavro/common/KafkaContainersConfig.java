@@ -55,19 +55,7 @@ public class KafkaContainersConfig {
             // Configure Kafka bootstrap servers
             dynamicProperty.add(
                     "spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
-            dynamicProperty.add(
-                    "spring.kafka.consumer.bootstrap-servers", kafkaContainer::getBootstrapServers);
-            dynamicProperty.add(
-                    "spring.kafka.producer.bootstrap-servers", kafkaContainer::getBootstrapServers);
-
             // Configure Schema Registry URLs
-            dynamicProperty.add(
-                    "spring.kafka.producer.properties.schema.registry.url",
-                    () ->
-                            "http://%s:%d"
-                                    .formatted(
-                                            schemaRegistry.getHost(),
-                                            schemaRegistry.getMappedPort(8085)));
             dynamicProperty.add(
                     "spring.kafka.properties.schema.registry.url",
                     () ->
