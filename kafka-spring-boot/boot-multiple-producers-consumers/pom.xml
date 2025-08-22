@@ -50,7 +50,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-opentelemetry</artifactId>
-            <version>4.0.0-M2</version>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
