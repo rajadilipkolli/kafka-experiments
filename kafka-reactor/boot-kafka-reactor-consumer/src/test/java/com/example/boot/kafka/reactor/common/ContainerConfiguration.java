@@ -14,7 +14,7 @@ public class ContainerConfiguration {
     @Bean
     @ServiceConnection
     PostgreSQLContainer<?> postgresContainer() {
-        return new PostgreSQLContainer<>(DockerImageName.parse("postgres").withTag("17.4-alpine"));
+        return new PostgreSQLContainer<>(DockerImageName.parse("postgres").withTag("17.6-alpine"));
     }
 
     @ServiceConnection
