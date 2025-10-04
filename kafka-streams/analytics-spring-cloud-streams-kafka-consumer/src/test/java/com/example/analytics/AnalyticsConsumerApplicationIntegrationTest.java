@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.analytics.common.AbstractIntegrationTest;
 import com.example.analytics.model.PageViewEvent;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +24,7 @@ class AnalyticsConsumerApplicationIntegrationTest extends AbstractIntegrationTes
     private final String[] pages = {"home", "products", "checkout", "cart", "about"};
 
     @BeforeEach
-    void setUpData() throws JsonProcessingException, InterruptedException {
+    void setUpData() throws InterruptedException {
         // Publish some test events to Kafka
         for (int i = 0; i < 5; i++) {
             PageViewEvent pageViewEvent =

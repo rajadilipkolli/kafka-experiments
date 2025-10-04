@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.kafka.version>3.3.10</spring.kafka.version>
         <spotless.version>3.0.0</spotless.version>
-        <junit.version>5.13.4</junit.version>
+        <junit.version>6.0.0</junit.version>
     </properties>
 
     <dependencyManagement>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.18</version>
+            <version>1.5.19</version>
         </dependency>
 
         <dependency>

@@ -6,8 +6,6 @@ import static org.awaitility.Awaitility.await;
 
 import com.example.analytics.common.ContainersConfiguration;
 import com.example.analytics.model.PageViewEvent;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import tools.jackson.databind.ObjectMapper;
 
 @SpringBootTest(classes = ContainersConfiguration.class)
 class AnalyticsProducerApplicationIntegrationTest {
@@ -37,7 +36,7 @@ class AnalyticsProducerApplicationIntegrationTest {
     }
 
     @KafkaListener(topics = "pvs", groupId = "pcs")
-    public void listenMessages(String message) throws JsonProcessingException {
+    public void listenMessages(String message) {
         final ObjectMapper objectMapper = new ObjectMapper();
         PageViewEvent value = objectMapper.readValue(message, PageViewEvent.class);
         messagesLatch.countDown();
