@@ -53,7 +53,7 @@ class AdvancedStreamsOperationsTest {
                     JsonSerdeUtils.getJsonClass().getName());
             props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 10); // Lower for tests
             props.put(
-                    StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
+                    StreamsConfig.DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
                     LogAndContinueExceptionHandler.class.getName());
 
             // Build the topology for testing
