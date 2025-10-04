@@ -1,10 +1,10 @@
 /* Licensed under Apache-2.0 2025 */
 package com.example.analytics.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
+import tools.jackson.databind.ObjectMapper;
 
 /** Utility class providing JSON serialization and deserialization for Kafka Streams testing. */
 public class JsonSerdeUtils {

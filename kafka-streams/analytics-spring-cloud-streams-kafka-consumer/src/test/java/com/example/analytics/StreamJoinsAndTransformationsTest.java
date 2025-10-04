@@ -7,7 +7,6 @@ import com.example.analytics.model.EnrichedPageView;
 import com.example.analytics.model.PageViewEvent;
 import com.example.analytics.model.UserProfile;
 import com.example.analytics.util.JsonSerdeUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Properties;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -25,6 +24,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import tools.jackson.databind.ObjectMapper;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class StreamJoinsAndTransformationsTest {
