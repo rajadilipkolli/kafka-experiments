@@ -83,6 +83,21 @@ class OutboxAdminControllerTest {
 
         @Override
         public void markCompleted(Instant instant) {}
+
+        @Override
+        public int getCompletionAttempts() {
+            return 0; // For test purposes, we return 0 completion attempts
+        }
+
+        @Override
+        public Instant getLastResubmissionDate() {
+            return Instant.now().minusSeconds(30); // For test purposes, we return a fixed instant
+        }
+
+        @Override
+        public Status getStatus() {
+            return Status.COMPLETED;
+        }
     }
 
     @Test

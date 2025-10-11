@@ -1,5 +1,6 @@
 package com.example.outboxpattern.config;
 
+import jakarta.validation.Valid;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -9,7 +10,7 @@ public class ApplicationProperties {
     private String orderCreatedKafkaTopic;
 
     @NestedConfigurationProperty
-    private Cors cors = new Cors();
+    @Valid private Cors cors = new Cors();
 
     public ApplicationProperties() {}
 

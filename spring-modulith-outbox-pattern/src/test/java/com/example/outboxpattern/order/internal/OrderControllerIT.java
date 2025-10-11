@@ -126,7 +126,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
                     .andExpect(jsonPath("$.status", is(404)))
                     .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
                     .andExpect(jsonPath("$.instance").value("/api/orders/10000"))
-                    .andExpect(jsonPath("$.errorCategory").value("Generic"));
+                    .andExpect(jsonPath("$.properties.errorCategory").value("Generic"));
         }
     }
 
@@ -190,14 +190,15 @@ class OrderControllerIT extends AbstractIntegrationTest {
                             .content(objectMapper.writeValueAsString(orderRequest)))
                     .andExpect(status().isBadRequest())
                     .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_PROBLEM_JSON_VALUE)))
-                    .andExpect(jsonPath("$.type", is("about:blank")))
+                    .andExpect(
+                            jsonPath("$.type", is("https://api.spring-modulith-outbox-pattern.com/errors/validation")))
                     .andExpect(jsonPath("$.title", is("Constraint Violation")))
                     .andExpect(jsonPath("$.status", is(400)))
                     .andExpect(jsonPath("$.detail", is("Invalid request content.")))
                     .andExpect(jsonPath("$.instance", is("/api/orders")))
-                    .andExpect(jsonPath("$.violations", hasSize(1)))
-                    .andExpect(jsonPath("$.violations[0].field", is("itemsList")))
-                    .andExpect(jsonPath("$.violations[0].message", is("ItemsList must not be empty")))
+                    .andExpect(jsonPath("$.properties.violations", hasSize(1)))
+                    .andExpect(jsonPath("$.properties.violations[0].field", is("itemsList")))
+                    .andExpect(jsonPath("$.properties.violations[0].message", is("ItemsList must not be empty")))
                     .andReturn();
         }
     }
@@ -241,7 +242,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
                     .andExpect(jsonPath("$.status", is(404)))
                     .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
                     .andExpect(jsonPath("$.instance").value("/api/orders/10000"))
-                    .andExpect(jsonPath("$.errorCategory").value("Generic"));
+                    .andExpect(jsonPath("$.properties.errorCategory").value("Generic"));
         }
     }
 
@@ -274,7 +275,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
                     .andExpect(jsonPath("$.status", is(404)))
                     .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
                     .andExpect(jsonPath("$.instance").value("/api/orders/1"))
-                    .andExpect(jsonPath("$.errorCategory").value("Generic"));
+                    .andExpect(jsonPath("$.properties.errorCategory").value("Generic"));
         }
     }
 }
