@@ -1,4 +1,4 @@
-version: '3.8'
+name: modulith-docker-compose
 services:
 
   postgresql:
@@ -22,10 +22,19 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
       - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
     ports:
       - "5050:80"
     depends_on:
-      - postgresql
+      postgresql:
+        condition: service_healthy
+    volumes:
+      - ./docker_pgadmin_servers.json:/pgadmin4/servers.json
+    entrypoint:
+      - "/bin/sh"
+      - "-c"
+      - "/bin/echo 'postgresql:5432:*:appuser:secret' > /tmp/pgpassfile && chmod 600 /tmp/pgpassfile && /entrypoint.sh"
     restart: unless-stopped
 
   zipkin-server:

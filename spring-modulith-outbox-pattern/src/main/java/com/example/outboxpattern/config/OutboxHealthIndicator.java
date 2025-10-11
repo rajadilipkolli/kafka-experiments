@@ -1,8 +1,8 @@
 package com.example.outboxpattern.config;
 
 import java.time.Duration;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.modulith.events.core.EventPublicationRegistry;
 import org.springframework.stereotype.Component;
 
