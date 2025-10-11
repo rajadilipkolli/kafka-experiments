@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   kafka:
-    image: confluentinc/cp-kafka:8.0.1
+    image: confluentinc/cp-kafka:8.0.2
     hostname: broker
     container_name: broker
     ports:
@@ -29,7 +29,7 @@ services:
       CLUSTER_ID: '4L6g3nShT-eMCtK--X86sw'
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:8.0.1
+    image: confluentinc/cp-schema-registry:8.0.2
     hostname: schema-registry
     container_name: schema-registry
     depends_on:
