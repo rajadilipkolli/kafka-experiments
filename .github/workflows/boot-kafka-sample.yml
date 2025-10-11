@@ -29,6 +29,7 @@ jobs:
         distribution: 'graalvm'
         github-token: ${{ secrets.GITHUB_TOKEN }}
         cache: 'maven'
+        components: 'native-image'
         native-image-job-reports: 'true'
       
     - name: Printing versions
