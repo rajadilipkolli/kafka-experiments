@@ -26,8 +26,9 @@ class GlobalExceptionHandler {
         ProblemDetail problemDetail =
                 ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(400), "Invalid request content.");
         problemDetail.setTitle("Constraint Violation");
-        problemDetail.setType(URI.create("about:blank"));
-        problemDetail.setProperty("errorCategory", "Generic");
+        problemDetail.setType(URI.create("https://api.spring-modulith-outbox-pattern.com/errors/validation"));
+        problemDetail.setProperty("errorCategory", "Validation");
+        problemDetail.setProperty("timestamp", Instant.now());
         List<ApiValidationError> validationErrorsList = methodArgumentNotValidException.getAllErrors().stream()
                 .map(objectError -> {
                     FieldError fieldError = (FieldError) objectError;
