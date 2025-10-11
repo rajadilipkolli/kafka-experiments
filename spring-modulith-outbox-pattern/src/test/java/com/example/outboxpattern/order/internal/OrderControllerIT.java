@@ -126,7 +126,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
                     .andExpect(jsonPath("$.status", is(404)))
                     .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
                     .andExpect(jsonPath("$.instance").value("/api/orders/10000"))
-                    .andExpect(jsonPath("$.errorCategory").value("Generic"));
+                    .andExpect(jsonPath("$.properties.errorCategory").value("Generic"));
         }
     }
 
@@ -241,7 +241,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
                     .andExpect(jsonPath("$.status", is(404)))
                     .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
                     .andExpect(jsonPath("$.instance").value("/api/orders/10000"))
-                    .andExpect(jsonPath("$.errorCategory").value("Generic"));
+                    .andExpect(jsonPath("$.properties.errorCategory").value("Generic"));
         }
     }
 
@@ -274,7 +274,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
                     .andExpect(jsonPath("$.status", is(404)))
                     .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
                     .andExpect(jsonPath("$.instance").value("/api/orders/1"))
-                    .andExpect(jsonPath("$.errorCategory").value("Generic"));
+                    .andExpect(jsonPath("$.properties.errorCategory").value("Generic"));
         }
     }
 }
