@@ -5,7 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
 import org.springframework.integration.kafka.dsl.Kafka;
@@ -60,7 +60,7 @@ class Initializer implements CommandLineRunner {
     }
 
     public void addAnotherListenerForTopics(String... topics) {
-        Map<String, Object> consumerProperties = kafkaProperties.buildConsumerProperties(null);
+        Map<String, Object> consumerProperties = kafkaProperties.buildConsumerProperties();
         // change the group id, so we don't revoke the other partitions.
         consumerProperties.put(
                 ConsumerConfig.GROUP_ID_CONFIG, consumerProperties.get(ConsumerConfig.GROUP_ID_CONFIG) + "x");
