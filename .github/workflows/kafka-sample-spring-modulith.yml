@@ -21,7 +21,7 @@ jobs:
         working-directory: "spring-modulith-outbox-pattern"
     strategy:
       matrix:
-        java: ["21"]
+        java: ["25"]
     steps:
     - uses: actions/checkout@v5
       with:
