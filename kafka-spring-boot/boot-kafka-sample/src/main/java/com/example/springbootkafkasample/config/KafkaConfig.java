@@ -1,5 +1,6 @@
 package com.example.springbootkafkasample.config;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +9,6 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListenerConfigurer;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistrar;
 import org.springframework.kafka.listener.KafkaListenerErrorHandler;
-import org.springframework.lang.NonNull;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration(proxyBeanMethods = false)
