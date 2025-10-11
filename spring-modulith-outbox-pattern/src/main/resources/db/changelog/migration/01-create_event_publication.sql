@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS event_publication
   completion_date         TIMESTAMP WITH TIME ZONE,
   last_resubmission_date  TIMESTAMP WITH TIME ZONE,
   completion_attempts     INTEGER NOT NULL DEFAULT 0,
-  status                  TEXT NOT NULL DEFAULT 'PENDING',
+  status                  smallint NOT NULL DEFAULT '0',
   PRIMARY KEY (id)
 );
 
