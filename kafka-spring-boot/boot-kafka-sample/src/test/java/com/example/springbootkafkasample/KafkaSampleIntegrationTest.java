@@ -212,10 +212,7 @@ class KafkaSampleIntegrationTest {
                             .isNotNull()
                             .isInstanceOf(URI.class)
                             .isEqualTo(URI.create("/listeners"));
-                    assertThat(problemDetail.getType())
-                            .isNotNull()
-                            .isInstanceOf(URI.class)
-                            .isEqualTo(URI.create("about:blank"));
+                    assertThat(problemDetail.getType()).isNull();
                     assertThat(problemDetail.getStatus()).isEqualTo(400);
                 });
     }
@@ -251,10 +248,7 @@ class KafkaSampleIntegrationTest {
                             .isNotNull()
                             .isInstanceOf(URI.class)
                             .isEqualTo(URI.create("/listeners"));
-                    assertThat(problemDetail.getType())
-                            .isNotNull()
-                            .isInstanceOf(URI.class)
-                            .isEqualTo(URI.create("about:blank"));
+                    assertThat(problemDetail.getType()).isNull();
                     assertThat(problemDetail.getStatus()).isEqualTo(400);
                 });
     }
