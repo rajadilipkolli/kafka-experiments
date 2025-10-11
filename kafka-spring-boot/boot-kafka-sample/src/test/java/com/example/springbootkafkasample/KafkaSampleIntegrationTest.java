@@ -8,7 +8,6 @@ import com.example.springbootkafkasample.dto.KafkaListenerRequest;
 import com.example.springbootkafkasample.dto.MessageDTO;
 import com.example.springbootkafkasample.dto.Operation;
 import com.example.springbootkafkasample.service.listener.Receiver2;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.time.Duration;
 import org.junit.jupiter.api.MethodOrderer;
@@ -22,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import tools.jackson.databind.ObjectMapper;
 
 @SpringBootTest(classes = {ContainerConfig.class})
 @AutoConfigureMockMvc
@@ -212,10 +212,7 @@ class KafkaSampleIntegrationTest {
                             .isNotNull()
                             .isInstanceOf(URI.class)
                             .isEqualTo(URI.create("/listeners"));
-                    assertThat(problemDetail.getType())
-                            .isNotNull()
-                            .isInstanceOf(URI.class)
-                            .isEqualTo(URI.create("about:blank"));
+                    assertThat(problemDetail.getType()).isNull();
                     assertThat(problemDetail.getStatus()).isEqualTo(400);
                 });
     }
@@ -251,10 +248,7 @@ class KafkaSampleIntegrationTest {
                             .isNotNull()
                             .isInstanceOf(URI.class)
                             .isEqualTo(URI.create("/listeners"));
-                    assertThat(problemDetail.getType())
-                            .isNotNull()
-                            .isInstanceOf(URI.class)
-                            .isEqualTo(URI.create("about:blank"));
+                    assertThat(problemDetail.getType()).isNull();
                     assertThat(problemDetail.getStatus()).isEqualTo(400);
                 });
     }
