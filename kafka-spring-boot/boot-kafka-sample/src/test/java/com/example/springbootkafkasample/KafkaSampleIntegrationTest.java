@@ -23,7 +23,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import tools.jackson.databind.ObjectMapper;
 
-@SpringBootTest(classes = {ContainerConfig.class})
+@SpringBootTest(classes = {ContainerConfig.class, BootKafkaSampleApplication.class})
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class KafkaSampleIntegrationTest {
@@ -99,7 +99,7 @@ class KafkaSampleIntegrationTest {
                 	},
                 	{
                 		"topicName": "test_2",
-                		"partitionCount": 1,
+                		"partitionCount": 32,
                 		"replicationCount": 1
                 	},
                 	{
