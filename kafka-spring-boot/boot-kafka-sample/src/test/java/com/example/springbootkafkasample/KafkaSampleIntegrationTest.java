@@ -77,7 +77,9 @@ class KafkaSampleIntegrationTest {
                 .atMost(Duration.ofSeconds(30))
                 .until(() -> receiver2.getProcessedMessages().size() == stableCount + 1);
 
-        assertThat(receiver2.getProcessedMessages()).contains(uniqueMsg);
+        // Verify our unique message was processed
+        await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> assertThat(receiver2.getProcessedMessages())
+                .contains(uniqueMsg));
         assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(1);
     }
 
