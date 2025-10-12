@@ -11,7 +11,8 @@ import com.example.springbootkafkasample.service.listener.Receiver2;
 import java.net.URI;
 import java.time.Duration;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -42,8 +43,22 @@ class KafkaSampleIntegrationTest {
     @Test
     @Order(101)
     void sendAndReceiveMessage() throws Exception {
-        // Wait until all messages are processed in initializer
-        TimeUnit.SECONDS.sleep(2);
+        // Wait until startup/initial traffic has quiesced (processed messages stable)
+        final AtomicInteger lastSize = new AtomicInteger(-1);
+        final AtomicLong lastChangeTime = new AtomicLong(System.currentTimeMillis());
+
+        await().pollInterval(Duration.ofMillis(200))
+                .atMost(Duration.ofSeconds(30))
+                .until(() -> {
+                    int currentSize = receiver2.getProcessedMessages().size();
+                    if (currentSize != lastSize.get()) {
+                        lastSize.set(currentSize);
+                        lastChangeTime.set(System.currentTimeMillis());
+                        return false;
+                    }
+                    // Stable if no changes for at least 500ms
+                    return System.currentTimeMillis() - lastChangeTime.get() >= 500;
+                });
         int stableCount = receiver2.getProcessedMessages().size();
 
         // Send a unique test message so we can deterministically assert exactly one new processed message
