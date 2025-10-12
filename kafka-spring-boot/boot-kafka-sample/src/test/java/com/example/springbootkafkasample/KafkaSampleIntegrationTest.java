@@ -118,7 +118,7 @@ class KafkaSampleIntegrationTest {
                 	},
                 	{
                 		"topicName": "test_2",
-                		"partitionCount": 32,
+                		"partitionCount": 1,
                 		"replicationCount": 1
                 	},
                 	{
