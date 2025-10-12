@@ -42,20 +42,21 @@ class KafkaSampleIntegrationTest {
     @Order(101)
     void sendAndReceiveMessage() throws Exception {
         // Wait until startup/initial traffic has quiesced (processed messages stable)
+        final int[] lastSize = {-1};
+        final long[] lastChangeTime = {System.currentTimeMillis()};
+
         await().pollInterval(Duration.ofMillis(200))
                 .atMost(Duration.ofSeconds(30))
                 .until(() -> {
-                    int size1 = receiver2.getProcessedMessages().size();
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
+                    int currentSize = receiver2.getProcessedMessages().size();
+                    if (currentSize != lastSize[0]) {
+                        lastSize[0] = currentSize;
+                        lastChangeTime[0] = System.currentTimeMillis();
                         return false;
                     }
-                    int size2 = receiver2.getProcessedMessages().size();
-                    return size1 == size2;
+                    // Stable if no changes for at least 500ms
+                    return System.currentTimeMillis() - lastChangeTime[0] >= 500;
                 });
-
         int stableCount = receiver2.getProcessedMessages().size();
 
         // Send a unique test message so we can deterministically assert exactly one new processed message

@@ -28,6 +28,7 @@ public class Receiver2 {
     private final CountDownLatch deadLetterLatch = new CountDownLatch(1);
 
     private final ConcurrentLinkedQueue<String> processedMessages = new ConcurrentLinkedQueue<>();
+    private static final int MAX_PROCESSED_MESSAGES = 100;
 
     public CountDownLatch getDeadLetterLatch() {
         return deadLetterLatch;
@@ -47,6 +48,10 @@ public class Receiver2 {
         logger.info("Received message : {} in topic :{}", messageDTO.toString(), topic);
         // record the processed message
         this.processedMessages.add(messageDTO.msg());
+        // Keep only recent messages
+        while (this.processedMessages.size() > MAX_PROCESSED_MESSAGES) {
+            this.processedMessages.poll();
+        }
     }
 
     @DltHandler
