@@ -10,6 +10,7 @@ import com.example.springbootkafkasample.dto.Operation;
 import com.example.springbootkafkasample.service.listener.Receiver2;
 import java.net.URI;
 import java.time.Duration;
+import java.util.UUID;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -40,28 +41,40 @@ class KafkaSampleIntegrationTest {
     @Test
     @Order(101)
     void sendAndReceiveMessage() throws Exception {
+        // Wait until startup/initial traffic has quiesced (processed messages stable)
+        await().pollInterval(Duration.ofMillis(200))
+                .atMost(Duration.ofSeconds(30))
+                .until(() -> {
+                    int size1 = receiver2.getProcessedMessages().size();
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return false;
+                    }
+                    int size2 = receiver2.getProcessedMessages().size();
+                    return size1 == size2;
+                });
+
+        int stableCount = receiver2.getProcessedMessages().size();
+
+        // Send a unique test message so we can deterministically assert exactly one new processed message
+        String uniqueMsg = "junitTest-" + UUID.randomUUID();
         this.mockMvcTester
                 .post()
                 .uri("/messages")
-                .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", "junitTest")))
+                .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", uniqueMsg)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .exchange()
                 .assertThat()
                 .hasStatusOk();
-        // Wait for at least one message to be processed by Receiver2.
-        // We check that the latch count decreases (by any amount) because
-        // startup traffic can consume multiple messages before this test runs.
-        long initialCount = receiver2.getLatch().getCount();
-        await().pollInterval(Duration.ofSeconds(1))
+
+        // Now wait for exactly one more processed message
+        await().pollInterval(Duration.ofMillis(200))
                 .atMost(Duration.ofSeconds(30))
-                .untilAsserted(() -> {
-                    long currentCount = receiver2.getLatch().getCount();
-                    assertThat(currentCount)
-                            .as(
-                                    "Expected latch count to decrease from initial %d, but was %d",
-                                    initialCount, currentCount)
-                            .isLessThan(initialCount);
-                });
+                .until(() -> receiver2.getProcessedMessages().size() == stableCount + 1);
+
+        assertThat(receiver2.getProcessedMessages()).contains(uniqueMsg);
         assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(1);
     }
 

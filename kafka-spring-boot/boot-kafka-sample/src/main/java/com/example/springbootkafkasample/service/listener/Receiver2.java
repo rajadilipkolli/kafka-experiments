@@ -4,6 +4,8 @@ import static com.example.springbootkafkasample.config.Initializer.TOPIC_TEST_2;
 
 import com.example.springbootkafkasample.dto.MessageDTO;
 import jakarta.validation.Valid;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,16 +25,16 @@ public class Receiver2 {
 
     private static final Logger logger = LoggerFactory.getLogger(Receiver2.class);
 
-    private final CountDownLatch latch = new CountDownLatch(10);
-
     private final CountDownLatch deadLetterLatch = new CountDownLatch(1);
 
-    public CountDownLatch getLatch() {
-        return latch;
-    }
+    private final ConcurrentLinkedQueue<String> processedMessages = new ConcurrentLinkedQueue<>();
 
     public CountDownLatch getDeadLetterLatch() {
         return deadLetterLatch;
+    }
+
+    public Collection<String> getProcessedMessages() {
+        return this.processedMessages;
     }
 
     @RetryableTopic(
@@ -43,7 +45,8 @@ public class Receiver2 {
     @KafkaListener(id = "topic_2_Listener", topics = TOPIC_TEST_2, groupId = "foo")
     public void listenTopic2(@Payload @Valid MessageDTO messageDTO, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
         logger.info("Received message : {} in topic :{}", messageDTO.toString(), topic);
-        latch.countDown();
+        // record the processed message
+        this.processedMessages.add(messageDTO.msg());
     }
 
     @DltHandler
