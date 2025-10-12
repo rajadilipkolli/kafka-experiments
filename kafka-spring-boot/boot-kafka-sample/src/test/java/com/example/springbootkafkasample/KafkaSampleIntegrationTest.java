@@ -10,6 +10,9 @@ import com.example.springbootkafkasample.dto.Operation;
 import com.example.springbootkafkasample.service.listener.Receiver2;
 import java.net.URI;
 import java.time.Duration;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -40,33 +43,49 @@ class KafkaSampleIntegrationTest {
     @Test
     @Order(101)
     void sendAndReceiveMessage() throws Exception {
-        long initialCount = receiver2.getLatch().getCount();
+        // Wait until startup/initial traffic has quiesced (processed messages stable)
+        final AtomicInteger lastSize = new AtomicInteger(-1);
+        final AtomicLong lastChangeTime = new AtomicLong(System.currentTimeMillis());
+
+        await().pollInterval(Duration.ofMillis(200))
+                .atMost(Duration.ofSeconds(30))
+                .until(() -> {
+                    int currentSize = receiver2.getProcessedMessages().size();
+                    if (currentSize != lastSize.get()) {
+                        lastSize.set(currentSize);
+                        lastChangeTime.set(System.currentTimeMillis());
+                        return false;
+                    }
+                    // Stable if no changes for at least 500ms
+                    return System.currentTimeMillis() - lastChangeTime.get() >= 500;
+                });
+        int stableCount = receiver2.getProcessedMessages().size();
+
+        // Send a unique test message so we can deterministically assert exactly one new processed message
+        String uniqueMsg = "junitTest-" + UUID.randomUUID();
         this.mockMvcTester
                 .post()
                 .uri("/messages")
-                .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", "junitTest")))
+                .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", uniqueMsg)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .exchange()
                 .assertThat()
                 .hasStatusOk();
 
-        // 4 from topic1 and 3 from topic2 on startUp, plus 1 from test
-        await().pollInterval(Duration.ofSeconds(1))
+        // Now wait for exactly one more processed message
+        await().pollInterval(Duration.ofMillis(200))
                 .atMost(Duration.ofSeconds(30))
-                .untilAsserted(() -> {
-                    long currentCount = receiver2.getLatch().getCount();
-                    assertThat(currentCount)
-                            .as(
-                                    "Expected message count to decrease by 1, initial: %d, current: %d",
-                                    initialCount, currentCount)
-                            .isEqualTo(initialCount - 1);
-                });
+                .until(() -> receiver2.getProcessedMessages().size() == stableCount + 1);
+
+        // Verify our unique message was processed
+        await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> assertThat(receiver2.getProcessedMessages())
+                .contains(uniqueMsg));
         assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(1);
     }
 
     @Test
     @Order(102)
-    void sendAndReceiveMessageInDeadLetter() throws Exception {
+    void sendAndReceiveMessageInDeadLetter() {
         this.mockMvcTester
                 .post()
                 .uri("/messages")

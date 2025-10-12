@@ -25,8 +25,8 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.core.RoutingKafkaTemplate;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
+import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
@@ -48,7 +48,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
         // Clone the PF with a different Serializer, register with Spring for shutdown
         Map<String, Object> configs = new HashMap<>(pf.getConfigurationProperties());
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JacksonJsonSerializer.class);
         DefaultKafkaProducerFactory<Object, Object> jsonPF = new DefaultKafkaProducerFactory<>(configs);
         context.registerBean("jsonPF", DefaultKafkaProducerFactory.class, () -> jsonPF);
 
@@ -81,8 +81,8 @@ public class KafkaConfig implements KafkaListenerConfigurer {
     ConsumerFactory<String, SimpleMessage> jsonKafkaConsumerFactory() {
         Map<String, Object> consumerProperties = this.kafkaProperties.buildConsumerProperties();
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class.getName());
-        consumerProperties.put(JsonDeserializer.TRUSTED_PACKAGES, "com.example.springbootkafka.multi.domain");
+        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JacksonJsonDeserializer.class.getName());
+        consumerProperties.put(JacksonJsonDeserializer.TRUSTED_PACKAGES, "com.example.springbootkafka.multi.domain");
         return new DefaultKafkaConsumerFactory<>(consumerProperties);
     }
 
