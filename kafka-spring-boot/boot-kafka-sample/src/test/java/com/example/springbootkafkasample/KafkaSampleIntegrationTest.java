@@ -11,6 +11,7 @@ import com.example.springbootkafkasample.service.listener.Receiver2;
 import java.net.URI;
 import java.time.Duration;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -41,22 +42,8 @@ class KafkaSampleIntegrationTest {
     @Test
     @Order(101)
     void sendAndReceiveMessage() throws Exception {
-        // Wait until startup/initial traffic has quiesced (processed messages stable)
-        final int[] lastSize = {-1};
-        final long[] lastChangeTime = {System.currentTimeMillis()};
-
-        await().pollInterval(Duration.ofMillis(200))
-                .atMost(Duration.ofSeconds(30))
-                .until(() -> {
-                    int currentSize = receiver2.getProcessedMessages().size();
-                    if (currentSize != lastSize[0]) {
-                        lastSize[0] = currentSize;
-                        lastChangeTime[0] = System.currentTimeMillis();
-                        return false;
-                    }
-                    // Stable if no changes for at least 500ms
-                    return System.currentTimeMillis() - lastChangeTime[0] >= 500;
-                });
+        // Wait until all messages are processed in initializer
+        TimeUnit.SECONDS.sleep(2);
         int stableCount = receiver2.getProcessedMessages().size();
 
         // Send a unique test message so we can deterministically assert exactly one new processed message
@@ -81,7 +68,7 @@ class KafkaSampleIntegrationTest {
 
     @Test
     @Order(102)
-    void sendAndReceiveMessageInDeadLetter() throws Exception {
+    void sendAndReceiveMessageInDeadLetter() {
         this.mockMvcTester
                 .post()
                 .uri("/messages")
