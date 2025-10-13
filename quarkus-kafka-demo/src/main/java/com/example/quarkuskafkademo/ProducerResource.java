@@ -10,16 +10,19 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.jboss.logging.Logger;
 
 @Path("/produce")
 public class ProducerResource {
 
     @Inject
-    @Channel("words-out")
+    @Channel("demo-out")
     Emitter<String> emitter;
 
     @Inject
     ObjectMapper mapper;
+
+    private static final Logger LOG = Logger.getLogger(ProducerResource.class);
 
     /**
      * Accept a JSON payload and forward its raw string to the outgoing channel.
@@ -45,6 +48,7 @@ public class ProducerResource {
             emitter.send(json);
             return Response.accepted().build();
         } catch (JsonProcessingException e) {
+            LOG.error("Failed to serialize MessageDto", e);
             return Response.serverError().entity("failed to serialize message").build();
         }
     }

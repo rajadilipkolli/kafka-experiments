@@ -4,6 +4,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -21,7 +24,8 @@ public class ProducerConsumerIT {
     URI produceUri;
 
     @Test
-    public void testProduceAndConsumePojo() {
+    public void testProduceAndConsumePojo()
+            throws JsonMappingException, JsonProcessingException, IllegalArgumentException {
         MessageDto dto = new MessageDto("hello-test-containers", 123);
 
         RestAssured.given()
@@ -37,11 +41,8 @@ public class ProducerConsumerIT {
         String received = KafkaConsumerBean.pollMessage(10, TimeUnit.SECONDS);
         assertThat("Expected a message to be consumed", received, notNullValue());
 
-        // The Jackson ObjectMapper used by Quarkus should serialize the POJO to the same JSON shape.
-        // We'll build the expected JSON using the same field ordering Quarkus/Jackson will use: message then id.
-        String expectedJson = "{\"message\":\"hello-test-containers\",\"id\":123}";
-        // allow minor spacing differences by removing whitespace before assert
-        String compactReceived = received.replaceAll("\\s+", "");
-        assertThat(compactReceived, equalTo(expectedJson));
+        // Compare JSON semantically
+        ObjectMapper om = new ObjectMapper();
+        assertThat(om.readTree(received), equalTo(om.valueToTree(dto)));
     }
 }

@@ -11,25 +11,25 @@ Build
 2. Start a Kafka broker (localhost:9092). You can use the repository's docker-compose files or another Kafka installation.
 3. From the repository root run:
 
-```
-mvn -f quarkus-kafka-demo/pom.xml -DskipTests package
+```shell
+./mvnw -f quarkus-kafka-demo/pom.xml -DskipTests package
 ```
 
 Run
 
-```
-mvn -f quarkus-kafka-demo/pom.xml quarkus:dev
+```shell
+./mvnw -f quarkus-kafka-demo/pom.xml quarkus:dev
 ```
 
 Or run the packaged JAR:
 
-```
+```shell
 java -jar quarkus-kafka-demo/target/quarkus-kafka-demo-1.0.0-SNAPSHOT-runner.jar
 ```
 
 Test
 
-```
+```shell
 curl -X POST http://localhost:8080/produce -d "hello from quarkus"
 ```
 

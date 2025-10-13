@@ -5,16 +5,18 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.jboss.logging.Logger;
 
 @ApplicationScoped
 public class KafkaConsumerBean {
 
+    private static final Logger LOG = Logger.getLogger(KafkaConsumerBean.class);
     // Queue used by tests to assert received messages. Production can ignore it.
     private static final BlockingQueue<String> RECEIVED = new LinkedBlockingQueue<>();
 
-    @Incoming("words-in")
+    @Incoming("demo-in")
     public void receive(String message) {
-        System.out.println("[KafkaConsumer] Received: " + message);
+        LOG.infof("Received: %s", message);
         RECEIVED.offer(message);
     }
 
