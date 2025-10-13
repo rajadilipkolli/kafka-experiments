@@ -1,0 +1,43 @@
+name: quarkus-kafka-demo
+
+services:
+  broker:
+    image: apache/kafka-native:4.1.0
+    hostname: broker
+    ports:
+      - "9092:9092"
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost 9092" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      #Use two listeners with different names, it will force Kafka to communicate with itself via internal
+      #listener when KAFKA_INTER_BROKER_LISTENER_NAME is set, otherwise Kafka will try to use the advertised listener
+      KAFKA_LISTENERS: INTERNAL://broker:29092,EXTERNAL_HOST://0.0.0.0:9092,CONTROLLER://broker:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://broker:29092,EXTERNAL_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 32
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:9094
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_LOG_FLUSH_INTERVAL_MESSAGES: 9223372036854775807
+      CLUSTER_ID: 4L6g3nShT-eMCtK--X86sw     
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    restart: "no"
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "broker:29092"
+    depends_on:
+      broker:
+        condition: service_healthy
