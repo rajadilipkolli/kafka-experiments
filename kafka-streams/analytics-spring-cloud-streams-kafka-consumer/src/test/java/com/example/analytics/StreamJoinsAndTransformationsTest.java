@@ -76,8 +76,8 @@ class StreamJoinsAndTransformationsTest {
                             (pageView, profile) ->
                                     new EnrichedPageView(
                                             pageView.getUserId(),
-                                            profile.getName(),
-                                            profile.getCountry(),
+                                            profile.name(),
+                                            profile.country(),
                                             pageView.getPage(),
                                             pageView.getDuration()),
                             Joined.with(Serdes.String(), pageViewSerde, userProfileSerde));
@@ -128,8 +128,8 @@ class StreamJoinsAndTransformationsTest {
         // Add user profiles to the table
         UserProfile user1 = new UserProfile("user1", "John Doe", "USA");
         UserProfile user2 = new UserProfile("user2", "Jane Smith", "Canada");
-        userProfileTopic.pipeInput(user1.getUserId(), user1);
-        userProfileTopic.pipeInput(user2.getUserId(), user2);
+        userProfileTopic.pipeInput(user1.userId(), user1);
+        userProfileTopic.pipeInput(user2.userId(), user2);
 
         // Send page view events
         PageViewEvent page1 = new PageViewEvent("user1", "home", 60);
@@ -140,26 +140,26 @@ class StreamJoinsAndTransformationsTest {
         // Verify the joined results
         EnrichedPageView result1 = enrichedPageViewTopic.readValue();
         assertThat(result1).isNotNull();
-        assertThat(result1.getUserId()).isEqualTo("user1");
-        assertThat(result1.getUserName()).isEqualTo("John Doe");
-        assertThat(result1.getUserCountry()).isEqualTo("USA");
-        assertThat(result1.getPageName()).isEqualTo("home");
-        assertThat(result1.getDuration()).isEqualTo(60);
+        assertThat(result1.userId()).isEqualTo("user1");
+        assertThat(result1.userName()).isEqualTo("John Doe");
+        assertThat(result1.userCountry()).isEqualTo("USA");
+        assertThat(result1.pageName()).isEqualTo("home");
+        assertThat(result1.duration()).isEqualTo(60);
 
         EnrichedPageView result2 = enrichedPageViewTopic.readValue();
         assertThat(result2).isNotNull();
-        assertThat(result2.getUserId()).isEqualTo("user2");
-        assertThat(result2.getUserName()).isEqualTo("Jane Smith");
-        assertThat(result2.getUserCountry()).isEqualTo("Canada");
-        assertThat(result2.getPageName()).isEqualTo("products");
-        assertThat(result2.getDuration()).isEqualTo(120);
+        assertThat(result2.userId()).isEqualTo("user2");
+        assertThat(result2.userName()).isEqualTo("Jane Smith");
+        assertThat(result2.userCountry()).isEqualTo("Canada");
+        assertThat(result2.pageName()).isEqualTo("products");
+        assertThat(result2.duration()).isEqualTo(120);
     }
 
     @Test
     void testMissingUserProfile() {
         // Add just one user profile
         UserProfile user1 = new UserProfile("user1", "John Doe", "USA");
-        userProfileTopic.pipeInput(user1.getUserId(), user1);
+        userProfileTopic.pipeInput(user1.userId(), user1);
 
         // Send two page views but only one has a matching profile
         PageViewEvent page1 = new PageViewEvent("user1", "home", 60);
@@ -170,7 +170,7 @@ class StreamJoinsAndTransformationsTest {
         // Only one result should be produced (inner join)
         EnrichedPageView result = enrichedPageViewTopic.readValue();
         assertThat(result).isNotNull();
-        assertThat(result.getUserId()).isEqualTo("user1");
+        assertThat(result.userId()).isEqualTo("user1");
 
         // There should be no more records since user3 had no profile
         assertThat(enrichedPageViewTopic.isEmpty()).isTrue();
@@ -180,7 +180,7 @@ class StreamJoinsAndTransformationsTest {
     void testUserProfileUpdate() {
         // Add initial user profile
         UserProfile user1 = new UserProfile("user1", "John Doe", "USA");
-        userProfileTopic.pipeInput(user1.getUserId(), user1);
+        userProfileTopic.pipeInput(user1.userId(), user1);
 
         // Send a page view event
         PageViewEvent page1 = new PageViewEvent("user1", "home", 60);
@@ -189,15 +189,15 @@ class StreamJoinsAndTransformationsTest {
         // Verify the initial join result
         EnrichedPageView result1 = enrichedPageViewTopic.readValue();
         assertThat(result1).isNotNull();
-        assertThat(result1.getUserId()).isEqualTo("user1");
-        assertThat(result1.getUserName()).isEqualTo("John Doe");
-        assertThat(result1.getUserCountry()).isEqualTo("USA");
-        assertThat(result1.getPageName()).isEqualTo("home");
-        assertThat(result1.getDuration()).isEqualTo(60);
+        assertThat(result1.userId()).isEqualTo("user1");
+        assertThat(result1.userName()).isEqualTo("John Doe");
+        assertThat(result1.userCountry()).isEqualTo("USA");
+        assertThat(result1.pageName()).isEqualTo("home");
+        assertThat(result1.duration()).isEqualTo(60);
 
         // Update the user profile
         UserProfile updatedUser1 = new UserProfile("user1", "John Smith", "Canada");
-        userProfileTopic.pipeInput(user1.getUserId(), updatedUser1);
+        userProfileTopic.pipeInput(user1.userId(), updatedUser1);
 
         // Send another page view event for the same user
         PageViewEvent page2 = new PageViewEvent("user1", "products", 45);
@@ -206,10 +206,10 @@ class StreamJoinsAndTransformationsTest {
         // Verify the updated profile is used in the join
         EnrichedPageView result2 = enrichedPageViewTopic.readValue();
         assertThat(result2).isNotNull();
-        assertThat(result2.getUserId()).isEqualTo("user1");
-        assertThat(result2.getUserName()).isEqualTo("John Smith");
-        assertThat(result2.getUserCountry()).isEqualTo("Canada");
-        assertThat(result2.getPageName()).isEqualTo("products");
-        assertThat(result2.getDuration()).isEqualTo(45);
+        assertThat(result2.userId()).isEqualTo("user1");
+        assertThat(result2.userName()).isEqualTo("John Smith");
+        assertThat(result2.userCountry()).isEqualTo("Canada");
+        assertThat(result2.pageName()).isEqualTo("products");
+        assertThat(result2.duration()).isEqualTo(45);
     }
 }
