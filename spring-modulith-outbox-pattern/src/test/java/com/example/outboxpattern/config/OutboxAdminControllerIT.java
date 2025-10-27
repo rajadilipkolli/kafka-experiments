@@ -36,7 +36,7 @@ class OutboxAdminControllerIT extends AbstractIntegrationTest {
                 .andReturn();
 
         Map<String, Object> initialStats =
-                objectMapper.readValue(initialResult.getResponse().getContentAsString(), Map.class);
+                jsonMapper.readValue(initialResult.getResponse().getContentAsString(), Map.class);
         int initialPendingCount = ((Number) initialStats.get("pendingCount")).intValue();
         // Publish some events that will be processed by event listeners
         OrderItemRecord item = new OrderItemRecord("Test Product", BigDecimal.TEN, 1);
@@ -57,7 +57,7 @@ class OutboxAdminControllerIT extends AbstractIntegrationTest {
                 .andReturn();
 
         Map<String, Object> afterStats =
-                objectMapper.readValue(afterResult.getResponse().getContentAsString(), Map.class);
+                jsonMapper.readValue(afterResult.getResponse().getContentAsString(), Map.class);
 
         // Verify the API response contains the expected fields
         assertThat(afterStats).containsKeys("pendingCount", "failedCount", "timestamp");

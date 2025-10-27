@@ -126,7 +126,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
                     .andExpect(jsonPath("$.status", is(404)))
                     .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
                     .andExpect(jsonPath("$.instance").value("/api/orders/10000"))
-                    .andExpect(jsonPath("$.properties.errorCategory").value("Generic"));
+                    .andExpect(jsonPath("$.errorCategory").value("Generic"));
         }
     }
 
@@ -139,7 +139,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
                     new OrderRequest(null, List.of(new OrderItemRequest("New Order", BigDecimal.TEN, 100)));
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(orderRequest)))
+                            .content(jsonMapper.writeValueAsString(orderRequest)))
                     .andExpect(status().isCreated())
                     .andExpect(header().exists(HttpHeaders.LOCATION))
                     .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_JSON_VALUE)))
@@ -164,7 +164,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
                     Order.OrderStatus.FAILED.name(), List.of(new OrderItemRequest("New Order", BigDecimal.TEN, 100)));
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(orderRequest)))
+                            .content(jsonMapper.writeValueAsString(orderRequest)))
                     .andExpect(status().isCreated())
                     .andExpect(header().exists(HttpHeaders.LOCATION))
                     .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_JSON_VALUE)))
@@ -187,7 +187,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
 
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(orderRequest)))
+                            .content(jsonMapper.writeValueAsString(orderRequest)))
                     .andExpect(status().isBadRequest())
                     .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_PROBLEM_JSON_VALUE)))
                     .andExpect(
@@ -196,9 +196,9 @@ class OrderControllerIT extends AbstractIntegrationTest {
                     .andExpect(jsonPath("$.status", is(400)))
                     .andExpect(jsonPath("$.detail", is("Invalid request content.")))
                     .andExpect(jsonPath("$.instance", is("/api/orders")))
-                    .andExpect(jsonPath("$.properties.violations", hasSize(1)))
-                    .andExpect(jsonPath("$.properties.violations[0].field", is("itemsList")))
-                    .andExpect(jsonPath("$.properties.violations[0].message", is("ItemsList must not be empty")))
+                    .andExpect(jsonPath("$.violations", hasSize(1)))
+                    .andExpect(jsonPath("$.violations[0].field", is("itemsList")))
+                    .andExpect(jsonPath("$.violations[0].message", is("ItemsList must not be empty")))
                     .andReturn();
         }
     }
@@ -216,7 +216,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
 
             mockMvc.perform(put("/api/orders/{id}", orderId)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(orderRequest)))
+                            .content(jsonMapper.writeValueAsString(orderRequest)))
                     .andExpect(status().isOk())
                     .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_JSON_VALUE)))
                     .andExpect(jsonPath("$.id", is(orderId), Long.class))
@@ -233,7 +233,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
 
             mockMvc.perform(put("/api/orders/{id}", orderId)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(order)))
+                            .content(jsonMapper.writeValueAsString(order)))
                     .andExpect(status().isNotFound())
                     .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_PROBLEM_JSON_VALUE)))
                     .andExpect(
@@ -242,7 +242,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
                     .andExpect(jsonPath("$.status", is(404)))
                     .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
                     .andExpect(jsonPath("$.instance").value("/api/orders/10000"))
-                    .andExpect(jsonPath("$.properties.errorCategory").value("Generic"));
+                    .andExpect(jsonPath("$.errorCategory").value("Generic"));
         }
     }
 
@@ -275,7 +275,7 @@ class OrderControllerIT extends AbstractIntegrationTest {
                     .andExpect(jsonPath("$.status", is(404)))
                     .andExpect(jsonPath("$.detail").value("Order with Id '%d' Not found".formatted(orderId)))
                     .andExpect(jsonPath("$.instance").value("/api/orders/1"))
-                    .andExpect(jsonPath("$.properties.errorCategory").value("Generic"));
+                    .andExpect(jsonPath("$.errorCategory").value("Generic"));
         }
     }
 }
