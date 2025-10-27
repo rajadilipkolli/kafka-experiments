@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS event_publication
   serialized_event       TEXT NOT NULL,
   publication_date       TIMESTAMP WITH TIME ZONE NOT NULL,
   completion_date        TIMESTAMP WITH TIME ZONE,
-  status                 smallint,
+  status                 TEXT,
   completion_attempts    INT,
   last_resubmission_date TIMESTAMP WITH TIME ZONE,
   PRIMARY KEY (id)
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS event_publication_archive
   serialized_event       TEXT NOT NULL,
   publication_date       TIMESTAMP WITH TIME ZONE NOT NULL,
   completion_date        TIMESTAMP WITH TIME ZONE,
-  status                 smallint,
+  status                 TEXT,
   completion_attempts    INT,
   last_resubmission_date TIMESTAMP WITH TIME ZONE,
   PRIMARY KEY (id)

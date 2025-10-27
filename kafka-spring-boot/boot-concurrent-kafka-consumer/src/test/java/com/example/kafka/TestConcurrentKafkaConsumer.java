@@ -6,7 +6,7 @@ import org.springframework.boot.SpringApplication;
 
 public class TestConcurrentKafkaConsumer {
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.from(ConcurrentKafkaConsumer::main)
                 .with(ContainerConfig.class, ProducerConfig.class)
                 .run(args);
