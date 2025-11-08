@@ -6,7 +6,7 @@ import com.example.boot.kafka.reactor.entity.MessageDTO;
 import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import reactor.kafka.receiver.KafkaReceiver;
@@ -21,7 +21,7 @@ public class TestKafkaConsumer {
     KafkaReceiver<Integer, MessageDTO> receiver(KafkaProperties properties) {
         LOGGER.info("Creating receiver");
         ReceiverOptions<Integer, MessageDTO> receiverOptions = ReceiverOptions.<Integer, MessageDTO>create(
-                        properties.buildConsumerProperties(null))
+                        properties.buildConsumerProperties())
                 .subscription(Collections.singleton(HELLO_TOPIC))
                 .addAssignListener(partitions -> LOGGER.debug("onPartitionsAssigned {}", partitions))
                 .addRevokeListener(partitions -> LOGGER.debug("onPartitionsRevoked {}", partitions));
