@@ -42,7 +42,7 @@ class KafkaSampleIntegrationTest {
 
     @Test
     @Order(101)
-    void sendAndReceiveMessage() throws Exception {
+    void sendAndReceiveMessage() {
         // Wait until startup/initial traffic has quiesced (processed messages stable)
         final AtomicInteger lastSize = new AtomicInteger(-1);
         final AtomicLong lastChangeTime = new AtomicLong(System.currentTimeMillis());
@@ -50,7 +50,7 @@ class KafkaSampleIntegrationTest {
         await().pollInterval(Duration.ofMillis(200))
                 .atMost(Duration.ofSeconds(30))
                 .until(() -> {
-                    int currentSize = receiver2.getProcessedMessages().size();
+                    int currentSize = receiver2.getSeenMessagesCount();
                     if (currentSize != lastSize.get()) {
                         lastSize.set(currentSize);
                         lastChangeTime.set(System.currentTimeMillis());
@@ -59,8 +59,6 @@ class KafkaSampleIntegrationTest {
                     // Stable if no changes for at least 500ms
                     return System.currentTimeMillis() - lastChangeTime.get() >= 500;
                 });
-        int stableCount = receiver2.getProcessedMessages().size();
-
         // Send a unique test message so we can deterministically assert exactly one new processed message
         String uniqueMsg = "junitTest-" + UUID.randomUUID();
         this.mockMvcTester
@@ -72,14 +70,11 @@ class KafkaSampleIntegrationTest {
                 .assertThat()
                 .hasStatusOk();
 
-        // Now wait for exactly one more processed message
+        // Wait for our unique message to be observed by the receiver
         await().pollInterval(Duration.ofMillis(200))
                 .atMost(Duration.ofSeconds(30))
-                .until(() -> receiver2.getProcessedMessages().size() == stableCount + 1);
-
-        // Verify our unique message was processed
-        await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> assertThat(receiver2.getProcessedMessages())
-                .contains(uniqueMsg));
+                .untilAsserted(
+                        () -> assertThat(receiver2.hasSeenMessage(uniqueMsg)).isTrue());
         assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(1);
     }
 

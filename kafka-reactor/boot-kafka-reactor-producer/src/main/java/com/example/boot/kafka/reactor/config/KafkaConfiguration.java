@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -28,7 +28,7 @@ class KafkaConfiguration {
     @Bean
     KafkaSender<Integer, MessageDTO> reactiveKafkaSender(KafkaProperties properties) {
         log.info("Creating Sender");
-        Map<String, Object> props = properties.buildProducerProperties(null);
+        Map<String, Object> props = properties.buildProducerProperties();
         SenderOptions<Integer, MessageDTO> senderOptions = SenderOptions.create(props);
         return KafkaSender.create(senderOptions);
     }

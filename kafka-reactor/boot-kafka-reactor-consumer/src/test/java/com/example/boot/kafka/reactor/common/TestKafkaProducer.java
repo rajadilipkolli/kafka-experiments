@@ -4,7 +4,7 @@ import com.example.boot.kafka.reactor.entity.MessageDTO;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import reactor.kafka.sender.KafkaSender;
@@ -23,7 +23,7 @@ public class TestKafkaProducer {
     @Bean
     KafkaSender<Integer, MessageDTO> reactiveKafkaSender(KafkaProperties properties) {
         log.info("Creating reactive Kafka sender with properties: {}", properties.getProducer());
-        Map<String, Object> props = properties.buildProducerProperties(null);
+        Map<String, Object> props = properties.buildProducerProperties();
         SenderOptions<Integer, MessageDTO> senderOptions = SenderOptions.create(props);
         senderOptions.maxInFlight(1024);
         senderOptions.stopOnError(false);

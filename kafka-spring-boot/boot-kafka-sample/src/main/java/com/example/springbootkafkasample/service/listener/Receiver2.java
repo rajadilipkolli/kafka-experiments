@@ -4,9 +4,9 @@ import static com.example.springbootkafkasample.config.Initializer.TOPIC_TEST_2;
 
 import com.example.springbootkafkasample.dto.MessageDTO;
 import jakarta.validation.Valid;
-import java.util.Collection;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.BackOff;
@@ -27,15 +27,24 @@ public class Receiver2 {
 
     private final CountDownLatch deadLetterLatch = new CountDownLatch(1);
 
-    private final ConcurrentLinkedQueue<String> processedMessages = new ConcurrentLinkedQueue<>();
-    private static final int MAX_PROCESSED_MESSAGES = 100;
+    // Keep a durable record of seen messages so tests can reliably
+    // assert that a specific message was observed.
+    private final ConcurrentHashMap<String, AtomicInteger> seenMessages = new ConcurrentHashMap<>();
 
     public CountDownLatch getDeadLetterLatch() {
         return deadLetterLatch;
     }
 
-    public Collection<String> getProcessedMessages() {
-        return this.processedMessages;
+    /**
+     * Return how many distinct messages we've seen so far. Used by tests
+     * to determine quiescence of background traffic.
+     */
+    public int getSeenMessagesCount() {
+        return this.seenMessages.size();
+    }
+
+    public boolean hasSeenMessage(String msg) {
+        return this.seenMessages.containsKey(msg);
     }
 
     @RetryableTopic(
@@ -46,12 +55,10 @@ public class Receiver2 {
     @KafkaListener(id = "topic_2_Listener", topics = TOPIC_TEST_2, groupId = "foo")
     public void listenTopic2(@Payload @Valid MessageDTO messageDTO, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
         logger.info("Received message : {} in topic :{}", messageDTO.toString(), topic);
-        // record the processed message
-        this.processedMessages.add(messageDTO.msg());
-        // Keep only recent messages
-        while (this.processedMessages.size() > MAX_PROCESSED_MESSAGES) {
-            this.processedMessages.poll();
-        }
+        // record the processed message in the durable seenMessages map
+        this.seenMessages
+                .computeIfAbsent(messageDTO.msg(), k -> new AtomicInteger())
+                .incrementAndGet();
     }
 
     @DltHandler
