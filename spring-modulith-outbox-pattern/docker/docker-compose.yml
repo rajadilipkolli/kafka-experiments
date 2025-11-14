@@ -51,7 +51,7 @@ services:
       - "9411:9411"
 
   broker:
-    image: apache/kafka-native:4.1.0
+    image: apache/kafka-native:4.1.1
     hostname: broker
     ports:
       - "9092:9092"
