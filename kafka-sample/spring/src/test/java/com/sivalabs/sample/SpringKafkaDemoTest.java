@@ -17,7 +17,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 @SpringJUnitConfig(classes = KafkaConfig.class)
 @EmbeddedKafka(
         partitions = 1,
-        kraft = true,
         topics = {KafkaConfig.TOPIC})
 @DirtiesContext
 class SpringKafkaDemoTest {
