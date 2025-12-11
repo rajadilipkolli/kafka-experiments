@@ -1,0 +1,50 @@
+name: camel-spring-boot-integration
+
+on:
+  push:
+    paths:
+      - "integration/camel-spring-integration/**"
+    branches: [ main ]
+  pull_request:
+    paths:
+      - "integration/camel-spring-integration/**"
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "integration/camel-spring-integration"
+    steps:
+    - uses: actions/checkout@v6
+      with:
+          fetch-depth: 0
+    - uses: graalvm/setup-graalvm@v1
+      with:
+        java-version: '25'
+        distribution: 'graalvm'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        cache: 'maven'
+        native-image-job-reports: 'true'
+      
+    - name: Printing versions
+      run: |
+        echo "GRAALVM_HOME: $GRAALVM_HOME"
+        echo "JAVA_HOME: $JAVA_HOME"
+        java --version
+        native-image --version
+  
+    - name: Build with Maven
+      run: ./mvnw clean verify
+
+    - if: ${{ github.ref == 'refs/heads/main' }}
+      name: Build Image and push to docker
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+        DOC_PASSCODE: ${{secrets.DOCKER_PASSCODE}}
+        DOC_USERNAME: ${{secrets.DOCKER_USERNAME}}
+      run: ./mvnw -Pnative spring-boot:build-image --file pom.xml
