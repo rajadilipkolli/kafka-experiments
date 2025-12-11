@@ -8,7 +8,7 @@
 			"installGradle": "false"
 		},
 		"ghcr.io/devcontainers/features/node:1": {
-			"version": "latest"
+			"version": "lts"
 		},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
 			"version": "latest",

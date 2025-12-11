@@ -10,5 +10,4 @@ class TestCamelSpringBootApplication {
                 .with(ContainerConfiguration.class)
                 .run(args);
     }
-
 }
