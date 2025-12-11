@@ -57,8 +57,7 @@ class KafkaSampleApplicationTests {
     @Test
     void topicsWithPartitionsCount() throws Exception {
 
-        String expectedJson =
-                """
+        String expectedJson = """
                 [
                 	{
                 		"topicName": "test_1",
