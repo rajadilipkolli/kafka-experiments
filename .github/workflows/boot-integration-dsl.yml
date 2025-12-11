@@ -3,11 +3,11 @@ name: kafka-spring-boot-integration-dsl
 on:
   push:
     paths:
-      - "kafka-dsl-integration/**"
+      - "integration/spring-dsl-integration/**"
     branches: [ main ]
   pull_request:
     paths:
-      - "kafka-dsl-integration/**"
+      - "integration/spring-dsl-integration/**"
     types:
       - opened
       - synchronize
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "kafka-dsl-integration"
+        working-directory: "integration/spring-dsl-integration"
     steps:
     - uses: actions/checkout@v6
       with:

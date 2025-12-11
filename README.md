@@ -1,5 +1,3 @@
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/rajadilipkolli/kafka-experiments)
-
 # 🚀 Kafka Experiments
 
 A comprehensive collection of Apache Kafka integration examples demonstrating various patterns, frameworks, and best practices for building real-time data streaming applications.
@@ -36,16 +34,16 @@ This repository contains practical examples organized by integration patterns an
 
 ### 📋 Available Examples
 
-| Category                 | Project                                                      | Description                            | Key Features                                                                              |
-|--------------------------|--------------------------------------------------------------|----------------------------------------|-------------------------------------------------------------------------------------------|
-| **📝 Schema Management** | [Kafka Avro](./kafka-avro/README.md)                         | Schema evolution with Apache Avro      | • Backward/Forward compatibility<br>• Schema Registry integration<br>• Version management |
-| **🔧 Configuration**     | [DSL Integration](./kafka-dsl-integration/ReadMe.md)         | Domain-specific language configuration | • Fluent API configuration<br>• Type-safe setup                                           |
-| **⚛️ Reactive**          | [Kafka Reactor](./kafka-reactor/README.md)                   | Non-blocking reactive streams          | • Project Reactor integration<br>• Backpressure handling<br>• Async processing            |
-| **☕ Core Java**          | [Java Samples](./kafka-sample/README.md)                     | Plain Java and Spring examples         | • Pure Java clients<br>• Spring Framework integration                                     |
-| **🌱 Spring Boot**       | [Spring Boot Examples](./kafka-spring-boot/README.md)        | Production-ready Spring Boot apps      | • Auto-configuration<br>• Error handling<br>• Listener management                         |
-| **☁️ Cloud Native**      | [Spring Cloud](./kafka-spring-cloud-sample/README.md)        | Cloud-native microservices             | • Spring Cloud Stream<br>• Binder abstraction<br>• Batch processing                       |
-| **🌊 Stream Processing** | [Kafka Streams](./kafka-streams/README.md)                   | Real-time stream processing            | • Stateful operations<br>• Stream topology<br>• Real-time analytics                       |
-| **📦 Event Sourcing**    | [Outbox Pattern](./spring-modulith-outbox-pattern/README.md) | Transactional outbox with Modulith     | • Event sourcing<br>• Transactional consistency<br>• Domain events                        |
+| Category                 | Project                                                           | Description                            | Key Features                                                                              |
+|--------------------------|-------------------------------------------------------------------|----------------------------------------|-------------------------------------------------------------------------------------------|
+| **📝 Schema Management** | [Kafka Avro](./kafka-avro/README.md)                              | Schema evolution with Apache Avro      | • Backward/Forward compatibility<br>• Schema Registry integration<br>• Version management |
+| **🔧 Configuration**     | [DSL Integration](./integration/spring-dsl-integration/ReadMe.md) | Domain-specific language configuration | • Fluent API configuration<br>• Type-safe setup                                           |
+| **⚛️ Reactive**          | [Kafka Reactor](./kafka-reactor/README.md)                        | Non-blocking reactive streams          | • Project Reactor integration<br>• Backpressure handling<br>• Async processing            |
+| **☕ Core Java**          | [Java Samples](./kafka-sample/README.md)                          | Plain Java and Spring examples         | • Pure Java clients<br>• Spring Framework integration                                     |
+| **🌱 Spring Boot**       | [Spring Boot Examples](./kafka-spring-boot/README.md)             | Production-ready Spring Boot apps      | • Auto-configuration<br>• Error handling<br>• Listener management                         |
+| **☁️ Cloud Native**      | [Spring Cloud](./kafka-spring-cloud-sample/README.md)             | Cloud-native microservices             | • Spring Cloud Stream<br>• Binder abstraction<br>• Batch processing                       |
+| **🌊 Stream Processing** | [Kafka Streams](./kafka-streams/README.md)                        | Real-time stream processing            | • Stateful operations<br>• Stream topology<br>• Real-time analytics                       |
+| **📦 Event Sourcing**    | [Outbox Pattern](./spring-modulith-outbox-pattern/README.md)      | Transactional outbox with Modulith     | • Event sourcing<br>• Transactional consistency<br>• Domain events                        |
 
 ## 🚀 Getting Started
 
@@ -165,14 +163,14 @@ Each project includes comprehensive testing strategies:
 3. Try [Kafka Avro](./kafka-avro/README.md) for schema management
 
 ### 🚀 Intermediate
-4. Implement [Reactive Patterns](./kafka-reactor/README.md) for scalability
-5. Build [Stream Processing](./kafka-streams/README.md) applications
-6. Explore [Cloud Integration](./kafka-spring-cloud-sample/README.md)
+1. Implement [Reactive Patterns](./kafka-reactor/README.md) for scalability
+2. Build [Stream Processing](./kafka-streams/README.md) applications
+3. Explore [Cloud Integration](./kafka-spring-cloud-sample/README.md)
 
 ### 🎯 Advanced
-7. Master [Event Sourcing](./spring-modulith-outbox-pattern/README.md) patterns
-8. Implement custom [DSL Integration](./kafka-dsl-integration/ReadMe.md)
-9. Design complex event-driven architectures
+1. Master [Event Sourcing](./spring-modulith-outbox-pattern/README.md) patterns
+2. Implement custom [DSL Integration](./integration/spring-dsl-integration/ReadMe.md)
+3. Design complex event-driven architectures
 
 ## 🤝 Contributing
 
