@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example.integration</groupId>
-	<artifactId>kafka-dsl-integration</artifactId>
+	<artifactId>spring-dsl-integration</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>kafka-dsl-integration</name>
+	<name>spring-dsl-integration</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>

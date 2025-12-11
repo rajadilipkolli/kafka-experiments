@@ -98,8 +98,7 @@ class KafkaSampleIntegrationTest {
     @Test
     @Order(51)
     void topicsWithPartitionsCount() {
-        String expectedJson =
-                """
+        String expectedJson = """
                 [
                 	{
                 		"topicName": "__consumer_offsets",
@@ -147,8 +146,7 @@ class KafkaSampleIntegrationTest {
     @Test
     @Order(1)
     void getListOfContainers() {
-        String expectedJson =
-                """
+        String expectedJson = """
                 {
                     "topic_2_Listener": true,
                     "topic_2_Listener-retry": true,
@@ -169,8 +167,7 @@ class KafkaSampleIntegrationTest {
     @Test
     @Order(2)
     void stopAndStartContainers() throws Exception {
-        String expectedJson =
-                """
+        String expectedJson = """
                 {
                         "topic_2_Listener": true,
                         "topic_2_Listener-retry": true,
@@ -234,8 +231,7 @@ class KafkaSampleIntegrationTest {
     @Test
     @Order(4)
     void whenInvalidOperation_thenReturnsBadRequest() {
-        String invalidRequest =
-                """
+        String invalidRequest = """
             {
                 "containerId": "topic_2_Listener-dlt",
                  "operation": "INVALID"

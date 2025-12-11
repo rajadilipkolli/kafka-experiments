@@ -1,4 +1,4 @@
-package com.example.boot.kafka.reactor.common;
+package com.example.camel.integration.common;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -18,8 +18,6 @@ public class ContainerConfiguration {
 
     @Bean
     DynamicPropertyRegistrar kafkaProperties(KafkaContainer kafkaContainer) {
-        return (properties) -> {
-            properties.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
-        };
+        return properties -> properties.add("camel.component.kafka.brokers", kafkaContainer::getBootstrapServers);
     }
 }

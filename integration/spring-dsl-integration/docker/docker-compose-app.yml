@@ -1,7 +1,7 @@
-version: '3.8'
+name: spring-dsl-integration-app
 services:
 
-  kafka-dsl-integration:
+  spring-dsl-integration:
     build: ..
     ports:
       - "18080:8080"
