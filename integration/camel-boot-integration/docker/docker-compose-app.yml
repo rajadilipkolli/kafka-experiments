@@ -1,7 +1,7 @@
 version: '3.8'
 services:
 
-  camel-spring-kafka:
+  camel-boot-integration:
     build: ..
     ports:
       - "18080:8080"

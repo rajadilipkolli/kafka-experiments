@@ -5,7 +5,7 @@ import org.apache.camel.component.kafka.KafkaConstants;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MySpringBootRouter extends RouteBuilder {
+public class KafkaBootRouter extends RouteBuilder {
 
     @Override
     public void configure() {
@@ -14,10 +14,10 @@ public class MySpringBootRouter extends RouteBuilder {
                 .routeId("kafka-producer-route")
                 .setBody(simple("Hello Kafka at ${header.firedTime}"))
                 .setHeader(KafkaConstants.KEY, constant("Camel")) // Key of the message
-                .to("kafka:myTopic?brokers=localhost:9092");
+                .to("kafka:myTopic");
 
         // Kafka Consumer
-        from("kafka:myTopic?brokers=localhost:9092")
+        from("kafka:myTopic")
                 .log("Message received from Kafka : ${body}")
                 .log("    on the topic ${headers[kafka.TOPIC]}")
                 .log("    on the partition ${headers[kafka.PARTITION]}")

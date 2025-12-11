@@ -3,11 +3,11 @@ name: camel-spring-boot-integration
 on:
   push:
     paths:
-      - "integration/camel-spring-integration/**"
+      - "integration/camel-boot-integration/**"
     branches: [ main ]
   pull_request:
     paths:
-      - "integration/camel-spring-integration/**"
+      - "integration/camel-boot-integration/**"
     types:
       - opened
       - synchronize
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "integration/camel-spring-integration"
+        working-directory: "integration/camel-boot-integration"
     steps:
     - uses: actions/checkout@v6
       with:
