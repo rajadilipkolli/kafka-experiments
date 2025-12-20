@@ -70,12 +70,12 @@ class StreamTableJoinsTest {
                             userProfiles,
                             (pageView, userProfile) -> {
                                 String region = userProfile != null ? userProfile : "unknown";
-                                return String.format(
-                                        "Page: %s, User: %s, Region: %s, Duration: %d",
-                                        pageView.getPage(),
-                                        pageView.getUserId(),
-                                        region,
-                                        pageView.getDuration());
+                                return "Page: %s, User: %s, Region: %s, Duration: %d"
+                                        .formatted(
+                                                pageView.getPage(),
+                                                pageView.getUserId(),
+                                                region,
+                                                pageView.getDuration());
                             },
                             Joined.with(Serdes.String(), pageViewSerde, Serdes.String()))
                     .to("enriched-page-views", Produced.with(Serdes.String(), Serdes.String()));
