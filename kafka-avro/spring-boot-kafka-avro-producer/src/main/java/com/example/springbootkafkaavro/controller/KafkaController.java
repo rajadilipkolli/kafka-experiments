@@ -21,35 +21,23 @@ class KafkaController {
         this.producer = producer;
     }
 
-    @PostMapping(value = "/publish")
-    void sendMessageToKafkaTopic(
+    @PostMapping(value = "/{version}/publish", version = "1")
+    void sendMessageToKafkaTopicV1(
             @RequestParam @NotBlank String name,
             @RequestParam @Positive Integer age,
             @RequestParam(required = false) String gender) {
-        Person person = new Person();
-        person.setId(System.currentTimeMillis()); // Set ID for demo
-        person.setAge(age);
-        person.setName(name);
-        if (gender != null) {
-            person.setGender(gender);
-        }
+        Person person = createBasePerson(name, age, gender);
         this.producer.sendMessage(person);
     }
 
-    @PostMapping(value = "/publish/v2")
-    void sendV2MessageToKafkaTopic(
+    @PostMapping(value = "/{version}/publish", version = "2")
+    void sendMessageToKafkaTopicV2(
             @RequestParam @NotBlank String name,
             @RequestParam @Positive Integer age,
             @RequestParam(required = false) String gender,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String phoneNumber) {
-        Person person = new Person();
-        person.setId(System.currentTimeMillis()); // Set ID for demo
-        person.setAge(age);
-        person.setName(name);
-        if (gender != null) {
-            person.setGender(gender);
-        }
+        Person person = createBasePerson(name, age, gender);
         if (email != null) {
             person.setEmail(email);
         }
@@ -57,5 +45,16 @@ class KafkaController {
             person.setPhoneNumber(phoneNumber);
         }
         this.producer.sendMessage(person);
+    }
+
+    private Person createBasePerson(String name, Integer age, String gender) {
+        Person person = new Person();
+        person.setId(System.currentTimeMillis());
+        person.setAge(age);
+        person.setName(name);
+        if (gender != null) {
+            person.setGender(gender);
+        }
+        return person;
     }
 }

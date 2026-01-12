@@ -16,7 +16,7 @@ import org.testcontainers.utility.DockerImageName;
 public class KafkaContainersConfig {
 
     private final Network network = Network.newNetwork();
-    private static final String CONFLUENT_VERSION = "8.1.0";
+    private static final String CONFLUENT_VERSION = "8.1.1";
 
     @Bean
     @ServiceConnection

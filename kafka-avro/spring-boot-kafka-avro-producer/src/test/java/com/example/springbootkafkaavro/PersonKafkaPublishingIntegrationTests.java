@@ -36,7 +36,7 @@ class PersonKafkaPublishingIntegrationTests {
     void publishPersonWithoutGender(CapturedOutput output) {
         this.mockMvcTester
                 .post()
-                .uri("/person/publish")
+                .uri("/person/v1/publish")
                 .param("name", "junit")
                 .param("age", "33")
                 .exchange()
@@ -55,7 +55,7 @@ class PersonKafkaPublishingIntegrationTests {
     void publishPersonWithGender(CapturedOutput output) {
         this.mockMvcTester
                 .post()
-                .uri("/person/publish")
+                .uri("/person/v1/publish")
                 .param("name", "junit")
                 .param("age", "33")
                 .param("gender", "male")
@@ -77,7 +77,7 @@ class PersonKafkaPublishingIntegrationTests {
         for (int i = 0; i < numberOfRequests; i++) {
             this.mockMvcTester
                     .post()
-                    .uri("/person/publish")
+                    .uri("/person/v1/publish")
                     .param("name", "user" + i)
                     .param("age", String.valueOf(20 + i))
                     .exchange()
@@ -99,7 +99,7 @@ class PersonKafkaPublishingIntegrationTests {
     void publishPersonWithoutName() {
         this.mockMvcTester
                 .post()
-                .uri("/person/publish")
+                .uri("/person/v1/publish")
                 .param("age", "33")
                 .exchange()
                 .assertThat()
@@ -117,7 +117,7 @@ class PersonKafkaPublishingIntegrationTests {
     void publishPersonWithoutAge() {
         this.mockMvcTester
                 .post()
-                .uri("/person/publish")
+                .uri("/person/v1/publish")
                 .param("name", "junit")
                 .exchange()
                 .assertThat()
@@ -134,7 +134,7 @@ class PersonKafkaPublishingIntegrationTests {
     void publishPersonWithEmptyName() {
         this.mockMvcTester
                 .post()
-                .uri("/person/publish")
+                .uri("/person/v1/publish")
                 .param("name", "")
                 .param("age", "33")
                 .exchange()
@@ -149,7 +149,7 @@ class PersonKafkaPublishingIntegrationTests {
     void publishPersonWithNegativeAge() {
         this.mockMvcTester
                 .post()
-                .uri("/person/publish")
+                .uri("/person/v1/publish")
                 .param("name", "junit")
                 .param("age", "-1")
                 .exchange()
@@ -177,7 +177,7 @@ class PersonKafkaPublishingIntegrationTests {
         var requestBuilder =
                 this.mockMvcTester
                         .post()
-                        .uri("/person/publish/v2")
+                        .uri("/person/v2/publish")
                         .param("name", name)
                         .param("age", age);
 
@@ -262,7 +262,7 @@ class PersonKafkaPublishingIntegrationTests {
     void publishV2PersonWithoutName() {
         this.mockMvcTester
                 .post()
-                .uri("/person/publish/v2")
+                .uri("/person/v2/publish")
                 .param("age", "33")
                 .param("email", "test@example.com")
                 .exchange()
@@ -281,7 +281,7 @@ class PersonKafkaPublishingIntegrationTests {
     void publishV2PersonWithoutAge() {
         this.mockMvcTester
                 .post()
-                .uri("/person/publish/v2")
+                .uri("/person/v2/publish")
                 .param("name", "test")
                 .param("email", "test@example.com")
                 .exchange()
@@ -299,7 +299,7 @@ class PersonKafkaPublishingIntegrationTests {
     void publishV2PersonWithEmptyName() {
         this.mockMvcTester
                 .post()
-                .uri("/person/publish/v2")
+                .uri("/person/v2/publish")
                 .param("name", "")
                 .param("age", "33")
                 .param("email", "test@example.com")
@@ -315,7 +315,7 @@ class PersonKafkaPublishingIntegrationTests {
     void publishV2PersonWithNegativeAge() {
         this.mockMvcTester
                 .post()
-                .uri("/person/publish/v2")
+                .uri("/person/v2/publish")
                 .param("name", "test")
                 .param("age", "-1")
                 .param("email", "test@example.com")
