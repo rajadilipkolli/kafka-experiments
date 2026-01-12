@@ -291,7 +291,7 @@ Full tech stack [here](/techstack.md)
 |[org.springframework.boot:spring-boot-starter-data-jpa](https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-data-jpa)|N/A|12/04/23|renovate[bot] |Apache-2.0|N/A|
 |[org.springframework.boot:spring-boot-starter-test](https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-test)|N/A|12/04/23|renovate[bot] |Apache-2.0|N/A|
 |[org.springframework.boot:spring-boot-starter-validation](https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-validation)|N/A|12/04/23|renovate[bot] |Apache-2.0|N/A|
-|[org.springframework.boot:spring-boot-starter-web](https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-web)|N/A|12/04/23|renovate[bot] |Apache-2.0|N/A|
+|[org.springframework.boot:spring-boot-starter-webmvc](https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-webmvc)|N/A|12/04/23|renovate[bot] |Apache-2.0|N/A|
 |[org.springframework.kafka:spring-kafka](https://github.com/spring-projects/spring-kafka)|v3.1.1|12/04/23|renovate[bot] |Apache-2.0|N/A|
 |[org.springframework:spring-jdbc](https://github.com/spring-projects/spring-framework)|N/A|01/06/24|Raja Kolli |Apache-2.0|N/A|
 |[org.springframework:spring-test](https://github.com/spring-projects/spring-framework)|v6.1.4|12/19/23|renovate[bot] |Apache-2.0|N/A|

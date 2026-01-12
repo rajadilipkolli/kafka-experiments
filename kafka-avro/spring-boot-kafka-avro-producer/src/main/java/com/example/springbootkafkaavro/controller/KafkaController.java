@@ -21,8 +21,8 @@ class KafkaController {
         this.producer = producer;
     }
 
-    @PostMapping(value = "/publish")
-    void sendMessageToKafkaTopic(
+    @PostMapping(value = "/{version}/publish", version = "1")
+    void sendMessageToKafkaTopicV1(
             @RequestParam @NotBlank String name,
             @RequestParam @Positive Integer age,
             @RequestParam(required = false) String gender) {
@@ -36,8 +36,8 @@ class KafkaController {
         this.producer.sendMessage(person);
     }
 
-    @PostMapping(value = "/publish/v2")
-    void sendV2MessageToKafkaTopic(
+    @PostMapping(value = "/{version}/publish", version = "2")
+    void sendMessageToKafkaTopicV2(
             @RequestParam @NotBlank String name,
             @RequestParam @Positive Integer age,
             @RequestParam(required = false) String gender,
