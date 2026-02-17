@@ -2,7 +2,7 @@ name: camel-boot-integration
 services:
 
   broker:
-    image: apache/kafka-native:4.1.1
+    image: apache/kafka-native:4.2.0
     hostname: broker
     ports:
       - "9092:9092"
