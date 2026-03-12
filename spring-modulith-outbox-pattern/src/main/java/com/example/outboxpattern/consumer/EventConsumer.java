@@ -7,9 +7,9 @@ import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 
 @Service
-class EventProducer {
+class EventConsumer {
 
-    private static final Logger log = LoggerFactory.getLogger(EventProducer.class);
+    private static final Logger log = LoggerFactory.getLogger(EventConsumer.class);
 
     @ApplicationModuleListener
     void onOrderResponseEvent(OrderRecord orderRecord) {
