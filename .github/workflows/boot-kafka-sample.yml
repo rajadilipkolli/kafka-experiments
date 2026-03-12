@@ -37,5 +37,8 @@ jobs:
         echo "JAVA_HOME: $JAVA_HOME"
         java --version
         native-image --version
-    - name: Build with Maven
-      run: ./mvnw -B verify spring-boot:build-image --file pom.xml
+    - name: Build and analyze
+      run: ./mvnw clean verify
+    - if: ${{ github.ref == 'refs/heads/main' }}
+      name: Build Docker Image
+      run: ./mvnw -B spring-boot:build-image --file pom.xml
