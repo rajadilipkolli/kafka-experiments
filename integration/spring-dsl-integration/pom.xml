@@ -32,10 +32,7 @@
 		<dependency>
 			<groupId>io.opentelemetry</groupId>
 			<artifactId>opentelemetry-exporter-otlp</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-micrometer</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>

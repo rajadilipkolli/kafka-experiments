@@ -3,7 +3,7 @@ package com.example.springbootkafkasample.config;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.kafka.ConcurrentKafkaListenerContainerFactoryConfigurer;
+import org.springframework.boot.kafka.autoconfigure.ConcurrentKafkaListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -35,7 +35,8 @@ class KafkaConfig implements KafkaListenerConfigurer {
     ConcurrentKafkaListenerContainerFactory<Object, Object> kafkaListenerContainerFactory(
             ConcurrentKafkaListenerContainerFactoryConfigurer configurer,
             ConsumerFactory<Object, Object> consumerFactory) {
-        ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<Object, Object> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
         configurer.configure(factory, consumerFactory);
         factory.getContainerProperties().setObservationEnabled(true);
         return factory;
