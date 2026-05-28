@@ -36,3 +36,16 @@ services:
       KAFKA_BROKERCONNECT: "broker:29092"
     depends_on:
       - broker
+
+  grafana-lgtm:
+    image: grafana/otel-lgtm:0.28.0
+    extra_hosts: ['host.docker.internal:host-gateway']
+    container_name: grafana-lgtm
+    environment:
+      - OTEL_METRIC_EXPORT_INTERVAL=500
+    ports:
+      - "3000:3000" # Grafana UI
+      - "3200:3200" # OTLP HTTP receiver for logs
+      - "4317:4317" # OTLP gRPC receiver
+      - "4318:4318" # OTLP HTTP receiver
+      - "9090:9090" # Prometheus metrics endpoint
