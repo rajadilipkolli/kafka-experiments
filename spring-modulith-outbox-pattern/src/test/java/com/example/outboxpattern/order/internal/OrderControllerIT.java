@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.outboxpattern.common.AbstractIntegrationTest;
-import com.example.outboxpattern.common.listener.OrderListener;
 import com.example.outboxpattern.order.internal.domain.request.OrderItemRequest;
 import com.example.outboxpattern.order.internal.domain.request.OrderRequest;
 import com.example.outboxpattern.order.internal.entities.Order;
@@ -39,9 +38,6 @@ class OrderControllerIT extends AbstractIntegrationTest {
 
     @Autowired
     private OrderItemRepository orderItemRepository;
-
-    @Autowired
-    private OrderListener orderListener;
 
     private List<Order> orderList = null;
 

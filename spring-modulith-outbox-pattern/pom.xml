@@ -21,7 +21,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <java.version>25</java.version>
-        <spring-modulith.version>2.0.6</spring-modulith.version>
+        <spring-modulith.version>2.1.0</spring-modulith.version>
         <springdoc-openapi.version>3.0.3</springdoc-openapi.version>
 
         <project.testresult.directory>${project.build.directory}/test-results</project.testresult.directory>
@@ -64,11 +64,7 @@
         <!-- Observability Starts -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-zipkin</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-tracing-bridge-brave</artifactId>
+            <artifactId>spring-boot-starter-opentelemetry</artifactId>
         </dependency>
         <!-- Observability Ends -->
 
@@ -112,12 +108,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.modulith</groupId>
-            <artifactId>spring-modulith-actuator</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.modulith</groupId>
-            <artifactId>spring-modulith-observability</artifactId>
+            <artifactId>spring-modulith-starter-insight</artifactId>
             <scope>runtime</scope>
         </dependency>
 
