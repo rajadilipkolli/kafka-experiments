@@ -1,53 +1,33 @@
 package com.example.outboxpattern.order.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.outboxpattern.common.SQLContainerConfig;
+import com.example.outboxpattern.common.TestDataHelper;
 import com.example.outboxpattern.order.OrderRecord;
 import com.example.outboxpattern.order.internal.domain.request.OrderItemRequest;
 import com.example.outboxpattern.order.internal.domain.request.OrderRequest;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
-import org.springframework.kafka.core.KafkaOperations;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.modulith.test.ApplicationModuleTest;
 import org.springframework.modulith.test.Scenario;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.TestPropertySource;
 
-@ApplicationModuleTest
-@Import({SQLContainerConfig.class})
-@Disabled("Disabled to avoid conflicts with KakfaOperations mock")
+@ApplicationModuleTest(classes = {SQLContainerConfig.class})
+@Import(TestDataHelper.class)
+@TestPropertySource(properties = "spring.modulith.events.externalization.enabled=false")
 class OrderModuleIntTests {
-
-    private static final Logger log = LoggerFactory.getLogger(OrderModuleIntTests.class);
-
-    @MockitoBean
-    KafkaOperations<String, Object> kafkaOperations;
 
     @Autowired
     OrderService orders;
 
-    @BeforeEach
-    void setUp() {
-        when(kafkaOperations.send(any(), any(), any())).then(invocation -> {
-            log.info(
-                    "Sending message key {}, value {} to {}.",
-                    invocation.getArguments()[1],
-                    invocation.getArguments()[2],
-                    invocation.getArguments()[0]);
-            return CompletableFuture.completedFuture(new SendResult<>(null, null));
-        });
-    }
+    @Autowired
+    TestDataHelper testDataHelper;
 
     @Test
     void shouldTriggerOrderCreatedEvent(Scenario scenario) {
@@ -83,5 +63,42 @@ class OrderModuleIntTests {
                     assertThat(teaItem.quantity()).isEqualTo(50);
                     assertThat(teaItem.productPrice()).isEqualTo(BigDecimal.valueOf(5));
                 });
+    }
+
+    @Test
+    void shouldUpdateExistingOrder() {
+        Long orderId = testDataHelper.insertOrder(LocalDateTime.now(), "CREATED");
+        testDataHelper.insertOrderItem(orderId, "Product", BigDecimal.TEN, 1);
+
+        OrderRequest request = new OrderRequest(null, List.of(new OrderItemRequest("Product", BigDecimal.ONE, 2)));
+
+        orders.updateOrder(orderId, request);
+
+        var orderMap = testDataHelper.findOrderById(orderId);
+        org.assertj.core.api.Assertions.assertThat(orderMap.get("status")).isEqualTo("COMPLETED");
+    }
+
+    @Test
+    void shouldDeleteOrder() {
+        Long orderId = testDataHelper.insertOrder(LocalDateTime.now(), "CREATED");
+        testDataHelper.insertOrderItem(orderId, "Product", BigDecimal.TEN, 1);
+
+        orders.deleteOrderById(orderId);
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> testDataHelper.findOrderById(orderId))
+                .isInstanceOf(org.springframework.dao.EmptyResultDataAccessException.class);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenOrderNotFound(Scenario scenario) {
+        org.assertj.core.api.Assertions.assertThatThrownBy(
+                        () -> orders.findOrderById(100_000L).orElseThrow(() -> new OrderNotFoundException(100_000L)))
+                .isInstanceOf(OrderNotFoundException.class);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingNonExistentOrder(Scenario scenario) {
+        OrderRequest request = new OrderRequest(null, List.of(new OrderItemRequest("Product", BigDecimal.TEN, 1)));
+        assertThatThrownBy(() -> orders.updateOrder(100_000L, request)).isInstanceOf(OrderNotFoundException.class);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.outboxpattern.order.internal;
+package com.example.outboxpattern.order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -17,58 +17,41 @@ import com.example.outboxpattern.common.AbstractIntegrationTest;
 import com.example.outboxpattern.order.internal.domain.request.OrderItemRequest;
 import com.example.outboxpattern.order.internal.domain.request.OrderRequest;
 import com.example.outboxpattern.order.internal.entities.Order;
-import com.example.outboxpattern.order.internal.entities.OrderItem;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 class OrderControllerIT extends AbstractIntegrationTest {
 
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private OrderItemRepository orderItemRepository;
-
-    private List<Order> orderList = null;
+    private List<Map<String, Object>> orderList = null;
 
     @BeforeEach
     void setUp() {
-        orderItemRepository.deleteAll();
-        orderRepository.deleteAllInBatch();
+        testDataHelper.deleteAllOrderItems();
+        testDataHelper.deleteAllOrders();
 
         orderList = new ArrayList<>();
-        orderList.add(new Order()
-                .setOrderedDate(LocalDateTime.now())
-                .setStatus(Order.OrderStatus.CREATED)
-                .addOrderItem(new OrderItem()
-                        .setProductCode("First Order")
-                        .setProductPrice(BigDecimal.TWO)
-                        .setQuantity(10)));
-        orderList.add(new Order()
-                .setOrderedDate(LocalDateTime.now().plusDays(1))
-                .setStatus(Order.OrderStatus.CREATED)
-                .addOrderItem(new OrderItem()
-                        .setProductCode("Second Order")
-                        .setProductPrice(BigDecimal.TEN)
-                        .setQuantity(10)));
-        orderList.add(new Order()
-                .setOrderedDate(LocalDateTime.now().plusDays(2))
-                .setStatus(Order.OrderStatus.CREATED)
-                .addOrderItem(new OrderItem()
-                        .setProductCode("Third Order")
-                        .setProductPrice(BigDecimal.ONE)
-                        .setQuantity(10)));
-        orderList = orderRepository.saveAll(orderList);
+
+        Long orderId1 = testDataHelper.insertOrder(LocalDateTime.now(), "CREATED");
+        testDataHelper.insertOrderItem(orderId1, "First Order", BigDecimal.TWO, 10);
+        orderList.add(testDataHelper.findOrderById(orderId1));
+
+        Long orderId2 = testDataHelper.insertOrder(LocalDateTime.now().plusDays(1), "CREATED");
+        testDataHelper.insertOrderItem(orderId2, "Second Order", BigDecimal.TEN, 10);
+        orderList.add(testDataHelper.findOrderById(orderId2));
+
+        Long orderId3 = testDataHelper.insertOrder(LocalDateTime.now().plusDays(2), "CREATED");
+        testDataHelper.insertOrderItem(orderId3, "Third Order", BigDecimal.ONE, 10);
+        orderList.add(testDataHelper.findOrderById(orderId3));
     }
 
     @Test
@@ -92,21 +75,17 @@ class OrderControllerIT extends AbstractIntegrationTest {
     class Find {
         @Test
         void shouldFindOrderById() throws Exception {
-            Order order = orderList.getFirst();
-            Long orderId = order.getId();
+            Map<String, Object> order = orderList.getFirst();
+            Long orderId = (Long) order.get("id");
 
             mockMvc.perform(get("/api/orders/{id}", orderId))
                     .andExpect(status().isOk())
                     .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_JSON_VALUE)))
-                    .andExpect(jsonPath("$.id", is(order.getId()), Long.class))
+                    .andExpect(jsonPath("$.id", is(orderId), Long.class))
                     .andExpect(jsonPath("$.status", is("CREATED")))
-                    .andExpect(jsonPath(
-                            "$.orderItems[0].productCode",
-                            is(order.getItems().getFirst().getProductCode())))
+                    .andExpect(jsonPath("$.orderItems[0].productCode", is("First Order")))
                     .andExpect(jsonPath("$.orderItems[0].productPrice", is(2.0)))
-                    .andExpect(jsonPath(
-                            "$.orderItems[0].quantity",
-                            is(order.getItems().getFirst().getQuantity())));
+                    .andExpect(jsonPath("$.orderItems[0].quantity", is(10)));
         }
 
         @Test
@@ -204,11 +183,9 @@ class OrderControllerIT extends AbstractIntegrationTest {
     class Update {
         @Test
         void shouldUpdateOrder() throws Exception {
-            Long orderId = orderList.getFirst().getId();
-            OrderRequest orderRequest = new OrderRequest(
-                    null,
-                    List.of(new OrderItemRequest(
-                            orderList.getFirst().getItems().getFirst().getProductCode(), BigDecimal.TEN, 100)));
+            Long orderId = (Long) orderList.getFirst().get("id");
+            OrderRequest orderRequest =
+                    new OrderRequest(null, List.of(new OrderItemRequest("First Order", BigDecimal.TEN, 100)));
 
             mockMvc.perform(put("/api/orders/{id}", orderId)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -247,15 +224,14 @@ class OrderControllerIT extends AbstractIntegrationTest {
     class Delete {
         @Test
         void shouldDeleteOrder() throws Exception {
-            Order order = orderList.getFirst();
+            Map<String, Object> order = orderList.getFirst();
+            Long orderId = (Long) order.get("id");
 
-            mockMvc.perform(delete("/api/orders/{id}", order.getId()))
+            mockMvc.perform(delete("/api/orders/{id}", orderId))
                     .andExpect(status().isOk())
                     .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_JSON_VALUE)))
-                    .andExpect(jsonPath("$.id", is(order.getId()), Long.class))
-                    .andExpect(jsonPath(
-                            "$.orderItems[0].productCode",
-                            is(order.getItems().getFirst().getProductCode())));
+                    .andExpect(jsonPath("$.id", is(orderId), Long.class))
+                    .andExpect(jsonPath("$.orderItems[0].productCode", is("First Order")));
         }
 
         @Test
