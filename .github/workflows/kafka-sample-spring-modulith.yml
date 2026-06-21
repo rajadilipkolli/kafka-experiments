@@ -23,7 +23,7 @@ jobs:
       matrix:
         java: ["25"]
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
           fetch-depth: 0
     - uses: graalvm/setup-graalvm@v1
