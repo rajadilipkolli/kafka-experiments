@@ -26,4 +26,7 @@ public abstract class AbstractIntegrationTest {
 
     @Autowired
     protected OrderListener orderListener;
+
+    @Autowired
+    protected TestDataHelper testDataHelper;
 }
