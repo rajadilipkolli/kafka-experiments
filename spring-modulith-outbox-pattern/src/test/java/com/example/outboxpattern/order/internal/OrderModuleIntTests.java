@@ -75,7 +75,7 @@ class OrderModuleIntTests {
         orders.updateOrder(orderId, request);
 
         var orderMap = testDataHelper.findOrderById(orderId);
-        org.assertj.core.api.Assertions.assertThat(orderMap.get("status")).isEqualTo("COMPLETED");
+        assertThat(orderMap.get("status")).isEqualTo("COMPLETED");
     }
 
     @Test
@@ -85,19 +85,18 @@ class OrderModuleIntTests {
 
         orders.deleteOrderById(orderId);
 
-        org.assertj.core.api.Assertions.assertThatThrownBy(() -> testDataHelper.findOrderById(orderId))
+        assertThatThrownBy(() -> testDataHelper.findOrderById(orderId))
                 .isInstanceOf(org.springframework.dao.EmptyResultDataAccessException.class);
     }
 
     @Test
-    void shouldThrowExceptionWhenOrderNotFound(Scenario scenario) {
-        org.assertj.core.api.Assertions.assertThatThrownBy(
-                        () -> orders.findOrderById(100_000L).orElseThrow(() -> new OrderNotFoundException(100_000L)))
+    void shouldThrowExceptionWhenOrderNotFound() {
+        assertThatThrownBy(() -> orders.findOrderById(100_000L).orElseThrow(() -> new OrderNotFoundException(100_000L)))
                 .isInstanceOf(OrderNotFoundException.class);
     }
 
     @Test
-    void shouldThrowExceptionWhenUpdatingNonExistentOrder(Scenario scenario) {
+    void shouldThrowExceptionWhenUpdatingNonExistentOrder() {
         OrderRequest request = new OrderRequest(null, List.of(new OrderItemRequest("Product", BigDecimal.TEN, 1)));
         assertThatThrownBy(() -> orders.updateOrder(100_000L, request)).isInstanceOf(OrderNotFoundException.class);
     }
