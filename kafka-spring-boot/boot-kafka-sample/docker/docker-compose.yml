@@ -43,7 +43,7 @@ services:
         condition: service_healthy
   
   grafana-lgtm:
-    image: grafana/otel-lgtm:0.30.2
+    image: grafana/otel-lgtm:0.31.0
     extra_hosts: ['host.docker.internal:host-gateway']
     container_name: grafana-lgtm
     environment:
