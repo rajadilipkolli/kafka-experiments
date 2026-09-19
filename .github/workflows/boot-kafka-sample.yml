@@ -1,0 +1,42 @@
+name: spring-boot-kafka-sample
+
+on:
+  push:
+    paths:
+      - "kafka-spring-boot/boot-kafka-sample/**"
+    branches: [ main ]
+  pull_request:
+    paths:
+      - "kafka-spring-boot/boot-kafka-sample/**"
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "kafka-spring-boot/boot-kafka-sample"
+    steps:
+    - uses: actions/checkout@v7
+    - uses: graalvm/setup-graalvm@v1
+      with:
+        java-version: '25'
+        distribution: 'graalvm'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        cache: 'maven'
+        native-image-job-reports: 'true'
+      
+    - name: Printing versions
+      run: |
+        echo "GRAALVM_HOME: $GRAALVM_HOME"
+        echo "JAVA_HOME: $JAVA_HOME"
+        java --version
+        native-image --version
+    - name: Build and analyze
+      run: ./mvnw clean verify
+    - if: ${{ github.ref == 'refs/heads/main' }}
+      name: Build Docker Image
+      run: ./mvnw -B spring-boot:build-image --file pom.xml

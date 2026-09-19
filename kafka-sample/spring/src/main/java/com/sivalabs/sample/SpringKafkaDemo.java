@@ -1,10 +1,9 @@
 package com.sivalabs.sample;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
 import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class SpringKafkaDemo {
 
@@ -13,8 +12,8 @@ public class SpringKafkaDemo {
 
         MessageSender messageSender = ctx.getBean(MessageSender.class);
         SecureRandom random = new SecureRandom();
-        while(true) {
-            messageSender.send(String.valueOf(random.nextInt()),String.valueOf(random.nextInt()));
+        while (true) {
+            messageSender.send(String.valueOf(random.nextInt()), String.valueOf(random.nextInt()));
             TimeUnit.SECONDS.sleep(10);
         }
     }

@@ -1,0 +1,33 @@
+name: kafka-spring-cloud-sample
+
+on:
+  push:
+    paths:
+      - "kafka-spring-cloud-sample/**"
+    branches: [ main ]
+  pull_request:
+    paths:
+      - "kafka-spring-cloud-sample/**"
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "kafka-spring-cloud-sample"
+    steps:
+    - uses: actions/checkout@v7
+      with:
+          fetch-depth: 0
+    - name: Set up JDK
+      uses: actions/setup-java@v6.0.1
+      with:
+        java-version: '25.0.4+101.0.LTS'
+        distribution: 'temurin'
+        cache: 'maven'
+    - name: Build with Maven
+      run: ./mvnw -B verify --file pom.xml

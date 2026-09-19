@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class PageViewEventProcessor {
 
     @Bean
-    public Function<KStream<String, PageViewEvent>, KStream<String, Long>> processInput() {
+    Function<KStream<String, PageViewEvent>, KStream<String, Long>> processInput() {
 
         return eventKStream ->
                 eventKStream

@@ -1,0 +1,14 @@
+{
+     "namespace": "com.example.springbootkafkaavro.model",
+     "type": "record",
+     "name": "Person",
+     "version": "2",
+     "fields": [
+       { "name": "id", "type": "long" },
+       { "name": "name", "type": "string", "avro.java.string": "String" },
+       { "name": "age", "type": "int" },
+       { "name": "gender", "type": ["null", "string"], "default": null, "avro.java.string": "String" },
+       { "name": "email", "type": ["null", "string"], "default": null, "avro.java.string": "String" },
+       { "name": "phoneNumber", "type": ["null", "string"], "default": null, "avro.java.string": "String" }
+     ]
+}

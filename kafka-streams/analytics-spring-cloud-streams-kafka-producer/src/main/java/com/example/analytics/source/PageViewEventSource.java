@@ -1,4 +1,4 @@
-/* Licensed under Apache-2.0 2019-2023 */
+/* Licensed under Apache-2.0 2019-2025 */
 package com.example.analytics.source;
 
 import com.example.analytics.model.PageViewEvent;
@@ -11,12 +11,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
-public class PageViewEventSource {
+class PageViewEventSource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PageViewEventSource.class);
 
     @Bean
-    public Supplier<PageViewEvent> pageViewEventSupplier() {
+    Supplier<PageViewEvent> pageViewEventSupplier() {
         List<String> names = List.of("rajesh", "kumar", "raja", "dilip", "chowdary", "kolli");
         List<String> pages = List.of("blog", "sitemap", "initializr", "news", "colophon", "about");
         return () -> {

@@ -1,0 +1,15 @@
+spring:
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+    properties:
+      specific:
+        avro:
+          reader: true
+
+logging:
+  level:
+    "[com.example.springbootkafkaavro.listener]": DEBUG

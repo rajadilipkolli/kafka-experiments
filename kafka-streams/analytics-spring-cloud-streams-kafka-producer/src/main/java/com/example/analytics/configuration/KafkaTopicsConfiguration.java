@@ -1,4 +1,4 @@
-/* Licensed under Apache-2.0 2021-2023 */
+/* Licensed under Apache-2.0 2021-2025 */
 package com.example.analytics.configuration;
 
 import org.apache.kafka.clients.admin.NewTopic;
@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
 @Configuration(proxyBeanMethods = false)
-public class KafkaTopicsConfiguration {
+class KafkaTopicsConfiguration {
 
     @Bean
-    public NewTopic pvsTopic(final AnalyticsApplicationProperties analyticsApplicationProperties) {
+    NewTopic pvsTopic(final AnalyticsApplicationProperties analyticsApplicationProperties) {
         return TopicBuilder.name(analyticsApplicationProperties.topicNamePvs()).build();
     }
 }

@@ -1,7 +1,6 @@
 /* Licensed under Apache-2.0 2021-2023 */
 package com.example.analytics.configuration;
 
-import org.apache.kafka.common.config.TopicConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
@@ -16,9 +15,6 @@ public class KafkaTopicsConfiguration {
                 // pcsTopic
                 TopicBuilder.name(analyticsApplicationProperties.topicNamePcs()).compact().build(),
                 // pvsTopic
-                TopicBuilder.name(analyticsApplicationProperties.topicNamePvs())
-                        .replicas(analyticsApplicationProperties.replication())
-                        .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
-                        .build());
+                TopicBuilder.name(analyticsApplicationProperties.topicNamePvs()).build());
     }
 }

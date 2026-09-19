@@ -1,0 +1,11 @@
+spring:
+  kafka:
+    consumer:
+      group-id: avro-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      auto-offset-reset: earliest
+    properties:
+      specific:
+        avro:
+          reader: true

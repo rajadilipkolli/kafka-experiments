@@ -1,13 +1,16 @@
 package com.example.boot.kafka.reactor;
 
+import com.example.boot.kafka.reactor.common.ContainerConfiguration;
+import com.example.boot.kafka.reactor.common.TestKafkaConsumer;
 import com.example.boot.kafka.reactor.entity.MessageDTO;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -17,11 +20,12 @@ import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOffset;
 import reactor.test.StepVerifier;
 
-@SpringBootTest(classes = TestBootKafkaReactorProducerApplication.class)
+@SpringBootTest(classes = {ContainerConfiguration.class, TestKafkaConsumer.class})
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@Slf4j
 class BootKafkaReactorProducerApplicationTests {
+
+    private static final Logger log = LoggerFactory.getLogger(BootKafkaReactorProducerApplicationTests.class);
 
     @Autowired
     KafkaReceiver<Integer, MessageDTO> receiver;
@@ -38,7 +42,7 @@ class BootKafkaReactorProducerApplicationTests {
                     "text": "hello1",
                     "sentAt": "2023-06-15T18:49:38.813Z"
                 }
-                    """;
+                """;
         this.webTestClient
                 .post()
                 .uri("/messages")

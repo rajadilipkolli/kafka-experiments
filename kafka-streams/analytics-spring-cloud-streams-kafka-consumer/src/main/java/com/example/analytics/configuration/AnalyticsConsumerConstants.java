@@ -3,9 +3,9 @@ package com.example.analytics.configuration;
 
 public class AnalyticsConsumerConstants {
 
+    public static final String PAGE_COUNT_MV = "pcmv";
+
     private AnalyticsConsumerConstants() {
         throw new IllegalStateException("AnalyticsConsumerConstants class");
     }
-
-    public static final String PAGE_COUNT_MV = "pcmv";
 }

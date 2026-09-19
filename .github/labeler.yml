@@ -1,15 +1,27 @@
 "component : avro":
   - changed-files:
       - any-glob-to-any-file: 'kafka-avro/**/*'
+"component : dsl-integration":
+  - changed-files:
+      - any-glob-to-any-file: 'kafka-dsl-integration/**/*'
 "component : reactor":
   - changed-files:
       - any-glob-to-any-file: 'kafka-reactor/**/*'
 "component : sample":
   - changed-files:
       - any-glob-to-any-file: 'kafka-sample/**/*'
+"component : spring-boot":
+  - changed-files:
+      - any-glob-to-any-file: 'kafka-spring-boot/**/*'
 "component : streams":
   - changed-files:
       - any-glob-to-any-file: 'kafka-streams/**/*'
+"component : cloud":
+  - changed-files:
+      - any-glob-to-any-file: 'kafka-spring-cloud-sample/**/*'
+"component : modulith":
+  - changed-files:
+      - any-glob-to-any-file: 'spring-modulith-outbox-pattern/**/*'
 "type: documentation":
   - changed-files:
       - any-glob-to-any-file: 'docs/**/*'

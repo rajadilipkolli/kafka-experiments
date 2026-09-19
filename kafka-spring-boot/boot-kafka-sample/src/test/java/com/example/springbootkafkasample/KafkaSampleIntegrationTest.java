@@ -1,0 +1,265 @@
+package com.example.springbootkafkasample;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+
+import com.example.springbootkafkasample.common.ContainerConfig;
+import com.example.springbootkafkasample.dto.KafkaListenerRequest;
+import com.example.springbootkafkasample.dto.MessageDTO;
+import com.example.springbootkafkasample.dto.Operation;
+import com.example.springbootkafkasample.service.listener.Receiver2;
+import java.net.URI;
+import java.time.Duration;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import tools.jackson.databind.ObjectMapper;
+
+@SpringBootTest(classes = {ContainerConfig.class})
+@AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+class KafkaSampleIntegrationTest {
+
+    @Autowired
+    private MockMvcTester mockMvcTester;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private Receiver2 receiver2;
+
+    @Test
+    @Order(101)
+    void sendAndReceiveMessage() {
+        // Wait until startup/initial traffic has quiesced (processed messages stable)
+        final AtomicInteger lastSize = new AtomicInteger(-1);
+        final AtomicLong lastChangeTime = new AtomicLong(System.currentTimeMillis());
+
+        await().pollInterval(Duration.ofMillis(200))
+                .atMost(Duration.ofSeconds(30))
+                .until(() -> {
+                    int currentSize = receiver2.getSeenMessagesCount();
+                    if (currentSize != lastSize.get()) {
+                        lastSize.set(currentSize);
+                        lastChangeTime.set(System.currentTimeMillis());
+                        return false;
+                    }
+                    // Stable if no changes for at least 500ms
+                    return System.currentTimeMillis() - lastChangeTime.get() >= 500;
+                });
+        // Send a unique test message so we can deterministically assert exactly one new processed message
+        String uniqueMsg = "junitTest-" + UUID.randomUUID();
+        this.mockMvcTester
+                .post()
+                .uri("/messages")
+                .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", uniqueMsg)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()
+                .assertThat()
+                .hasStatusOk();
+
+        // Wait for our unique message to be observed by the receiver
+        await().pollInterval(Duration.ofMillis(200))
+                .atMost(Duration.ofSeconds(30))
+                .untilAsserted(
+                        () -> assertThat(receiver2.hasSeenMessage(uniqueMsg)).isTrue());
+        assertThat(receiver2.getDeadLetterLatch().getCount()).isEqualTo(1);
+    }
+
+    @Test
+    @Order(102)
+    void sendAndReceiveMessageInDeadLetter() {
+        this.mockMvcTester
+                .post()
+                .uri("/messages")
+                .content(this.objectMapper.writeValueAsString(new MessageDTO("test_1", "")))
+                .contentType(MediaType.APPLICATION_JSON)
+                .assertThat()
+                .hasStatusOk();
+
+        await().pollInterval(Duration.ofSeconds(1))
+                .atMost(Duration.ofSeconds(15))
+                .untilAsserted(() ->
+                        assertThat(receiver2.getDeadLetterLatch().getCount()).isZero());
+    }
+
+    @Test
+    @Order(51)
+    void topicsWithPartitionsCount() {
+        String expectedJson = """
+                [
+                	{
+                		"topicName": "__consumer_offsets",
+                		"partitionCount": 1,
+                		"replicationCount": 1
+                	},
+                	{
+                		"topicName": "test_1",
+                		"partitionCount": 32,
+                		"replicationCount": 1
+                	},
+                	{
+                		"topicName": "test_2",
+                		"partitionCount": 1,
+                		"replicationCount": 1
+                	},
+                	{
+                		"topicName": "test_2-dlt",
+                		"partitionCount": 1,
+                		"replicationCount": 1
+                	},
+                	{
+                		"topicName": "test_2-retry",
+                		"partitionCount": 1,
+                		"replicationCount": 1
+                	},
+                	{
+                		"topicName": "test_3",
+                		"partitionCount": 32,
+                		"replicationCount": 1
+                	}
+                ]
+                """;
+        this.mockMvcTester
+                .get()
+                .uri("/topics")
+                .param("showInternalTopics", "true")
+                .assertThat()
+                .hasStatusOk()
+                .hasContentType(MediaType.APPLICATION_JSON)
+                .bodyJson()
+                .isEqualTo(expectedJson);
+    }
+
+    @Test
+    @Order(1)
+    void getListOfContainers() {
+        String expectedJson = """
+                {
+                    "topic_2_Listener": true,
+                    "topic_2_Listener-retry": true,
+                    "topic_1_Listener": true,
+                    "topic_2_Listener-dlt": true
+                }
+                """;
+        this.mockMvcTester
+                .get()
+                .uri("/listeners")
+                .assertThat()
+                .hasStatusOk()
+                .hasContentType(MediaType.APPLICATION_JSON)
+                .bodyJson()
+                .isEqualTo(expectedJson);
+    }
+
+    @Test
+    @Order(2)
+    void stopAndStartContainers() throws Exception {
+        String expectedJson = """
+                {
+                        "topic_2_Listener": true,
+                        "topic_2_Listener-retry": true,
+                        "topic_1_Listener": true,
+                        "topic_2_Listener-dlt": %s
+                }
+                """;
+        this.mockMvcTester
+                .post()
+                .uri("/listeners")
+                .content(this.objectMapper.writeValueAsString(
+                        new KafkaListenerRequest("topic_2_Listener-dlt", Operation.STOP)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .assertThat()
+                .hasStatusOk()
+                .hasContentType(MediaType.APPLICATION_JSON)
+                .bodyJson()
+                .isEqualTo(expectedJson.formatted(false));
+        this.mockMvcTester
+                .post()
+                .uri("/listeners")
+                .content(this.objectMapper.writeValueAsString(
+                        new KafkaListenerRequest("topic_2_Listener-dlt", Operation.START)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .assertThat()
+                .hasStatusOk()
+                .hasContentType(MediaType.APPLICATION_JSON)
+                .bodyJson()
+                .isEqualTo(expectedJson.formatted(true));
+    }
+
+    @Test
+    @Order(3)
+    void invalidContainerOperation() throws Exception {
+        this.mockMvcTester
+                .post()
+                .uri("/listeners")
+                .content(objectMapper.writeValueAsString(
+                        new KafkaListenerRequest("invalid-container-id", Operation.STOP)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .assertThat()
+                .hasStatus(HttpStatus.BAD_REQUEST)
+                .hasContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
+                .bodyJson()
+                .convertTo(ProblemDetail.class)
+                .satisfies(problemDetail -> {
+                    assertThat(problemDetail).isNotNull();
+                    assertThat(problemDetail.getDetail())
+                            .isNotNull()
+                            .isEqualTo("Listener container with ID 'invalid-container-id' not found");
+                    assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
+                    assertThat(problemDetail.getInstance())
+                            .isNotNull()
+                            .isInstanceOf(URI.class)
+                            .isEqualTo(URI.create("/listeners"));
+                    assertThat(problemDetail.getType()).isNull();
+                    assertThat(problemDetail.getStatus()).isEqualTo(400);
+                });
+    }
+
+    @Test
+    @Order(4)
+    void whenInvalidOperation_thenReturnsBadRequest() {
+        String invalidRequest = """
+            {
+                "containerId": "topic_2_Listener-dlt",
+                 "operation": "INVALID"
+            }
+            """;
+
+        this.mockMvcTester
+                .post()
+                .uri("/listeners")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidRequest)
+                .assertThat()
+                .hasStatus(HttpStatus.BAD_REQUEST)
+                .hasContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
+                .bodyJson()
+                .convertTo(ProblemDetail.class)
+                .satisfies(problemDetail -> {
+                    assertThat(problemDetail).isNotNull();
+                    assertThat(problemDetail.getDetail())
+                            .isNotNull()
+                            .isEqualTo("Invalid operation value. Allowed values are: START, STOP.");
+                    assertThat(problemDetail.getTitle()).isEqualTo("Bad Request");
+                    assertThat(problemDetail.getInstance())
+                            .isNotNull()
+                            .isInstanceOf(URI.class)
+                            .isEqualTo(URI.create("/listeners"));
+                    assertThat(problemDetail.getType()).isNull();
+                    assertThat(problemDetail.getStatus()).isEqualTo(400);
+                });
+    }
+}
