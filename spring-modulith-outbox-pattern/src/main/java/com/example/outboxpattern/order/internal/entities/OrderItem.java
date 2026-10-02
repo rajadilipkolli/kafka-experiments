@@ -11,6 +11,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -22,6 +23,7 @@ import org.hibernate.proxy.HibernateProxy;
 @Entity
 @Table(
         name = "order_items",
+        indexes = @Index(name = "idx_order_items_order_id", columnList = "order_id"),
         uniqueConstraints =
                 @UniqueConstraint(
                         name = "UC_ORDER_ITEMS_PRODUCT_ORDER",
@@ -38,7 +40,7 @@ public class OrderItem implements Serializable {
     @Column(nullable = false)
     private int quantity;
 
-    @Column(columnDefinition = "NUMERIC(19,2)")
+    @Column(precision = 19, scale = 2)
     private BigDecimal productPrice;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -96,6 +96,13 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>com.julien-dubois.bootui</groupId>
+            <artifactId>bootui-spring-boot-starter</artifactId>
+            <version>1.19.0</version>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-docker-compose</artifactId>
             <scope>runtime</scope>
