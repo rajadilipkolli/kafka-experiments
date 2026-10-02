@@ -15,6 +15,11 @@ class WebMvcConfig implements WebMvcConfigurer {
         this.applicationProperties = applicationProperties;
     }
 
+    /**
+     * Registers CORS settings for the configured path, splitting comma-separated methods, headers, and origin patterns.
+     *
+     * @param registry registry to receive the CORS mapping
+     */
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         ApplicationProperties.Cors propertiesCors = applicationProperties.cors();

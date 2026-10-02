@@ -48,6 +48,12 @@ class OrderController {
         return orderService.findOrderById(id).map(ResponseEntity::ok).orElseThrow(() -> new OrderNotFoundException(id));
     }
 
+    /**
+     * Creates an order from a validated JSON request.
+     *
+     * @param orderRequest order details to persist
+     * @return a 201 Created response containing the saved order and its URI in the Location header
+     */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<OrderRecord> createOrder(@RequestBody @Validated OrderRequest orderRequest) {
         OrderRecord response = orderService.saveOrder(orderRequest);
@@ -58,6 +64,14 @@ class OrderController {
         return ResponseEntity.created(location).body(response);
     }
 
+    /**
+     * Updates an existing order from a validated JSON request.
+     *
+     * @param id identifier of the order to update
+     * @param orderRequest replacement order details
+     * @return a 200 OK response containing the updated order
+     * @throws OrderNotFoundException if no order exists for the identifier
+     */
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<OrderRecord> updateOrder(@PathVariable Long id, @RequestBody @Valid OrderRequest orderRequest) {
         return ResponseEntity.ok(orderService.updateOrder(id, orderRequest));
