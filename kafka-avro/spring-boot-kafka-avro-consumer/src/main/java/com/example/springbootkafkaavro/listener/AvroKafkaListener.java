@@ -4,6 +4,7 @@ import com.example.springbootkafkaavro.entity.PersonEntity;
 import com.example.springbootkafkaavro.model.Person;
 import com.example.springbootkafkaavro.repository.PersonRepository;
 import com.example.springbootkafkaavro.util.ApplicationConstants;
+import java.nio.charset.StandardCharsets;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +24,11 @@ public class AvroKafkaListener {
 
     /**
      * Persists a person event unless its event ID is already stored. Missing IDs are derived from
-     * the Kafka topic, partition, and offset for legacy messages. A constraint violation is ignored
-     * only when the event ID can subsequently be found.
+     * the Kafka topic, partition, and offset for legacy messages. Non-UUID IDs are mapped to stable
+     * UUIDs using UTF-8. A constraint violation is ignored only when the event ID can subsequently
+     * be found.
      *
      * @param personConsumerRecord the person event and its Kafka metadata
-     * @throws IllegalArgumentException if a supplied event ID is not a valid UUID
      */
     @KafkaListener(topics = ApplicationConstants.PERSONS_TOPIC, groupId = "avro-group")
     public void handler(ConsumerRecord<String, Person> personConsumerRecord) {
@@ -56,7 +57,13 @@ public class AvroKafkaListener {
         java.util.UUID eventId;
         String eventIdStr = getFieldValue(person, "eventId");
         if (eventIdStr != null) {
-            eventId = java.util.UUID.fromString(eventIdStr);
+            try {
+                eventId = java.util.UUID.fromString(eventIdStr);
+            } catch (IllegalArgumentException e) {
+                eventId =
+                        java.util.UUID.nameUUIDFromBytes(
+                                eventIdStr.getBytes(StandardCharsets.UTF_8));
+            }
         } else {
             String nameStr =
                     personConsumerRecord.topic()
@@ -64,7 +71,7 @@ public class AvroKafkaListener {
                             + personConsumerRecord.partition()
                             + "-"
                             + personConsumerRecord.offset();
-            eventId = java.util.UUID.nameUUIDFromBytes(nameStr.getBytes());
+            eventId = java.util.UUID.nameUUIDFromBytes(nameStr.getBytes(StandardCharsets.UTF_8));
         }
 
         if (personRepository.existsByEventId(eventId)) {

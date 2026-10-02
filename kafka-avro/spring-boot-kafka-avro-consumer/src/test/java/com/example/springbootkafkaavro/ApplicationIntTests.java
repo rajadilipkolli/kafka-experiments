@@ -2,6 +2,7 @@ package com.example.springbootkafkaavro;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
 
 import com.example.springbootkafkaavro.common.KafkaContainersConfig;
@@ -27,6 +28,26 @@ class ApplicationIntTests {
     @Autowired private PersonRepository personRepository;
     @Autowired private KafkaProducer kafkaProducer;
     @Autowired private KafkaTemplate<String, Person> kafkaTemplate;
+
+    @Test
+    void databaseRejectsDuplicateEventIds() {
+        java.util.UUID eventId = java.util.UUID.randomUUID();
+        PersonEntity original =
+                personRepository.saveAndFlush(
+                        new PersonEntity().setName("original").setEventId(eventId));
+        try {
+            assertThatThrownBy(
+                            () ->
+                                    personRepository.saveAndFlush(
+                                            new PersonEntity()
+                                                    .setName("duplicate")
+                                                    .setEventId(eventId)))
+                    .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+            assertThat(personRepository.findById(original.getId())).isPresent();
+        } finally {
+            personRepository.deleteById(original.getId());
+        }
+    }
 
     /** Verifies that publishing a person adds a persisted record. */
     @Test

@@ -1,14 +1,18 @@
 package com.example.boot.kafka.reactor;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.example.boot.kafka.reactor.common.ContainerConfiguration;
 import com.example.boot.kafka.reactor.common.TestKafkaProducer;
 import com.example.boot.kafka.reactor.entity.MessageDTO;
+import com.example.boot.kafka.reactor.repository.MessageRepository;
 import com.example.boot.kafka.reactor.util.AppConstants;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +39,14 @@ class BootKafkaReactorConsumerApplicationTests {
 
     @Autowired
     protected WebTestClient webTestClient;
+
+    @Autowired
+    MessageRepository messageRepository;
+
+    @BeforeEach
+    void clearMessages() {
+        messageRepository.deleteAll().block();
+    }
 
     /**
      * Verifies that a message without an event ID can be consumed and retrieved through the API.
@@ -74,12 +86,12 @@ class BootKafkaReactorConsumerApplicationTests {
                 .getResponseBody();
 
         // Use StepVerifier to verify the behavior of the Flux
-        StepVerifier.create(responseFlux).expectNextCount(1).thenCancel().verify();
+        StepVerifier.create(responseFlux).expectNextCount(1).verifyComplete();
     }
 
     /**
      * Verifies that repeated deliveries of one event and a separate event yield the expected
-     * message count through the API, including the message from the preceding test.
+     * two rows and event IDs through the API.
      */
     @Test
     void shouldHandleEventIdDeduplication() throws InterruptedException {
@@ -117,7 +129,10 @@ class BootKafkaReactorConsumerApplicationTests {
                 .returnResult(MessageDTO.class)
                 .getResponseBody();
 
-        // One from previous test + 1 from duplicated test + 1 from distinct test
-        StepVerifier.create(responseFlux).expectNextCount(3).thenCancel().verify();
+        StepVerifier.create(responseFlux.collectList())
+                .assertNext(messages -> assertThat(messages)
+                        .extracting(MessageDTO::eventId)
+                        .containsExactlyInAnyOrder(eventId, distinctEventId))
+                .verifyComplete();
     }
 }
