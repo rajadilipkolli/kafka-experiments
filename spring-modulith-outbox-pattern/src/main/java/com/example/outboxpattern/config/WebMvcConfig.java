@@ -2,6 +2,7 @@ package com.example.outboxpattern.config;
 
 import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -18,9 +19,9 @@ class WebMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         ApplicationProperties.Cors propertiesCors = applicationProperties.cors();
         registry.addMapping(propertiesCors.pathPattern())
-                .allowedMethods(propertiesCors.allowedMethods().split(","))
-                .allowedHeaders(propertiesCors.allowedHeaders().split(","))
-                .allowedOriginPatterns(propertiesCors.allowedOriginPatterns())
+                .allowedMethods(StringUtils.tokenizeToStringArray(propertiesCors.allowedMethods(), ","))
+                .allowedHeaders(StringUtils.tokenizeToStringArray(propertiesCors.allowedHeaders(), ","))
+                .allowedOriginPatterns(StringUtils.tokenizeToStringArray(propertiesCors.allowedOriginPatterns(), ","))
                 .allowCredentials(propertiesCors.allowCredentials());
     }
 }
