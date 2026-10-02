@@ -12,6 +12,8 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class MessageConsumer {
@@ -28,6 +30,30 @@ public class MessageConsumer {
     }
 
     void run() {
+        KafkaConsumer<String, Long> kafkaConsumer = getKafkaConsumer();
+        //Start processing messages
+        try (kafkaConsumer) {
+            kafkaConsumer.subscribe(Collections.singletonList(TOPIC_NAME));
+            while (true) {
+                ConsumerRecords<String, Long> records = kafkaConsumer.poll(Duration.ofMillis(100));
+                if (!records.isEmpty()) {
+                    Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
+                    for (ConsumerRecord<String, Long> record : records) {
+                        System.out.println("Received: " + record.key() + ":" + record.value());
+                        offsets.put(new TopicPartition(record.topic(), record.partition()),
+                                new OffsetAndMetadata(record.offset() + 1));
+                    }
+                    kafkaConsumer.commitSync(offsets);
+                }
+            }
+        } catch (WakeupException ex) {
+            System.out.println("Exception caught " + ex.getMessage());
+        } finally {
+            System.out.println("After closing KafkaConsumer");
+        }
+    }
+
+    private KafkaConsumer<String, Long> getKafkaConsumer() {
         Properties configProperties = new Properties();
         configProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         configProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
@@ -37,25 +63,7 @@ public class MessageConsumer {
         configProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 
         //Figure out where to start processing messages from
-        KafkaConsumer<String, Long> kafkaConsumer = new KafkaConsumer<>(configProperties);
-        kafkaConsumer.subscribe(Collections.singletonList(TOPIC_NAME));
-        //Start processing messages
-        try {
-            while (true) {
-                ConsumerRecords<String, Long> records = kafkaConsumer.poll(Duration.ofMillis(100));
-                for (ConsumerRecord<String, Long> record : records) {
-                    System.out.println("Received: "+record.key()+":"+ record.value());
-                    kafkaConsumer.commitSync(Collections.singletonMap(
-                            new TopicPartition(record.topic(), record.partition()),
-                            new OffsetAndMetadata(record.offset() + 1)));
-                }
-            }
-        } catch (WakeupException ex) {
-            System.out.println("Exception caught " + ex.getMessage());
-        } finally {
-            kafkaConsumer.close();
-            System.out.println("After closing KafkaConsumer");
-        }
+        return new KafkaConsumer<>(configProperties);
     }
 }
 
