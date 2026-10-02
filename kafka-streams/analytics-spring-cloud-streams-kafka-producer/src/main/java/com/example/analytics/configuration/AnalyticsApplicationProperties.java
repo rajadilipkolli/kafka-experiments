@@ -7,6 +7,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "application.topic")
 public record AnalyticsApplicationProperties(
-        @NotBlank String topicNamePvs,
-        @Positive short replication,
-        @Positive short partitions) {}
+        @NotBlank String topicNamePvs, @Positive short replication, @Positive short partitions) {}

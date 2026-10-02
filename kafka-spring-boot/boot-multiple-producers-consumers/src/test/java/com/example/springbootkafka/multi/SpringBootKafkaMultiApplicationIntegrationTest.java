@@ -41,9 +41,10 @@ class SpringBootKafkaMultiApplicationIntegrationTest {
                         .content(this.objectMapper.writeValueAsString(new SimpleMessage(10, "foo")))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        await().pollDelay(1, TimeUnit.SECONDS).atMost(15, TimeUnit.SECONDS).untilAsserted(() -> assertThat(
-                        simpleReceiver.getLatch().getCount())
-                .isZero());
+        await().pollDelay(1, TimeUnit.SECONDS)
+                .atMost(15, TimeUnit.SECONDS)
+                .untilAsserted(
+                        () -> assertThat(simpleReceiver.getLatch().getCount()).isZero());
     }
 
     @Test
@@ -54,8 +55,9 @@ class SpringBootKafkaMultiApplicationIntegrationTest {
                         .content(this.objectMapper.writeValueAsString(simpleMessage))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        await().pollDelay(1, TimeUnit.SECONDS).atMost(15, TimeUnit.SECONDS).untilAsserted(() -> assertThat(
-                        jsonReceiver.getLatch().getCount())
-                .isZero());
+        await().pollDelay(1, TimeUnit.SECONDS)
+                .atMost(15, TimeUnit.SECONDS)
+                .untilAsserted(
+                        () -> assertThat(jsonReceiver.getLatch().getCount()).isZero());
     }
 }

@@ -55,17 +55,19 @@ class SpringBootKafkaMultiApplicationTests {
     @Test
     void sendAndReceiveData() throws Exception {
         sender.send(10, "foo");
-        await().pollDelay(1, TimeUnit.SECONDS).atMost(5, TimeUnit.SECONDS).untilAsserted(() -> assertThat(
-                        simpleReceiver.getLatch().getCount())
-                .isZero());
+        await().pollDelay(1, TimeUnit.SECONDS)
+                .atMost(5, TimeUnit.SECONDS)
+                .untilAsserted(
+                        () -> assertThat(simpleReceiver.getLatch().getCount()).isZero());
     }
 
     @Test
     void sendAndReceiveJsonData() throws Exception {
         SimpleMessage simpleMessage = new SimpleMessage(110, "My Json Message");
         sender.send(simpleMessage);
-        await().pollDelay(1, TimeUnit.SECONDS).atMost(5, TimeUnit.SECONDS).untilAsserted(() -> assertThat(
-                        jsonReceiver.getLatch().getCount())
-                .isZero());
+        await().pollDelay(1, TimeUnit.SECONDS)
+                .atMost(5, TimeUnit.SECONDS)
+                .untilAsserted(
+                        () -> assertThat(jsonReceiver.getLatch().getCount()).isZero());
     }
 }
