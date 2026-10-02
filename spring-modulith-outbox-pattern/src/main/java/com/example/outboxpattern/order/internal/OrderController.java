@@ -8,6 +8,7 @@ import com.example.outboxpattern.order.internal.domain.response.PagedResult;
 import com.example.outboxpattern.utils.AppConstants;
 import jakarta.validation.Valid;
 import java.net.URI;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,7 +48,7 @@ class OrderController {
         return orderService.findOrderById(id).map(ResponseEntity::ok).orElseThrow(() -> new OrderNotFoundException(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<OrderRecord> createOrder(@RequestBody @Validated OrderRequest orderRequest) {
         OrderRecord response = orderService.saveOrder(orderRequest);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -57,7 +58,7 @@ class OrderController {
         return ResponseEntity.created(location).body(response);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<OrderRecord> updateOrder(@PathVariable Long id, @RequestBody @Valid OrderRequest orderRequest) {
         return ResponseEntity.ok(orderService.updateOrder(id, orderRequest));
     }

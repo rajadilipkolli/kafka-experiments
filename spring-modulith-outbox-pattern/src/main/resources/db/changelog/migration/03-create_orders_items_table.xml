@@ -36,4 +36,10 @@
         <addUniqueConstraint tableName="order_items" columnNames="product_code,order_id"
                              constraintName="UC_ORDER_ITEMS_PRODUCT_ORDER"/>
     </changeSet>
+
+    <changeSet author="app" id="createIndex-order_items-order_id">
+        <createIndex tableName="order_items" indexName="idx_order_items_order_id">
+            <column name="order_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

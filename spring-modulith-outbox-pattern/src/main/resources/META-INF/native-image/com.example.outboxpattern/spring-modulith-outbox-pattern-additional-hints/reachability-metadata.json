@@ -1,0 +1,105 @@
+{
+  "reflection": [
+    {
+      "condition": {"typeReached": "com.example.outboxpattern.exception.GlobalExceptionHandler$ApiValidationError"},
+      "type": "com.example.outboxpattern.exception.GlobalExceptionHandler$ApiValidationError",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {"typeReached": "com.example.outboxpattern.exception.ResourceNotFoundException"},
+      "type": "com.example.outboxpattern.exception.ResourceNotFoundException",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true,
+      "serializable": true
+    },
+    {
+      "condition": {"typeReached": "com.example.outboxpattern.order.OrderItemRecord"},
+      "type": "com.example.outboxpattern.order.OrderItemRecord",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {"typeReached": "com.example.outboxpattern.order.OrderRecord"},
+      "type": "com.example.outboxpattern.order.OrderRecord",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {"typeReached": "com.example.outboxpattern.order.internal.OrderNotFoundException"},
+      "type": "com.example.outboxpattern.order.internal.OrderNotFoundException",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true,
+      "serializable": true
+    },
+    {
+      "condition": {"typeReached": "com.example.outboxpattern.order.internal.domain.query.FindOrdersQuery"},
+      "type": "com.example.outboxpattern.order.internal.domain.query.FindOrdersQuery",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {"typeReached": "com.example.outboxpattern.order.internal.domain.request.OrderItemRequest"},
+      "type": "com.example.outboxpattern.order.internal.domain.request.OrderItemRequest",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {"typeReached": "com.example.outboxpattern.order.internal.domain.request.OrderRequest"},
+      "type": "com.example.outboxpattern.order.internal.domain.request.OrderRequest",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {"typeReached": "com.example.outboxpattern.order.internal.domain.response.PagedResult"},
+      "type": "com.example.outboxpattern.order.internal.domain.response.PagedResult",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {"typeReached": "com.example.outboxpattern.order.internal.entities.Order"},
+      "type": "com.example.outboxpattern.order.internal.entities.Order",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {"typeReached": "com.example.outboxpattern.order.internal.entities.OrderItem"},
+      "type": "com.example.outboxpattern.order.internal.entities.OrderItem",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true,
+      "serializable": true
+    },
+    {
+      "condition": {"typeReached": "org.springframework.modulith.events.jpa.archiving.ArchivedJpaEventPublication"},
+      "type": "org.springframework.modulith.events.jpa.archiving.ArchivedJpaEventPublication",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {"typeReached": "org.springframework.modulith.events.jpa.updating.DefaultJpaEventPublication"},
+      "type": "org.springframework.modulith.events.jpa.updating.DefaultJpaEventPublication",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true
+    }
+  ],
+  "resources": [
+    {"glob": "application*.properties"},
+    {"glob": "application*.yml"},
+    {"glob": "application*.yaml"},
+    {"glob": "logback-spring.xml"},
+    {"glob": "log4j2-spring.xml"}
+  ]
+}
