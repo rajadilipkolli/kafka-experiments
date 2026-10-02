@@ -47,7 +47,7 @@ public class KafkaBootRouter extends RouteBuilder {
                     KafkaManualCommit manual =
                             exchange.getIn().getHeader(KafkaConstants.MANUAL_COMMIT, KafkaManualCommit.class);
                     if (manual != null) {
-                        manual.commitSync();
+                        manual.commit();
                     }
                 });
     }

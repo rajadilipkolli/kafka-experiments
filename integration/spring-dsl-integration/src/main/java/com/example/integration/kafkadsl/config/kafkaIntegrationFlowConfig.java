@@ -26,9 +26,8 @@ class kafkaIntegrationFlowConfig {
     @Bean
     IntegrationFlow fromKafkaFlow(ConsumerFactory<?, ?> consumerFactory) {
         // The offset commits on hand-off to the in-memory `fromKafka` queue channel.
-        return IntegrationFlow.from(Kafka.messageDrivenChannelAdapter(
-                        Kafka.container(consumerFactory, this.kafkaAppProperties.topic())
-                                .ackMode(AckMode.RECORD)))
+        return IntegrationFlow.from(Kafka.messageDrivenChannelAdapter(consumerFactory, this.kafkaAppProperties.topic())
+                        .configureListenerContainer(c -> c.ackMode(AckMode.RECORD)))
                 .channel(c -> c.queue("fromKafka"))
                 .get();
     }
