@@ -15,7 +15,7 @@ public class ContainerConfiguration {
     @Bean
     @ServiceConnection
     LgtmStackContainer lgtmContainer() {
-        return new LgtmStackContainer(DockerImageName.parse("grafana/otel-lgtm:0.30.1"))
+        return new LgtmStackContainer(DockerImageName.parse("grafana/otel-lgtm:0.34.0"))
                 .withStartupTimeout(Duration.ofMinutes(2))
                 .withReuse(true);
     }
@@ -23,7 +23,7 @@ public class ContainerConfiguration {
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer() {
-        return new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.0"));
+        return new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.1"));
     }
 
     @Bean

@@ -25,7 +25,7 @@ public class TestKafkaProducer {
         log.info("Creating reactive Kafka sender with properties: {}", properties.getProducer());
         Map<String, Object> props = properties.buildProducerProperties();
         SenderOptions<Integer, MessageDTO> senderOptions = SenderOptions.create(props);
-        senderOptions.maxInFlight(1024);
+        senderOptions.maxInFlight(5);
         senderOptions.stopOnError(false);
 
         KafkaSender<Integer, MessageDTO> sender = KafkaSender.create(senderOptions);

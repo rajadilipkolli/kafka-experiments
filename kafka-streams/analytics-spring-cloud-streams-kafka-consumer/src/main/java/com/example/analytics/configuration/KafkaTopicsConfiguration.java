@@ -13,8 +13,15 @@ public class KafkaTopicsConfiguration {
     NewTopics kafkaTopics(final AnalyticsApplicationProperties analyticsApplicationProperties) {
         return new NewTopics(
                 // pcsTopic
-                TopicBuilder.name(analyticsApplicationProperties.topicNamePcs()).compact().build(),
+                TopicBuilder.name(analyticsApplicationProperties.topicNamePcs())
+                        .partitions(analyticsApplicationProperties.partitions())
+                        .replicas(analyticsApplicationProperties.replication())
+                        .compact()
+                        .build(),
                 // pvsTopic
-                TopicBuilder.name(analyticsApplicationProperties.topicNamePvs()).build());
+                TopicBuilder.name(analyticsApplicationProperties.topicNamePvs())
+                        .partitions(analyticsApplicationProperties.partitions())
+                        .replicas(analyticsApplicationProperties.replication())
+                        .build());
     }
 }

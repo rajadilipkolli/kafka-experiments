@@ -38,7 +38,7 @@ class BootKafkaReactorConsumerApplicationTests {
 
     @Test
     void loadDataAndConsume() throws InterruptedException {
-        MessageDTO messageDTO = new MessageDTO(null, "hello1", LocalDateTime.now());
+        MessageDTO messageDTO = new MessageDTO(null, "hello1", LocalDateTime.now(), null);
         Integer key = new SecureRandom().nextInt(Integer.MAX_VALUE);
         this.sender
                 .send(Flux.just(
@@ -72,5 +72,45 @@ class BootKafkaReactorConsumerApplicationTests {
 
         // Use StepVerifier to verify the behavior of the Flux
         StepVerifier.create(responseFlux).expectNextCount(1).thenCancel().verify();
+    }
+
+    @Test
+    void shouldHandleEventIdDeduplication() throws InterruptedException {
+        java.util.UUID eventId = java.util.UUID.randomUUID();
+        MessageDTO messageDTO = new MessageDTO(null, "hello2", LocalDateTime.now(), eventId);
+        Integer key = new SecureRandom().nextInt(Integer.MAX_VALUE);
+
+        // Send duplicate messages
+        Flux<SenderRecord<Integer, MessageDTO, Integer>> outboundFlux = Flux.just(
+                SenderRecord.create(new ProducerRecord<>(AppConstants.HELLO_TOPIC, key, messageDTO), key),
+                SenderRecord.create(new ProducerRecord<>(AppConstants.HELLO_TOPIC, key, messageDTO), key),
+                SenderRecord.create(new ProducerRecord<>(AppConstants.HELLO_TOPIC, key, messageDTO), key));
+
+        this.sender.send(outboundFlux).collectList().block();
+        TimeUnit.SECONDS.sleep(5);
+
+        // Distinct message
+        java.util.UUID distinctEventId = java.util.UUID.randomUUID();
+        MessageDTO distinctMessage = new MessageDTO(null, "hello3", LocalDateTime.now(), distinctEventId);
+        this.sender
+                .send(Flux.just(
+                        SenderRecord.create(new ProducerRecord<>(AppConstants.HELLO_TOPIC, key, distinctMessage), key)))
+                .blockLast();
+        TimeUnit.SECONDS.sleep(5);
+
+        Flux<MessageDTO> responseFlux = webTestClient
+                .get()
+                .uri("/messages")
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectHeader()
+                .contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
+                .returnResult(MessageDTO.class)
+                .getResponseBody();
+
+        // One from previous test + 1 from duplicated test + 1 from distinct test
+        StepVerifier.create(responseFlux).expectNextCount(3).thenCancel().verify();
     }
 }

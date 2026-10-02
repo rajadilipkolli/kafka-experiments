@@ -5,6 +5,7 @@
  */
 package com.example.springbootkafkaavro.model;
 
+import org.apache.avro.JsonSchemaParser;
 import org.apache.avro.specific.SpecificData;
 import org.apache.avro.util.Utf8;
 import org.apache.avro.message.BinaryMessageEncoder;
@@ -13,10 +14,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class Person extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -8588598752981815872L;
+  private static final long serialVersionUID = -2254735654334387522L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.example.springbootkafkaavro.model\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"name\",\"type\":\"string\",\"avro.java.string\":\"String\"},{\"name\":\"age\",\"type\":\"int\"},{\"name\":\"gender\",\"type\":[\"null\",\"string\"],\"default\":null,\"avro.java.string\":\"String\"},{\"name\":\"email\",\"type\":[\"null\",\"string\"],\"default\":null,\"avro.java.string\":\"String\"},{\"name\":\"phoneNumber\",\"type\":[\"null\",\"string\"],\"default\":null,\"avro.java.string\":\"String\"}],\"version\":\"2\"}");
+  public static final org.apache.avro.Schema SCHEMA$ = JsonSchemaParser.parseInternal("{\"type\":\"record\",\"name\":\"Person\",\"namespace\":\"com.example.springbootkafkaavro.model\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"name\",\"type\":\"string\",\"avro.java.string\":\"String\"},{\"name\":\"age\",\"type\":\"int\"},{\"name\":\"gender\",\"type\":[\"null\",\"string\"],\"default\":null,\"avro.java.string\":\"String\"},{\"name\":\"email\",\"type\":[\"null\",\"string\"],\"default\":null,\"avro.java.string\":\"String\"},{\"name\":\"phoneNumber\",\"type\":[\"null\",\"string\"],\"default\":null,\"avro.java.string\":\"String\"},{\"name\":\"eventId\",\"type\":[\"null\",\"string\"],\"default\":null,\"avro.java.string\":\"String\"}],\"version\":\"2\"}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -78,6 +79,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   private java.lang.CharSequence gender;
   private java.lang.CharSequence email;
   private java.lang.CharSequence phoneNumber;
+  private java.lang.CharSequence eventId;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -94,14 +96,16 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
    * @param gender The new value for gender
    * @param email The new value for email
    * @param phoneNumber The new value for phoneNumber
+   * @param eventId The new value for eventId
    */
-  public Person(java.lang.Long id, java.lang.CharSequence name, java.lang.Integer age, java.lang.CharSequence gender, java.lang.CharSequence email, java.lang.CharSequence phoneNumber) {
+  public Person(java.lang.Long id, java.lang.CharSequence name, java.lang.Integer age, java.lang.CharSequence gender, java.lang.CharSequence email, java.lang.CharSequence phoneNumber, java.lang.CharSequence eventId) {
     this.id = id;
     this.name = name;
     this.age = age;
     this.gender = gender;
     this.email = email;
     this.phoneNumber = phoneNumber;
+    this.eventId = eventId;
   }
 
   @Override
@@ -120,6 +124,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     case 3: return gender;
     case 4: return email;
     case 5: return phoneNumber;
+    case 6: return eventId;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -135,6 +140,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     case 3: gender = (java.lang.CharSequence)value$; break;
     case 4: email = (java.lang.CharSequence)value$; break;
     case 5: phoneNumber = (java.lang.CharSequence)value$; break;
+    case 6: eventId = (java.lang.CharSequence)value$; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -242,6 +248,23 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   }
 
   /**
+   * Gets the value of the 'eventId' field.
+   * @return The value of the 'eventId' field.
+   */
+  public java.lang.CharSequence getEventId() {
+    return eventId;
+  }
+
+
+  /**
+   * Sets the value of the 'eventId' field.
+   * @param value the value to set.
+   */
+  public void setEventId(java.lang.CharSequence value) {
+    this.eventId = value;
+  }
+
+  /**
    * Creates a new Person RecordBuilder.
    * @return A new Person RecordBuilder
    */
@@ -288,6 +311,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
     private java.lang.CharSequence gender;
     private java.lang.CharSequence email;
     private java.lang.CharSequence phoneNumber;
+    private java.lang.CharSequence eventId;
 
     /** Creates a new Builder */
     private Builder() {
@@ -324,6 +348,10 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
         this.phoneNumber = data().deepCopy(fields()[5].schema(), other.phoneNumber);
         fieldSetFlags()[5] = other.fieldSetFlags()[5];
       }
+      if (isValidValue(fields()[6], other.eventId)) {
+        this.eventId = data().deepCopy(fields()[6].schema(), other.eventId);
+        fieldSetFlags()[6] = other.fieldSetFlags()[6];
+      }
     }
 
     /**
@@ -355,6 +383,10 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       if (isValidValue(fields()[5], other.phoneNumber)) {
         this.phoneNumber = data().deepCopy(fields()[5].schema(), other.phoneNumber);
         fieldSetFlags()[5] = true;
+      }
+      if (isValidValue(fields()[6], other.eventId)) {
+        this.eventId = data().deepCopy(fields()[6].schema(), other.eventId);
+        fieldSetFlags()[6] = true;
       }
     }
 
@@ -596,6 +628,46 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       return this;
     }
 
+    /**
+      * Gets the value of the 'eventId' field.
+      * @return The value.
+      */
+    public java.lang.CharSequence getEventId() {
+      return eventId;
+    }
+
+
+    /**
+      * Sets the value of the 'eventId' field.
+      * @param value The value of 'eventId'.
+      * @return This builder.
+      */
+    public com.example.springbootkafkaavro.model.Person.Builder setEventId(java.lang.CharSequence value) {
+      validate(fields()[6], value);
+      this.eventId = value;
+      fieldSetFlags()[6] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'eventId' field has been set.
+      * @return True if the 'eventId' field has been set, false otherwise.
+      */
+    public boolean hasEventId() {
+      return fieldSetFlags()[6];
+    }
+
+
+    /**
+      * Clears the value of the 'eventId' field.
+      * @return This builder.
+      */
+    public com.example.springbootkafkaavro.model.Person.Builder clearEventId() {
+      eventId = null;
+      fieldSetFlags()[6] = false;
+      return this;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public Person build() {
@@ -607,6 +679,7 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
         record.gender = fieldSetFlags()[3] ? this.gender : (java.lang.CharSequence) defaultValue(fields()[3]);
         record.email = fieldSetFlags()[4] ? this.email : (java.lang.CharSequence) defaultValue(fields()[4]);
         record.phoneNumber = fieldSetFlags()[5] ? this.phoneNumber : (java.lang.CharSequence) defaultValue(fields()[5]);
+        record.eventId = fieldSetFlags()[6] ? this.eventId : (java.lang.CharSequence) defaultValue(fields()[6]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;
@@ -669,6 +742,14 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       out.writeString(this.phoneNumber);
     }
 
+    if (this.eventId == null) {
+      out.writeIndex(0);
+      out.writeNull();
+    } else {
+      out.writeIndex(1);
+      out.writeString(this.eventId);
+    }
+
   }
 
   @Override public void customDecode(org.apache.avro.io.ResolvingDecoder in)
@@ -703,8 +784,15 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
         this.phoneNumber = in.readString(this.phoneNumber instanceof Utf8 ? (Utf8)this.phoneNumber : null);
       }
 
+      if (in.readIndex() != 1) {
+        in.readNull();
+        this.eventId = null;
+      } else {
+        this.eventId = in.readString(this.eventId instanceof Utf8 ? (Utf8)this.eventId : null);
+      }
+
     } else {
-      for (int i = 0; i < 6; i++) {
+      for (int i = 0; i < 7; i++) {
         switch (fieldOrder[i].pos()) {
         case 0:
           this.id = in.readLong();
@@ -745,6 +833,15 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
           }
           break;
 
+        case 6:
+          if (in.readIndex() != 1) {
+            in.readNull();
+            this.eventId = null;
+          } else {
+            this.eventId = in.readString(this.eventId instanceof Utf8 ? (Utf8)this.eventId : null);
+          }
+          break;
+
         default:
           throw new java.io.IOException("Corrupt ResolvingDecoder.");
         }
@@ -755,12 +852,13 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
   @Override
   public int hashCode() {
     int result = 1;
-    result = 31 * result + Long.hashCode(id);
-    result = 31 * result + (name == null ? 0 : name.hashCode());
-    result = 31 * result + Integer.hashCode(age);
-    result = 31 * result + (gender == null ? 0 : gender.hashCode());
-    result = 31 * result + (email == null ? 0 : email.hashCode());
-    result = 31 * result + (phoneNumber == null ? 0 : phoneNumber.hashCode());
+    result = 31 * result + Long.hashCode(this.id);
+    result = 31 * result + (this.name == null ? 0 : this.name.hashCode());
+    result = 31 * result + Integer.hashCode(this.age);
+    result = 31 * result + (this.gender == null ? 0 : this.gender.hashCode());
+    result = 31 * result + (this.email == null ? 0 : this.email.hashCode());
+    result = 31 * result + (this.phoneNumber == null ? 0 : this.phoneNumber.hashCode());
+    result = 31 * result + (this.eventId == null ? 0 : this.eventId.hashCode());
     return result;
   }
 
@@ -789,6 +887,9 @@ public class Person extends org.apache.avro.specific.SpecificRecordBase implemen
       return false;
     }
     if (Utf8.compareSequences(this.phoneNumber, other.phoneNumber) != 0) {
+      return false;
+    }
+    if (Utf8.compareSequences(this.eventId, other.eventId) != 0) {
       return false;
     }
     return true;

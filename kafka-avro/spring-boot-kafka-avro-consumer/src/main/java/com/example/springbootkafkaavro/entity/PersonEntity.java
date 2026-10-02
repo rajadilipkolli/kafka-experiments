@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.UUID;
 
 @Entity
 @Table(name = "person_entity")
@@ -25,6 +26,9 @@ public class PersonEntity {
     private String email;
 
     private String phoneNumber;
+
+    @Column(nullable = false, unique = true)
+    private UUID eventId;
 
     public PersonEntity() {}
 
@@ -79,6 +83,15 @@ public class PersonEntity {
 
     public PersonEntity setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+        return this;
+    }
+
+    public UUID getEventId() {
+        return eventId;
+    }
+
+    public PersonEntity setEventId(UUID eventId) {
+        this.eventId = eventId;
         return this;
     }
 }

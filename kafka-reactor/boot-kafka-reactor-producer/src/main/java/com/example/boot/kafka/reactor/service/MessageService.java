@@ -24,6 +24,10 @@ public class MessageService {
     }
 
     public void sendMessage(MessageDTO messageDTO) {
+        if (messageDTO.eventId() == null) {
+            messageDTO = new MessageDTO(
+                    messageDTO.id(), messageDTO.text(), messageDTO.sentAt(), java.util.UUID.randomUUID());
+        }
         Integer key = new SecureRandom().nextInt(Integer.MAX_VALUE);
         Flux<SenderRecord<Integer, MessageDTO, Integer>> outboundFlux =
                 Flux.just(SenderRecord.create(new ProducerRecord<>(AppConstants.HELLO_TOPIC, key, messageDTO), key));

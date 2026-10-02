@@ -11,6 +11,9 @@ class KafkaTopicsConfiguration {
 
     @Bean
     NewTopic pvsTopic(final AnalyticsApplicationProperties analyticsApplicationProperties) {
-        return TopicBuilder.name(analyticsApplicationProperties.topicNamePvs()).build();
+        return TopicBuilder.name(analyticsApplicationProperties.topicNamePvs())
+                .partitions(analyticsApplicationProperties.partitions())
+                .replicas(analyticsApplicationProperties.replication())
+                .build();
     }
 }

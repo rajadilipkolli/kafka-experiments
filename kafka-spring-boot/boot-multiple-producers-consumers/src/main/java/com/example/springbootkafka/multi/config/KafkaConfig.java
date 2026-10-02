@@ -27,6 +27,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.core.RoutingKafkaTemplate;
 import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
+import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
@@ -72,6 +73,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
         ConcurrentKafkaListenerContainerFactory<Integer, String> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setObservationEnabled(true);
+        factory.getContainerProperties().setAckMode(AckMode.RECORD);
         factory.setConsumerFactory(simpleKafkaConsumerFactory);
         return factory;
     }
@@ -92,6 +94,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
         ConcurrentKafkaListenerContainerFactory<String, SimpleMessage> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setObservationEnabled(true);
+        factory.getContainerProperties().setAckMode(AckMode.RECORD);
         factory.setConsumerFactory(jsonKafkaConsumerFactory);
         return factory;
     }

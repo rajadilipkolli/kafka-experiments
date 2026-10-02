@@ -9,6 +9,7 @@
        { "name": "age", "type": "int" },
        { "name": "gender", "type": ["null", "string"], "default": null, "avro.java.string": "String" },
        { "name": "email", "type": ["null", "string"], "default": null, "avro.java.string": "String" },
-       { "name": "phoneNumber", "type": ["null", "string"], "default": null, "avro.java.string": "String" }
+       { "name": "phoneNumber", "type": ["null", "string"], "default": null, "avro.java.string": "String" },
+       { "name": "eventId", "type": ["null", "string"], "default": null, "avro.java.string": "String" }
      ]
 }

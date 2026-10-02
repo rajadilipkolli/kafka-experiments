@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
@@ -28,7 +29,7 @@ public class MessageService {
     }
 
     @KafkaListener(topics = AppConstants.HELLO_TOPIC, groupId = "reactivekafka")
-    Mono<MessageDTO> listen(
+    Mono<Void> listen(
             @Header(KafkaHeaders.RECEIVED_KEY) Integer key, ConsumerRecord<Integer, MessageDTO> consumerRecord) {
         ZonedDateTime zdt =
                 ZonedDateTime.ofInstant(Instant.ofEpochMilli(consumerRecord.timestamp()), ZoneId.systemDefault());
@@ -39,7 +40,28 @@ public class MessageService {
                 zdt,
                 key,
                 consumerRecord.value());
-        return messageRepository.save(consumerRecord.value());
+
+        MessageDTO messageDTO = consumerRecord.value();
+        java.util.UUID eventId = messageDTO.eventId();
+        if (eventId == null) {
+            String name = consumerRecord.topic() + "-" + consumerRecord.partition() + "-" + consumerRecord.offset();
+            eventId = java.util.UUID.nameUUIDFromBytes(name.getBytes());
+        }
+
+        MessageDTO toSave = new MessageDTO(null, messageDTO.text(), messageDTO.sentAt(), eventId);
+
+        return messageRepository
+                .save(toSave)
+                .then()
+                .onErrorResume(
+                        DataIntegrityViolationException.class,
+                        e -> messageRepository.existsByEventId(toSave.eventId()).flatMap(exists -> {
+                            if (exists) {
+                                log.debug("Duplicate event ignored: {}", toSave.eventId());
+                                return Mono.empty();
+                            }
+                            return Mono.error(e);
+                        }));
     }
 
     public Flux<MessageDTO> fetchMessages() {

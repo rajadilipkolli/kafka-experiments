@@ -115,4 +115,71 @@ class ApplicationIntTests {
                 "V2 message: " + janeEntity.getName() + " (email: " + janeEntity.getEmail() + ")");
         System.out.println("=== TEST COMPLETED SUCCESSFULLY ===");
     }
+
+    @Test
+    void shouldHandleEventIdDeduplication() throws Exception {
+        // Clear any existing data
+        personRepository.deleteAll();
+
+        // 1. Send with explicit eventId multiple times -> 1 row
+        String eventId1 = java.util.UUID.randomUUID().toString();
+        Person person1 = new Person();
+        person1.setId(100L);
+        person1.setName("Duplicate Test 1");
+        person1.setAge(40);
+        person1.setEventId(eventId1);
+
+        kafkaTemplate
+                .send(new ProducerRecord<>(ApplicationConstants.PERSONS_TOPIC, "dup1", person1))
+                .get(5, SECONDS);
+        kafkaTemplate
+                .send(new ProducerRecord<>(ApplicationConstants.PERSONS_TOPIC, "dup1", person1))
+                .get(5, SECONDS);
+        kafkaTemplate
+                .send(new ProducerRecord<>(ApplicationConstants.PERSONS_TOPIC, "dup1", person1))
+                .get(5, SECONDS);
+
+        await().atMost(10, SECONDS)
+                .untilAsserted(() -> assertThat(personRepository.count()).isEqualTo(1));
+
+        // 2. Send two rows for the same Person.id with different eventId values -> 2 more rows
+        // (Total 3)
+        Person person2a = new Person();
+        person2a.setId(100L); // Same ID
+        person2a.setName("Duplicate Test 2a");
+        person2a.setAge(41);
+        person2a.setEventId(java.util.UUID.randomUUID().toString());
+
+        Person person2b = new Person();
+        person2b.setId(100L); // Same ID
+        person2b.setName("Duplicate Test 2b");
+        person2b.setAge(42);
+        person2b.setEventId(java.util.UUID.randomUUID().toString());
+
+        kafkaTemplate
+                .send(new ProducerRecord<>(ApplicationConstants.PERSONS_TOPIC, "dup2a", person2a))
+                .get(5, SECONDS);
+        kafkaTemplate
+                .send(new ProducerRecord<>(ApplicationConstants.PERSONS_TOPIC, "dup2b", person2b))
+                .get(5, SECONDS);
+
+        await().atMost(10, SECONDS)
+                .untilAsserted(() -> assertThat(personRepository.count()).isEqualTo(3));
+
+        // 3. Send with null eventId -> 1 more row (Total 4)
+        Person personNull = new Person();
+        personNull.setId(101L);
+        personNull.setName("Null EventId Test");
+        personNull.setAge(43);
+        personNull.setEventId(null);
+
+        kafkaTemplate
+                .send(
+                        new ProducerRecord<>(
+                                ApplicationConstants.PERSONS_TOPIC, "nullEvent", personNull))
+                .get(5, SECONDS);
+
+        await().atMost(10, SECONDS)
+                .untilAsserted(() -> assertThat(personRepository.count()).isEqualTo(4));
+    }
 }

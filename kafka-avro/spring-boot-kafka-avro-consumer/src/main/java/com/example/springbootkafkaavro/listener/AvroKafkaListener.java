@@ -44,6 +44,24 @@ public class AvroKafkaListener {
             log.info("V1 message - No email/phone fields available (backward compatibility)");
         }
 
+        java.util.UUID eventId;
+        String eventIdStr = getFieldValue(person, "eventId");
+        if (eventIdStr != null) {
+            eventId = java.util.UUID.fromString(eventIdStr);
+        } else {
+            String nameStr =
+                    personConsumerRecord.topic()
+                            + "-"
+                            + personConsumerRecord.partition()
+                            + "-"
+                            + personConsumerRecord.offset();
+            eventId = java.util.UUID.nameUUIDFromBytes(nameStr.getBytes());
+        }
+
+        if (personRepository.existsByEventId(eventId)) {
+            return;
+        }
+
         PersonEntity personEntity =
                 new PersonEntity()
                         .setName(person.getName().toString())
@@ -51,10 +69,17 @@ public class AvroKafkaListener {
                         .setGender(
                                 person.getGender() != null ? person.getGender().toString() : null)
                         .setEmail(email)
-                        .setPhoneNumber(phoneNumber);
+                        .setPhoneNumber(phoneNumber)
+                        .setEventId(eventId);
 
-        PersonEntity savedEntity = this.personRepository.save(personEntity);
-        log.info("Person saved to database with ID: {}", savedEntity.getId());
+        try {
+            PersonEntity savedEntity = this.personRepository.saveAndFlush(personEntity);
+            log.info("Person saved to database with ID: {}", savedEntity.getId());
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            if (!personRepository.existsByEventId(eventId)) {
+                throw e;
+            }
+        }
         log.info("=== END SCHEMA EVOLUTION DEMO ===");
     }
 

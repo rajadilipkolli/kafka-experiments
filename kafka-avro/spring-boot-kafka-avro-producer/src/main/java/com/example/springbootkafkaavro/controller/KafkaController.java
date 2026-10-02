@@ -52,6 +52,7 @@ class KafkaController {
         person.setId(System.currentTimeMillis());
         person.setAge(age);
         person.setName(name);
+        person.setEventId(java.util.UUID.randomUUID().toString());
         if (gender != null) {
             person.setGender(gender);
         }

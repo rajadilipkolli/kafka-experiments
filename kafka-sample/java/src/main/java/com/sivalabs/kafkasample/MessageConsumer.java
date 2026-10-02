@@ -4,6 +4,8 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -32,6 +34,7 @@ public class MessageConsumer {
         configProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
         configProperties.put(ConsumerConfig.GROUP_ID_CONFIG, "groupId");
         configProperties.put(ConsumerConfig.CLIENT_ID_CONFIG, "simple");
+        configProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 
         //Figure out where to start processing messages from
         KafkaConsumer<String, Long> kafkaConsumer = new KafkaConsumer<>(configProperties);
@@ -40,8 +43,12 @@ public class MessageConsumer {
         try {
             while (true) {
                 ConsumerRecords<String, Long> records = kafkaConsumer.poll(Duration.ofMillis(100));
-                for (ConsumerRecord<String, Long> record : records)
+                for (ConsumerRecord<String, Long> record : records) {
                     System.out.println("Received: "+record.key()+":"+ record.value());
+                    kafkaConsumer.commitSync(Collections.singletonMap(
+                            new TopicPartition(record.topic(), record.partition()),
+                            new OffsetAndMetadata(record.offset() + 1)));
+                }
             }
         } catch (WakeupException ex) {
             System.out.println("Exception caught " + ex.getMessage());
@@ -51,3 +58,4 @@ public class MessageConsumer {
         }
     }
 }
+

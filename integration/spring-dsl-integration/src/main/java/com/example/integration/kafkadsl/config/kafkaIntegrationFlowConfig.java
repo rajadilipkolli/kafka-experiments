@@ -6,6 +6,7 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.kafka.dsl.Kafka;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.ContainerProperties.AckMode;
 
 @Configuration(proxyBeanMethods = false)
 class kafkaIntegrationFlowConfig {
@@ -24,7 +25,10 @@ class kafkaIntegrationFlowConfig {
 
     @Bean
     IntegrationFlow fromKafkaFlow(ConsumerFactory<?, ?> consumerFactory) {
-        return IntegrationFlow.from(Kafka.messageDrivenChannelAdapter(consumerFactory, this.kafkaAppProperties.topic()))
+        // The offset commits on hand-off to the in-memory `fromKafka` queue channel.
+        return IntegrationFlow.from(Kafka.messageDrivenChannelAdapter(
+                        Kafka.container(consumerFactory, this.kafkaAppProperties.topic())
+                                .ackMode(AckMode.RECORD)))
                 .channel(c -> c.queue("fromKafka"))
                 .get();
     }

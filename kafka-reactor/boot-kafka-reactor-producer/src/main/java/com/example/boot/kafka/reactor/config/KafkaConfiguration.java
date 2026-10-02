@@ -10,6 +10,7 @@ import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.TopicBuilder;
 import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderOptions;
 
@@ -22,7 +23,7 @@ class KafkaConfiguration {
     @Bean
     NewTopic helloTopic() {
         log.info("Creating helloTopic");
-        return new NewTopic(AppConstants.HELLO_TOPIC, 1, (short) 1);
+        return TopicBuilder.name(AppConstants.HELLO_TOPIC).partitions(3).build();
     }
 
     @Bean
