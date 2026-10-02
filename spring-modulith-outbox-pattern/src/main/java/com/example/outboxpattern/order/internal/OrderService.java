@@ -26,12 +26,14 @@ class OrderService {
     private final OrderMapper orderMapper;
     private final ApplicationEventPublisher events;
 
+    /** Creates the order service with persistence, mapping, and event-publication dependencies. */
     OrderService(OrderRepository orderRepository, OrderMapper orderMapper, ApplicationEventPublisher events) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.events = events;
     }
 
+    /** Returns a page of mapped orders using the requested pagination and sorting. */
     PagedResult<OrderRecord> findAllOrders(FindOrdersQuery findOrdersQuery) {
 
         // create Pageable instance
@@ -44,6 +46,7 @@ class OrderService {
         return new PagedResult<>(ordersPage, orderRecordList);
     }
 
+    /** Converts the requested page number to a nonnegative zero-based index and applies sorting. */
     private Pageable createPageable(FindOrdersQuery findOrdersQuery) {
         int pageNo = Math.max(findOrdersQuery.pageNo() - 1, 0);
         Sort sort = Sort.by(
@@ -53,10 +56,17 @@ class OrderService {
         return PageRequest.of(pageNo, findOrdersQuery.pageSize(), sort);
     }
 
+    /** Returns the mapped order when the identifier exists, or an empty result otherwise. */
     Optional<OrderRecord> findOrderById(Long id) {
         return orderRepository.findOrderById(id).map(orderMapper::toResponse);
     }
 
+    /**
+     * Persists a new order and publishes its mapped record within the same transaction.
+     *
+     * @param orderRequest the order details to persist
+     * @return the saved order record
+     */
     @Transactional
     OrderRecord saveOrder(OrderRequest orderRequest) {
         Order order = orderMapper.toEntity(orderRequest);
@@ -67,6 +77,14 @@ class OrderService {
         return orderRecord;
     }
 
+    /**
+     * Applies the requested changes to an existing order within a transaction.
+     *
+     * @param id the order identifier
+     * @param orderRequest the replacement order details
+     * @return the updated order record
+     * @throws OrderNotFoundException if no order exists for the identifier
+     */
     @Transactional
     OrderRecord updateOrder(Long id, OrderRequest orderRequest) {
         Order order = orderRepository.findOrderById(id).orElseThrow(() -> new OrderNotFoundException(id));

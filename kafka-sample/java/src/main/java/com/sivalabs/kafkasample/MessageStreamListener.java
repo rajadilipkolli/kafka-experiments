@@ -14,6 +14,11 @@ import java.util.concurrent.CountDownLatch;
 
 public class MessageStreamListener {
 
+    /**
+     * Runs the name-count topology with exactly-once Kafka Streams processing until shutdown.
+     *
+     * @param args unused command-line arguments
+     */
     public static void main(String[] args) {
 
         Properties props = new Properties();

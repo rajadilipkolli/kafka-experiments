@@ -36,6 +36,9 @@ class BootKafkaReactorConsumerApplicationTests {
     @Autowired
     protected WebTestClient webTestClient;
 
+    /**
+     * Verifies that a message without an event ID can be consumed and retrieved through the API.
+     */
     @Test
     void loadDataAndConsume() throws InterruptedException {
         MessageDTO messageDTO = new MessageDTO(null, "hello1", LocalDateTime.now(), null);
@@ -74,6 +77,10 @@ class BootKafkaReactorConsumerApplicationTests {
         StepVerifier.create(responseFlux).expectNextCount(1).thenCancel().verify();
     }
 
+    /**
+     * Verifies that repeated deliveries of one event and a separate event yield the expected
+     * message count through the API, including the message from the preceding test.
+     */
     @Test
     void shouldHandleEventIdDeduplication() throws InterruptedException {
         java.util.UUID eventId = java.util.UUID.randomUUID();

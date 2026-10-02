@@ -59,6 +59,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
         return new RoutingKafkaTemplate(map);
     }
 
+    /** Creates consumers for integer keys and string values using Spring Boot Kafka settings. */
     @Bean
     ConsumerFactory<Integer, String> simpleKafkaConsumerFactory() {
         Map<String, Object> consumerProperties = this.kafkaProperties.buildConsumerProperties();
@@ -67,6 +68,9 @@ public class KafkaConfig implements KafkaListenerConfigurer {
         return new DefaultKafkaConsumerFactory<>(consumerProperties);
     }
 
+    /**
+     * Creates an observed string listener factory that commits offsets after each processed record.
+     */
     @Bean("simpleKafkaListenerContainerFactory")
     ConcurrentKafkaListenerContainerFactory<Integer, String> simpleKafkaListenerContainerFactory(
             ConsumerFactory<Integer, String> simpleKafkaConsumerFactory) {
@@ -79,6 +83,7 @@ public class KafkaConfig implements KafkaListenerConfigurer {
     }
 
     // Second consumer config
+    /** Creates consumers for string keys and JSON messages, trusting the application domain package. */
     @Bean
     ConsumerFactory<String, SimpleMessage> jsonKafkaConsumerFactory() {
         Map<String, Object> consumerProperties = this.kafkaProperties.buildConsumerProperties();
@@ -88,6 +93,9 @@ public class KafkaConfig implements KafkaListenerConfigurer {
         return new DefaultKafkaConsumerFactory<>(consumerProperties);
     }
 
+    /**
+     * Creates an observed JSON listener factory that commits offsets after each processed record.
+     */
     @Bean("jsonKafkaListenerContainerFactory")
     ConcurrentKafkaListenerContainerFactory<String, SimpleMessage> jsonKafkaListenerContainerFactory(
             ConsumerFactory<String, SimpleMessage> jsonKafkaConsumerFactory) {

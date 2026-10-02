@@ -18,12 +18,17 @@ class KafkaConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaConfiguration.class);
 
+    /** Declares the hello topic with three partitions and the broker default replication factor. */
     @Bean
     NewTopic helloTopic() {
         log.info("Creating helloTopic");
         return TopicBuilder.name(AppConstants.HELLO_TOPIC).partitions(3).build();
     }
 
+    /**
+     * Creates an observed listener factory using Spring Boot Kafka settings. Listeners returning
+     * {@code Mono} are acknowledged asynchronously when their result completes.
+     */
     @Bean
     ConcurrentKafkaListenerContainerFactory<Object, Object> kafkaListenerContainerFactory(
             ConcurrentKafkaListenerContainerFactoryConfigurer configurer,

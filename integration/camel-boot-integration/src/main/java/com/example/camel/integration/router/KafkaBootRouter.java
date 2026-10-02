@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaBootRouter extends RouteBuilder {
 
+    /**
+     * Defines the periodic JSON producer and consumer routes, committing available manual offsets
+     * after logging each consumed message.
+     */
     @Override
     public void configure() {
         // Kafka Producer - create a Map and marshal to JSON before sending

@@ -28,6 +28,7 @@ class ApplicationIntTests {
     @Autowired private KafkaProducer kafkaProducer;
     @Autowired private KafkaTemplate<String, Person> kafkaTemplate;
 
+    /** Verifies that publishing a person adds a persisted record. */
     @Test
     void contextLoads() {
         // Get initial count to account for previous tests
@@ -42,6 +43,9 @@ class ApplicationIntTests {
                         () -> assertThat(personRepository.count()).isEqualTo(initialCount + 1));
     }
 
+    /**
+     * Verifies persistence of messages both with and without the optional email and phone fields.
+     */
     @Test
     void shouldDemonstrateSchemaEvolution() {
         // Clear any existing data
@@ -116,6 +120,10 @@ class ApplicationIntTests {
         System.out.println("=== TEST COMPLETED SUCCESSFULLY ===");
     }
 
+    /**
+     * Verifies duplicate event suppression, distinct event IDs for the same person, and acceptance
+     * of a legacy message without an event ID.
+     */
     @Test
     void shouldHandleEventIdDeduplication() throws Exception {
         // Clear any existing data

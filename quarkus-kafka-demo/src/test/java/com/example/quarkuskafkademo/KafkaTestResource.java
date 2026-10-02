@@ -10,6 +10,9 @@ public class KafkaTestResource implements QuarkusTestResourceLifecycleManager {
 
     private KafkaContainer kafka;
 
+    /**
+     * Starts the test Kafka broker and returns its messaging configuration with DevServices disabled.
+     */
     @Override
     public Map<String, String> start() {
         kafka = new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.1"));

@@ -17,11 +17,16 @@ public class MessageProducer {
         TOPIC_NAME = topic_name;
     }
 
+    /** Starts the sample producer for the test topic. */
     public static void main(String[] args) {
         MessageProducer producer = new MessageProducer("test");
         producer.run();
     }
 
+    /**
+     * Continuously publishes random sample names using an idempotent producer with acknowledgments
+     * from all in-sync replicas.
+     */
     void run() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");

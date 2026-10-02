@@ -19,10 +19,17 @@ public class MessageService {
     private static final Logger log = LoggerFactory.getLogger(MessageService.class);
     private final KafkaSender<Integer, MessageDTO> sender;
 
+    /** Creates the message service with its reactive Kafka sender. */
     public MessageService(KafkaSender<Integer, MessageDTO> sender) {
         this.sender = sender;
     }
 
+    /**
+     * Sends a message asynchronously, assigning a random event ID only when one is absent.
+     * The supplied event ID is preserved so callers can reuse it for repeated deliveries.
+     *
+     * @param messageDTO the message to publish
+     */
     public void sendMessage(MessageDTO messageDTO) {
         if (messageDTO.eventId() == null) {
             messageDTO = new MessageDTO(

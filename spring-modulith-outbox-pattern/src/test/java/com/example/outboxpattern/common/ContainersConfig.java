@@ -12,12 +12,14 @@ import org.testcontainers.utility.DockerImageName;
 @TestConfiguration(proxyBeanMethods = false)
 public class ContainersConfig {
 
+    /** Creates the Kafka broker container used by the integration tests. */
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer() {
         return new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.1"));
     }
 
+    /** Registers the test broker bootstrap address in the Spring Kafka configuration. */
     @Bean
     DynamicPropertyRegistrar dynamicPropertyRegistrar(KafkaContainer kafkaContainer) {
         return registry -> {
@@ -27,6 +29,7 @@ public class ContainersConfig {
         };
     }
 
+    /** Creates a reusable LGTM observability container with a two-minute startup timeout. */
     @Bean
     @ServiceConnection
     LgtmStackContainer lgtmContainer() {

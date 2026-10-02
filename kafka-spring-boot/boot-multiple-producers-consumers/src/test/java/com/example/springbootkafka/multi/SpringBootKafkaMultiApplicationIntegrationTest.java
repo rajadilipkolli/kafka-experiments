@@ -34,6 +34,9 @@ class SpringBootKafkaMultiApplicationIntegrationTest {
     @Autowired
     private JsonReceiver jsonReceiver;
 
+    /**
+     * Verifies that a string message sent through the REST endpoint reaches the corresponding listener.
+     */
     @Test
     void sendAndReceiveData() throws Exception {
         this.mockMvc
@@ -47,6 +50,9 @@ class SpringBootKafkaMultiApplicationIntegrationTest {
                         () -> assertThat(simpleReceiver.getLatch().getCount()).isZero());
     }
 
+    /**
+     * Verifies that a JSON message sent through the REST endpoint reaches the corresponding listener.
+     */
     @Test
     void sendAndReceiveJsonData() throws Exception {
         SimpleMessage simpleMessage = new SimpleMessage(110, "My Json Message");

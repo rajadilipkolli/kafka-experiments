@@ -20,15 +20,25 @@ public class MessageConsumer {
 
     private final String TOPIC_NAME;
 
+    /** Creates a consumer for the supplied topic name. */
     MessageConsumer(String topic_name) {
         TOPIC_NAME = topic_name;
     }
 
+    /**
+     * Starts the consumer for the name-count output topic.
+     *
+     * @param args unused command-line arguments
+     */
     public static void main(String[] args) {
         MessageConsumer consumer = new MessageConsumer("streams-namecount-output");
         consumer.run();
     }
 
+    /**
+     * Polls and prints records, then synchronously commits the next offset for each processed
+     * partition. Closes the consumer when polling exits or fails.
+     */
     void run() {
         KafkaConsumer<String, Long> kafkaConsumer = getKafkaConsumer();
         //Start processing messages
@@ -53,6 +63,7 @@ public class MessageConsumer {
         }
     }
 
+    /** Creates a local Kafka consumer with automatic offset commits disabled. */
     private KafkaConsumer<String, Long> getKafkaConsumer() {
         Properties configProperties = new Properties();
         configProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");

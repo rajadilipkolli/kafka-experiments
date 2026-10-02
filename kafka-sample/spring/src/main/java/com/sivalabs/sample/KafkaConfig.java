@@ -25,6 +25,7 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers:localhost:9092}")
     private String bootstrapServers;
 
+    /** Creates a string listener factory that commits offsets after each processed record. */
     @Bean
     ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory =
@@ -34,11 +35,15 @@ public class KafkaConfig {
         return factory;
     }
 
+    /** Creates string consumers using the configured broker and offset settings. */
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerConfigs());
     }
 
+    /**
+     * Builds string consumer settings with automatic commits disabled and earliest-offset fallback.
+     */
     private Map<String, Object> consumerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -51,11 +56,15 @@ public class KafkaConfig {
         return props;
     }
 
+    /** Creates string producers using the configured delivery and batching settings. */
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
+    /**
+     * Builds string producer settings with idempotence and acknowledgments from all in-sync replicas.
+     */
     private Map<String, Object> producerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);

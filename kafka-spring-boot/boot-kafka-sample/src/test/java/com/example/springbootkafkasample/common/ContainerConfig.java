@@ -9,6 +9,7 @@ import org.testcontainers.utility.DockerImageName;
 @TestConfiguration(proxyBeanMethods = false)
 public class ContainerConfig {
 
+    /** Creates the test Kafka broker with a default of 32 partitions per topic. */
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer() {

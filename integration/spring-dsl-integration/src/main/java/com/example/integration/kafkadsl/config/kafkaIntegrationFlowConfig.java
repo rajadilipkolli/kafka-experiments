@@ -17,12 +17,17 @@ class kafkaIntegrationFlowConfig {
         this.kafkaAppProperties = kafkaAppProperties;
     }
 
+    /** Builds the outbound Kafka flow using the configured message key. */
     @Bean
     IntegrationFlow toKafka(KafkaTemplate<?, ?> kafkaTemplate) {
         return flow -> flow.handle(
                 Kafka.outboundChannelAdapter(kafkaTemplate).messageKey(this.kafkaAppProperties.messageKey()));
     }
 
+    /**
+     * Routes Kafka records to the in-memory {@code fromKafka} queue with record acknowledgments.
+     * Offsets are committed after enqueueing, before downstream queue processing.
+     */
     @Bean
     IntegrationFlow fromKafkaFlow(ConsumerFactory<?, ?> consumerFactory) {
         // The offset commits on hand-off to the in-memory `fromKafka` queue channel.

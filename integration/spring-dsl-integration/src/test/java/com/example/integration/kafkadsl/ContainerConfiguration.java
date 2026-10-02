@@ -10,12 +10,14 @@ import org.testcontainers.utility.DockerImageName;
 @TestConfiguration(proxyBeanMethods = false)
 class ContainerConfiguration {
 
+    /** Creates the Kafka broker container used by the integration tests. */
     @ServiceConnection
     @Bean
     KafkaContainer kafkaContainer() {
         return new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.1"));
     }
 
+    /** Registers the test broker bootstrap address in the Spring Kafka configuration. */
     @Bean
     DynamicPropertyRegistrar kafkaProperties(KafkaContainer kafkaContainer) {
         return properties -> properties.add("spring.kafka.bootstrapServers", kafkaContainer::getBootstrapServers);

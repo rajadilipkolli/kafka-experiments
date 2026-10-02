@@ -16,10 +16,19 @@ public class AvroKafkaListener {
     private static final Logger log = LoggerFactory.getLogger(AvroKafkaListener.class);
     private final PersonRepository personRepository;
 
+    /** Creates the listener with the repository used to persist and deduplicate person events. */
     public AvroKafkaListener(PersonRepository personRepository) {
         this.personRepository = personRepository;
     }
 
+    /**
+     * Persists a person event unless its event ID is already stored. Missing IDs are derived from
+     * the Kafka topic, partition, and offset for legacy messages. A constraint violation is ignored
+     * only when the event ID can subsequently be found.
+     *
+     * @param personConsumerRecord the person event and its Kafka metadata
+     * @throws IllegalArgumentException if a supplied event ID is not a valid UUID
+     */
     @KafkaListener(topics = ApplicationConstants.PERSONS_TOPIC, groupId = "avro-group")
     public void handler(ConsumerRecord<String, Person> personConsumerRecord) {
         Person person = personConsumerRecord.value();

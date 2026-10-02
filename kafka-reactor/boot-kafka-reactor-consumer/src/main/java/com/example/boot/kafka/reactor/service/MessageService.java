@@ -24,10 +24,19 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
 
+    /** Creates the message service with its persistence repository. */
     public MessageService(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
     }
 
+    /**
+     * Persists an event using its supplied ID or an ID derived from the Kafka topic, partition,
+     * and offset. Constraint violations complete successfully only if that event ID already exists.
+     *
+     * @param key the received Kafka key, used for logging
+     * @param consumerRecord the message and its Kafka metadata
+     * @return completion after persistence or duplicate detection, or an error for other failures
+     */
     @KafkaListener(topics = AppConstants.HELLO_TOPIC, groupId = "reactivekafka")
     Mono<Void> listen(
             @Header(KafkaHeaders.RECEIVED_KEY) Integer key, ConsumerRecord<Integer, MessageDTO> consumerRecord) {
@@ -64,6 +73,7 @@ public class MessageService {
                         }));
     }
 
+    /** Returns all stored messages, logging each result and any retrieval error. */
     public Flux<MessageDTO> fetchMessages() {
         return messageRepository
                 .findAll()

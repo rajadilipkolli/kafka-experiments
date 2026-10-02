@@ -11,12 +11,14 @@ import org.testcontainers.utility.DockerImageName;
 @TestConfiguration(proxyBeanMethods = false)
 public class ContainersConfig {
 
+    /** Creates the Kafka broker container used by the integration tests. */
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer() {
         return new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.1")).withReuse(true);
     }
 
+    /** Registers the test broker address for the Spring Cloud Stream Kafka binder. */
     @Bean
     DynamicPropertyRegistrar kafkaProperties(KafkaContainer kafkaContainer) {
         return (properties) -> {

@@ -9,6 +9,10 @@ import org.springframework.kafka.core.KafkaAdmin.NewTopics;
 @Configuration(proxyBeanMethods = false)
 public class KafkaTopicsConfiguration {
 
+    /**
+     * Declares the compacted counts topic and the views topic using the configured partition and
+     * replication counts.
+     */
     @Bean
     NewTopics kafkaTopics(final AnalyticsApplicationProperties analyticsApplicationProperties) {
         return new NewTopics(
