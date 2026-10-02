@@ -4,6 +4,7 @@ import com.example.springbootkafkaavro.entity.PersonEntity;
 import com.example.springbootkafkaavro.model.Person;
 import com.example.springbootkafkaavro.repository.PersonRepository;
 import com.example.springbootkafkaavro.util.ApplicationConstants;
+import java.nio.charset.StandardCharsets;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +17,19 @@ public class AvroKafkaListener {
     private static final Logger log = LoggerFactory.getLogger(AvroKafkaListener.class);
     private final PersonRepository personRepository;
 
+    /** Creates the listener with the repository used to persist and deduplicate person events. */
     public AvroKafkaListener(PersonRepository personRepository) {
         this.personRepository = personRepository;
     }
 
+    /**
+     * Persists a person event unless its event ID is already stored. Missing IDs are derived from
+     * the Kafka topic, partition, and offset for legacy messages. Non-UUID IDs are mapped to stable
+     * UUIDs using UTF-8. A constraint violation is ignored only when the event ID can subsequently
+     * be found.
+     *
+     * @param personConsumerRecord the person event and its Kafka metadata
+     */
     @KafkaListener(topics = ApplicationConstants.PERSONS_TOPIC, groupId = "avro-group")
     public void handler(ConsumerRecord<String, Person> personConsumerRecord) {
         Person person = personConsumerRecord.value();
@@ -44,6 +54,30 @@ public class AvroKafkaListener {
             log.info("V1 message - No email/phone fields available (backward compatibility)");
         }
 
+        java.util.UUID eventId;
+        String eventIdStr = getFieldValue(person, "eventId");
+        if (eventIdStr != null) {
+            try {
+                eventId = java.util.UUID.fromString(eventIdStr);
+            } catch (IllegalArgumentException e) {
+                eventId =
+                        java.util.UUID.nameUUIDFromBytes(
+                                eventIdStr.getBytes(StandardCharsets.UTF_8));
+            }
+        } else {
+            String nameStr =
+                    personConsumerRecord.topic()
+                            + "-"
+                            + personConsumerRecord.partition()
+                            + "-"
+                            + personConsumerRecord.offset();
+            eventId = java.util.UUID.nameUUIDFromBytes(nameStr.getBytes(StandardCharsets.UTF_8));
+        }
+
+        if (personRepository.existsByEventId(eventId)) {
+            return;
+        }
+
         PersonEntity personEntity =
                 new PersonEntity()
                         .setName(person.getName().toString())
@@ -51,10 +85,17 @@ public class AvroKafkaListener {
                         .setGender(
                                 person.getGender() != null ? person.getGender().toString() : null)
                         .setEmail(email)
-                        .setPhoneNumber(phoneNumber);
+                        .setPhoneNumber(phoneNumber)
+                        .setEventId(eventId);
 
-        PersonEntity savedEntity = this.personRepository.save(personEntity);
-        log.info("Person saved to database with ID: {}", savedEntity.getId());
+        try {
+            PersonEntity savedEntity = this.personRepository.saveAndFlush(personEntity);
+            log.info("Person saved to database with ID: {}", savedEntity.getId());
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            if (!personRepository.existsByEventId(eventId)) {
+                throw e;
+            }
+        }
         log.info("=== END SCHEMA EVOLUTION DEMO ===");
     }
 

@@ -30,6 +30,7 @@ class KafkaController {
         this.producer.sendMessage(person);
     }
 
+    /** Publishes a person event with the optional version 2 email and phone fields. */
     @PostMapping(value = "/{version}/publish", version = "2")
     void sendMessageToKafkaTopicV2(
             @RequestParam @NotBlank String name,
@@ -47,11 +48,20 @@ class KafkaController {
         this.producer.sendMessage(person);
     }
 
+    /**
+     * Creates a person with a timestamp-based ID and a fresh UUID for event deduplication.
+     *
+     * @param name the person name
+     * @param age the person age
+     * @param gender the optional gender
+     * @return the person populated with the supplied fields and generated identifiers
+     */
     private Person createBasePerson(String name, Integer age, String gender) {
         Person person = new Person();
         person.setId(System.currentTimeMillis());
         person.setAge(age);
         person.setName(name);
+        person.setEventId(java.util.UUID.randomUUID().toString());
         if (gender != null) {
             person.setGender(gender);
         }

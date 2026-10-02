@@ -20,7 +20,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 @SpringBootTest(
         classes = {ProducerConfig.class, ContainerConfig.class},
-        properties = {"spring.kafka.producer.acks=1"})
+        properties = {"spring.kafka.producer.acks=all", "spring.kafka.producer.properties.enable.idempotence=true"})
 class AppListenerTest {
 
     private static final int NUM_MESSAGES = 1000;

@@ -4,11 +4,16 @@ import java.time.Instant;
 import java.util.Date;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.kafka.KafkaConstants;
+import org.apache.camel.component.kafka.consumer.KafkaManualCommit;
 import org.springframework.stereotype.Component;
 
 @Component
 public class KafkaBootRouter extends RouteBuilder {
 
+    /**
+     * Defines the periodic JSON producer and consumer routes, committing available manual offsets
+     * after logging each consumed message.
+     */
     @Override
     public void configure() {
         // Kafka Producer - create a Map and marshal to JSON before sending
@@ -41,7 +46,14 @@ public class KafkaBootRouter extends RouteBuilder {
                 .log("    on the topic ${headers[kafka.TOPIC]}")
                 .log("    on the partition ${headers[kafka.PARTITION]}")
                 .log("    with the offset ${headers[kafka.OFFSET]}")
-                .log("    with the key ${headers[kafka.KEY]}");
+                .log("    with the key ${headers[kafka.KEY]}")
+                .process(exchange -> {
+                    KafkaManualCommit manual =
+                            exchange.getIn().getHeader(KafkaConstants.MANUAL_COMMIT, KafkaManualCommit.class);
+                    if (manual != null) {
+                        manual.commit();
+                    }
+                });
     }
 
     private record KafkaMessage(String message) {}

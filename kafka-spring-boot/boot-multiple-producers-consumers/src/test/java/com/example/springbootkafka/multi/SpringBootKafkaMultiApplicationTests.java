@@ -43,6 +43,7 @@ class SpringBootKafkaMultiApplicationTests {
     @Autowired
     private EmbeddedKafkaBroker embeddedKafkaBroker;
 
+    /** Waits for partition assignment before sending messages to the embedded broker. */
     @BeforeAll
     void setUp() {
         // wait until the partitions are assigned
@@ -52,20 +53,26 @@ class SpringBootKafkaMultiApplicationTests {
         }
     }
 
+    /**
+     * Verifies that a string message sent through the sender reaches the corresponding listener.
+     */
     @Test
     void sendAndReceiveData() throws Exception {
         sender.send(10, "foo");
-        await().pollDelay(1, TimeUnit.SECONDS).atMost(5, TimeUnit.SECONDS).untilAsserted(() -> assertThat(
-                        simpleReceiver.getLatch().getCount())
-                .isZero());
+        await().pollDelay(1, TimeUnit.SECONDS)
+                .atMost(5, TimeUnit.SECONDS)
+                .untilAsserted(
+                        () -> assertThat(simpleReceiver.getLatch().getCount()).isZero());
     }
 
+    /** Verifies that a JSON message sent through the sender reaches the corresponding listener. */
     @Test
     void sendAndReceiveJsonData() throws Exception {
         SimpleMessage simpleMessage = new SimpleMessage(110, "My Json Message");
         sender.send(simpleMessage);
-        await().pollDelay(1, TimeUnit.SECONDS).atMost(5, TimeUnit.SECONDS).untilAsserted(() -> assertThat(
-                        jsonReceiver.getLatch().getCount())
-                .isZero());
+        await().pollDelay(1, TimeUnit.SECONDS)
+                .atMost(5, TimeUnit.SECONDS)
+                .untilAsserted(
+                        () -> assertThat(jsonReceiver.getLatch().getCount()).isZero());
     }
 }

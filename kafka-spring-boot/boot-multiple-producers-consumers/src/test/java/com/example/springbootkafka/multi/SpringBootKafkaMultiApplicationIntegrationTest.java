@@ -34,6 +34,9 @@ class SpringBootKafkaMultiApplicationIntegrationTest {
     @Autowired
     private JsonReceiver jsonReceiver;
 
+    /**
+     * Verifies that a string message sent through the REST endpoint reaches the corresponding listener.
+     */
     @Test
     void sendAndReceiveData() throws Exception {
         this.mockMvc
@@ -41,11 +44,15 @@ class SpringBootKafkaMultiApplicationIntegrationTest {
                         .content(this.objectMapper.writeValueAsString(new SimpleMessage(10, "foo")))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        await().pollDelay(1, TimeUnit.SECONDS).atMost(15, TimeUnit.SECONDS).untilAsserted(() -> assertThat(
-                        simpleReceiver.getLatch().getCount())
-                .isZero());
+        await().pollDelay(1, TimeUnit.SECONDS)
+                .atMost(15, TimeUnit.SECONDS)
+                .untilAsserted(
+                        () -> assertThat(simpleReceiver.getLatch().getCount()).isZero());
     }
 
+    /**
+     * Verifies that a JSON message sent through the REST endpoint reaches the corresponding listener.
+     */
     @Test
     void sendAndReceiveJsonData() throws Exception {
         SimpleMessage simpleMessage = new SimpleMessage(110, "My Json Message");
@@ -54,8 +61,9 @@ class SpringBootKafkaMultiApplicationIntegrationTest {
                         .content(this.objectMapper.writeValueAsString(simpleMessage))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        await().pollDelay(1, TimeUnit.SECONDS).atMost(15, TimeUnit.SECONDS).untilAsserted(() -> assertThat(
-                        jsonReceiver.getLatch().getCount())
-                .isZero());
+        await().pollDelay(1, TimeUnit.SECONDS)
+                .atMost(15, TimeUnit.SECONDS)
+                .untilAsserted(
+                        () -> assertThat(jsonReceiver.getLatch().getCount()).isZero());
     }
 }

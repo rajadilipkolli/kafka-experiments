@@ -14,7 +14,7 @@ Using Spring Cloud and Kafka Streams together allows developers to build scalabl
 ## Starting docker
 
 ```shell
-docker exec -it analytics-spring-cloud-streams-kafka_kafka1_1 kafka-topics --zookeeper zookeeper:2181 --create --topic my-topic --partitions 1 --replication-factor 1
+docker exec -it analytics-spring-cloud-streams-kafka_kafka1_1 kafka-topics --bootstrap-server localhost:9092 --create --topic my-topic --partitions 3 --replication-factor 1
 ```
 
 You should see below response
@@ -25,7 +25,7 @@ You should see below response
 
 
 ```shell
-docker exec -it analytics-spring-cloud-streams-kafka_kafka1_1 kafka-topics --zookeeper zookeeper:2181 --create --topic my-topic-three --partitions 1 --replication-factor 3
+docker exec -it analytics-spring-cloud-streams-kafka_kafka1_1 kafka-topics --bootstrap-server localhost:9092 --create --topic my-topic-three --partitions 3 --replication-factor 3
 ```
 
 > Created topic "my-topic-three".

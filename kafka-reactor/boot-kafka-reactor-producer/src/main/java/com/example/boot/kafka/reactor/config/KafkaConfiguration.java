@@ -10,6 +10,7 @@ import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.TopicBuilder;
 import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderOptions;
 
@@ -19,12 +20,14 @@ class KafkaConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaConfiguration.class);
 
+    /** Declares the hello topic with three partitions and the broker default replication factor. */
     @Bean
     NewTopic helloTopic() {
         log.info("Creating helloTopic");
-        return new NewTopic(AppConstants.HELLO_TOPIC, 1, (short) 1);
+        return TopicBuilder.name(AppConstants.HELLO_TOPIC).partitions(3).build();
     }
 
+    /** Creates a reactive Kafka sender from the configured producer properties. */
     @Bean
     KafkaSender<Integer, MessageDTO> reactiveKafkaSender(KafkaProperties properties) {
         log.info("Creating Sender");

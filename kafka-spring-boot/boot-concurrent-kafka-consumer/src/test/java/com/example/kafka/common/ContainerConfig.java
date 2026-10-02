@@ -9,9 +9,10 @@ import org.testcontainers.utility.DockerImageName;
 @TestConfiguration(proxyBeanMethods = false)
 public class ContainerConfig {
 
+    /** Creates the Kafka broker container used by the integration tests. */
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer() {
-        return new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.0"));
+        return new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.1"));
     }
 }

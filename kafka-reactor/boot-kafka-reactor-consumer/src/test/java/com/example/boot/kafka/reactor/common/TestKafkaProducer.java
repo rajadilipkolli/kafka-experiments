@@ -20,13 +20,15 @@ public class TestKafkaProducer {
 
     private static final Logger log = LoggerFactory.getLogger(TestKafkaProducer.class);
 
+    /**
+     * Creates a reactive Kafka sender from the configured producer properties, closing it on JVM shutdown.
+     */
     @Bean
     KafkaSender<Integer, MessageDTO> reactiveKafkaSender(KafkaProperties properties) {
         log.info("Creating reactive Kafka sender with properties: {}", properties.getProducer());
         Map<String, Object> props = properties.buildProducerProperties();
-        SenderOptions<Integer, MessageDTO> senderOptions = SenderOptions.create(props);
-        senderOptions.maxInFlight(1024);
-        senderOptions.stopOnError(false);
+        SenderOptions<Integer, MessageDTO> senderOptions =
+                SenderOptions.<Integer, MessageDTO>create(props).maxInFlight(5).stopOnError(false);
 
         KafkaSender<Integer, MessageDTO> sender = KafkaSender.create(senderOptions);
 

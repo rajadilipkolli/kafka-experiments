@@ -1,14 +1,18 @@
 package com.example.boot.kafka.reactor;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.example.boot.kafka.reactor.common.ContainerConfiguration;
 import com.example.boot.kafka.reactor.common.TestKafkaProducer;
 import com.example.boot.kafka.reactor.entity.MessageDTO;
+import com.example.boot.kafka.reactor.repository.MessageRepository;
 import com.example.boot.kafka.reactor.util.AppConstants;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +40,20 @@ class BootKafkaReactorConsumerApplicationTests {
     @Autowired
     protected WebTestClient webTestClient;
 
+    @Autowired
+    MessageRepository messageRepository;
+
+    @BeforeEach
+    void clearMessages() {
+        messageRepository.deleteAll().block();
+    }
+
+    /**
+     * Verifies that a message without an event ID can be consumed and retrieved through the API.
+     */
     @Test
     void loadDataAndConsume() throws InterruptedException {
-        MessageDTO messageDTO = new MessageDTO(null, "hello1", LocalDateTime.now());
+        MessageDTO messageDTO = new MessageDTO(null, "hello1", LocalDateTime.now(), null);
         Integer key = new SecureRandom().nextInt(Integer.MAX_VALUE);
         this.sender
                 .send(Flux.just(
@@ -71,6 +86,53 @@ class BootKafkaReactorConsumerApplicationTests {
                 .getResponseBody();
 
         // Use StepVerifier to verify the behavior of the Flux
-        StepVerifier.create(responseFlux).expectNextCount(1).thenCancel().verify();
+        StepVerifier.create(responseFlux).expectNextCount(1).verifyComplete();
+    }
+
+    /**
+     * Verifies that repeated deliveries of one event and a separate event yield the expected
+     * two rows and event IDs through the API.
+     */
+    @Test
+    void shouldHandleEventIdDeduplication() throws InterruptedException {
+        java.util.UUID eventId = java.util.UUID.randomUUID();
+        MessageDTO messageDTO = new MessageDTO(null, "hello2", LocalDateTime.now(), eventId);
+        Integer key = new SecureRandom().nextInt(Integer.MAX_VALUE);
+
+        // Send duplicate messages
+        Flux<SenderRecord<Integer, MessageDTO, Integer>> outboundFlux = Flux.just(
+                SenderRecord.create(new ProducerRecord<>(AppConstants.HELLO_TOPIC, key, messageDTO), key),
+                SenderRecord.create(new ProducerRecord<>(AppConstants.HELLO_TOPIC, key, messageDTO), key),
+                SenderRecord.create(new ProducerRecord<>(AppConstants.HELLO_TOPIC, key, messageDTO), key));
+
+        this.sender.send(outboundFlux).collectList().block();
+        TimeUnit.SECONDS.sleep(5);
+
+        // Distinct message
+        java.util.UUID distinctEventId = java.util.UUID.randomUUID();
+        MessageDTO distinctMessage = new MessageDTO(null, "hello3", LocalDateTime.now(), distinctEventId);
+        this.sender
+                .send(Flux.just(
+                        SenderRecord.create(new ProducerRecord<>(AppConstants.HELLO_TOPIC, key, distinctMessage), key)))
+                .blockLast();
+        TimeUnit.SECONDS.sleep(5);
+
+        Flux<MessageDTO> responseFlux = webTestClient
+                .get()
+                .uri("/messages")
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectHeader()
+                .contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
+                .returnResult(MessageDTO.class)
+                .getResponseBody();
+
+        StepVerifier.create(responseFlux.collectList())
+                .assertNext(messages -> assertThat(messages)
+                        .extracting(MessageDTO::eventId)
+                        .containsExactlyInAnyOrder(eventId, distinctEventId))
+                .verifyComplete();
     }
 }
