@@ -1,7 +1,6 @@
 package com.example.outboxpattern.config;
 
 import java.time.Instant;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -25,21 +24,26 @@ public class OutboxEventResubmissionStartup {
     private final IncompleteEventPublications incompleteEventPublications;
     private final ApplicationProperties applicationProperties;
     private final EventPublicationRepository publicationRepository;
+    private final OutboxEventPublicationRecovery publicationRecovery;
 
     public OutboxEventResubmissionStartup(
             IncompleteEventPublications incompleteEventPublications,
             ApplicationProperties applicationProperties,
-            EventPublicationRepository publicationRepository) {
+            EventPublicationRepository publicationRepository,
+            OutboxEventPublicationRecovery publicationRecovery) {
         this.incompleteEventPublications = incompleteEventPublications;
         this.applicationProperties = applicationProperties;
         this.publicationRepository = publicationRepository;
+        this.publicationRecovery = publicationRecovery;
     }
 
     /**
      * Requests resubmission with the configured batch, in-flight, and minimum-age limits on startup
-     * and on the scheduled delay. Then selects stale published or processing publications, up to
-     * the smaller of the batch size and remaining resubmitted-event headroom. Staleness requires a
-     * publication date strictly before the minimum-age cutoff. Repository and resubmission failures
+     * and on the scheduled delay. First recovers resubmitted publications whose last attempt (or
+     * original publication date if absent) is strictly before the minimum-age cutoff. Then recovers
+     * published or processing publications with a publication date strictly before the cutoff,
+     * selecting at most the smaller of the batch size and remaining headroom in the database.
+     * Repository and resubmission failures
      * propagate to the invoking event listener or scheduler.
      */
     @EventListener(ApplicationReadyEvent.class)
@@ -58,6 +62,8 @@ public class OutboxEventResubmissionStartup {
                 .withMaxInFlight(applicationProperties.resubmissionMaxInFlight())
                 .withMinAge(applicationProperties.resubmissionMinAge());
 
+        Instant cutoff = Instant.now().minus(options.getMinAge());
+        publicationRecovery.recoverStaleResubmissions(cutoff);
         incompleteEventPublications.resubmitIncompletePublications(options);
 
         // The options overload only selects FAILED publications. Recover stale publications
@@ -66,11 +72,9 @@ public class OutboxEventResubmissionStartup {
         if (headroom <= 0) {
             return;
         }
-        AtomicInteger remaining = new AtomicInteger((int) Math.min(options.getBatchSize(), headroom));
-        Instant cutoff = Instant.now().minus(options.getMinAge());
-        incompleteEventPublications.resubmitIncompletePublications(publication ->
-                (publication.getStatus() == Status.PUBLISHED || publication.getStatus() == Status.PROCESSING)
-                        && publication.getPublicationDate().isBefore(cutoff)
-                        && remaining.getAndDecrement() > 0);
+        int remaining = (int) Math.min(options.getBatchSize(), headroom);
+        if (publicationRecovery.recoverStalePublications(cutoff, remaining) > 0) {
+            incompleteEventPublications.resubmitIncompletePublications(options.withBatchSize(remaining));
+        }
     }
 }

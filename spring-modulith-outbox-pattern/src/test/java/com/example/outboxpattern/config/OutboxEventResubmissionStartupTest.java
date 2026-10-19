@@ -2,6 +2,9 @@ package com.example.outboxpattern.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
@@ -12,12 +15,11 @@ import com.example.outboxpattern.ModulithApplication;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
-import java.util.function.Predicate;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
-import org.springframework.modulith.events.EventPublication;
 import org.springframework.modulith.events.EventPublication.Status;
 import org.springframework.modulith.events.IncompleteEventPublications;
 import org.springframework.modulith.events.ResubmissionOptions;
@@ -39,8 +41,11 @@ class OutboxEventResubmissionStartupTest {
                 25,
                 Duration.ofMinutes(10));
 
-        OutboxEventResubmissionStartup startup =
-                new OutboxEventResubmissionStartup(publications, properties, mock(EventPublicationRepository.class));
+        OutboxEventResubmissionStartup startup = new OutboxEventResubmissionStartup(
+                publications,
+                properties,
+                mock(EventPublicationRepository.class),
+                mock(OutboxEventPublicationRecovery.class));
         startup.onApplicationReady();
 
         ArgumentCaptor<ResubmissionOptions> captor = ArgumentCaptor.forClass(ResubmissionOptions.class);
@@ -56,38 +61,79 @@ class OutboxEventResubmissionStartupTest {
     void recoverySelectsOnlyStalePublishedAndProcessingWithinRemainingHeadroom() {
         IncompleteEventPublications publications = mock(IncompleteEventPublications.class);
         EventPublicationRepository repository = mock(EventPublicationRepository.class);
+        OutboxEventPublicationRecovery recovery = mock(OutboxEventPublicationRecovery.class);
         when(repository.countByStatus(Status.RESUBMITTED)).thenReturn(23);
+        when(recovery.recoverStalePublications(any(Instant.class), anyInt())).thenReturn(2);
+        Instant before = Instant.now().minus(properties().resubmissionMinAge());
         OutboxEventResubmissionStartup startup =
-                new OutboxEventResubmissionStartup(publications, properties(), repository);
+                new OutboxEventResubmissionStartup(publications, properties(), repository, recovery);
         startup.onApplicationReady();
 
-        ArgumentCaptor<Predicate<EventPublication>> captor = ArgumentCaptor.captor();
-        verify(publications).resubmitIncompletePublications(captor.capture());
-        Predicate<EventPublication> filter = captor.getValue();
-        assertThat(filter.test(publication(Status.PUBLISHED, Duration.ZERO))).isFalse();
-        assertThat(filter.test(publication(Status.PROCESSING, Duration.ZERO))).isFalse();
-        assertThat(filter.test(publication(Status.FAILED, Duration.ofHours(1)))).isFalse();
-        assertThat(filter.test(publication(Status.RESUBMITTED, Duration.ofHours(1))))
-                .isFalse();
-        assertThat(filter.test(publication(Status.COMPLETED, Duration.ofHours(1))))
-                .isFalse();
-        assertThat(filter.test(publication(Status.PUBLISHED, Duration.ofHours(1))))
-                .isTrue();
-        assertThat(filter.test(publication(Status.PROCESSING, Duration.ofHours(1))))
-                .isTrue();
-        assertThat(filter.test(publication(Status.PUBLISHED, Duration.ofHours(1))))
-                .isFalse();
+        ArgumentCaptor<Instant> cutoff = ArgumentCaptor.forClass(Instant.class);
+        ArgumentCaptor<ResubmissionOptions> options = ArgumentCaptor.forClass(ResubmissionOptions.class);
+        var order = inOrder(recovery, publications, repository);
+        order.verify(recovery).recoverStaleResubmissions(cutoff.capture());
+        order.verify(publications).resubmitIncompletePublications(any(ResubmissionOptions.class));
+        order.verify(repository).countByStatus(Status.RESUBMITTED);
+        order.verify(recovery).recoverStalePublications(cutoff.getValue(), 2);
+        order.verify(publications).resubmitIncompletePublications(options.capture());
+        assertThat(cutoff.getValue())
+                .isBetween(before, Instant.now().minus(properties().resubmissionMinAge()));
+        assertThat(options.getValue().getBatchSize()).isEqualTo(2);
+        assertThat(options.getValue().getMaxInFlight()).isEqualTo(25);
+        assertThat(options.getValue().getMinAge()).isEqualTo(Duration.ofMinutes(10));
     }
 
     @Test
     void skipsAdditionalRecoveryWhenInFlightLimitIsReached() {
         IncompleteEventPublications publications = mock(IncompleteEventPublications.class);
         EventPublicationRepository repository = mock(EventPublicationRepository.class);
+        OutboxEventPublicationRecovery recovery = mock(OutboxEventPublicationRecovery.class);
         when(repository.countByStatus(Status.RESUBMITTED)).thenReturn(25);
-        new OutboxEventResubmissionStartup(publications, properties(), repository).onApplicationReady();
+        new OutboxEventResubmissionStartup(publications, properties(), repository, recovery).onApplicationReady();
+
+        verify(recovery).recoverStaleResubmissions(any(Instant.class));
+        verify(publications).resubmitIncompletePublications(any(ResubmissionOptions.class));
+        verify(recovery, never()).recoverStalePublications(any(Instant.class), anyInt());
+    }
+
+    @Test
+    void recoversStaleResubmissionsBeforeReplayWhenLimitWasFull() {
+        IncompleteEventPublications publications = mock(IncompleteEventPublications.class);
+        EventPublicationRepository repository = mock(EventPublicationRepository.class);
+        OutboxEventPublicationRecovery recovery = mock(OutboxEventPublicationRecovery.class);
+        AtomicInteger inFlight = new AtomicInteger(25);
+        when(repository.countByStatus(Status.RESUBMITTED)).thenAnswer(invocation -> inFlight.get());
+        when(recovery.recoverStaleResubmissions(any(Instant.class))).thenAnswer(invocation -> {
+            inFlight.set(24);
+            return 1;
+        });
+        doAnswer(invocation -> {
+                    assertThat(inFlight.get()).isEqualTo(24);
+                    inFlight.incrementAndGet();
+                    return null;
+                })
+                .when(publications)
+                .resubmitIncompletePublications(any(ResubmissionOptions.class));
+
+        new OutboxEventResubmissionStartup(publications, properties(), repository, recovery).onApplicationReady();
 
         verify(publications).resubmitIncompletePublications(any(ResubmissionOptions.class));
-        verify(publications, never()).resubmitIncompletePublications(any(Predicate.class));
+        verify(recovery, never()).recoverStalePublications(any(Instant.class), anyInt());
+    }
+
+    @Test
+    void recoveryNeverSelectsMoreThanTheConfiguredBatchSize() {
+        IncompleteEventPublications publications = mock(IncompleteEventPublications.class);
+        OutboxEventPublicationRecovery recovery = mock(OutboxEventPublicationRecovery.class);
+        ApplicationProperties properties =
+                new ApplicationProperties("order-created", null, 50, 100, 5, 25, Duration.ofMinutes(10));
+
+        new OutboxEventResubmissionStartup(publications, properties, mock(EventPublicationRepository.class), recovery)
+                .onApplicationReady();
+
+        verify(recovery).recoverStalePublications(any(Instant.class), org.mockito.ArgumentMatchers.eq(5));
+        verify(publications).resubmitIncompletePublications(any(ResubmissionOptions.class));
     }
 
     @Test
@@ -103,6 +149,8 @@ class OutboxEventResubmissionStartupTest {
             context.registerBean(IncompleteEventPublications.class, () -> publications);
             context.registerBean(ApplicationProperties.class, this::properties);
             context.registerBean(EventPublicationRepository.class, () -> mock(EventPublicationRepository.class));
+            context.registerBean(
+                    OutboxEventPublicationRecovery.class, () -> mock(OutboxEventPublicationRecovery.class));
             context.refresh();
             verify(publications, timeout(5000).atLeast(2))
                     .resubmitIncompletePublications(any(ResubmissionOptions.class));
@@ -111,12 +159,5 @@ class OutboxEventResubmissionStartupTest {
 
     private ApplicationProperties properties() {
         return new ApplicationProperties("order-created", null, 50, 100, 75, 25, Duration.ofMinutes(10));
-    }
-
-    private EventPublication publication(Status status, Duration age) {
-        EventPublication publication = mock(EventPublication.class);
-        when(publication.getStatus()).thenReturn(status);
-        when(publication.getPublicationDate()).thenReturn(Instant.now().minus(age));
-        return publication;
     }
 }
