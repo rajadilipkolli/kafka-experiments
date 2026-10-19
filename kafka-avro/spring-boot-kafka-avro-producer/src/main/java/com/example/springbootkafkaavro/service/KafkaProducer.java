@@ -19,6 +19,12 @@ public class KafkaProducer {
     private final KafkaTemplate<String, Person> kafkaTemplate;
     private final long sendTimeoutMs;
 
+    /**
+     * Creates a producer with a bounded wait for each send result.
+     *
+     * @param kafkaTemplate template used to publish person records
+     * @param sendTimeoutMs maximum wait for the send future, in milliseconds, after submission
+     */
     public KafkaProducer(
             KafkaTemplate<String, Person> kafkaTemplate,
             @Value("${app.producer.send-timeout-ms:12000}") long sendTimeoutMs) {
@@ -26,6 +32,13 @@ public class KafkaProducer {
         this.sendTimeoutMs = sendTimeoutMs;
     }
 
+    /**
+     * Publishes a person to the persons topic, keyed by name, and waits for the send result.
+     * A timeout stops waiting without canceling the send. Interruption restores the interrupt flag.
+     *
+     * @throws ResponseStatusException with HTTP 503 if submission or waiting fails, including
+     *     interruption or expiration of the configured wait
+     */
     public void sendMessage(Person person) {
         try {
             CompletableFuture<SendResult<String, Person>> future =

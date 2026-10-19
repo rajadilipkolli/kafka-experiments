@@ -20,6 +20,7 @@ public class kafkaIntegrationFlowConfig {
         this.kafkaAppProperties = kafkaAppProperties;
     }
 
+    /** Returns an in-memory receive queue with the configured message capacity. */
     @Bean
     public QueueChannel fromKafka() {
         return new QueueChannel(this.kafkaAppProperties.queueCapacity());
@@ -35,6 +36,8 @@ public class kafkaIntegrationFlowConfig {
     /**
      * Routes Kafka records to the in-memory {@code fromKafka} queue with record acknowledgments.
      * Offsets are committed after enqueueing, before downstream queue processing.
+     * Each enqueue waits up to five seconds; retryable delivery failures are retried without
+     * an attempt limit at 100-millisecond intervals.
      */
     @Bean
     IntegrationFlow fromKafkaFlow(ConsumerFactory<?, ?> consumerFactory, QueueChannel fromKafka) {

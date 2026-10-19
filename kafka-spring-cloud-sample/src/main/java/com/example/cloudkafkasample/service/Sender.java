@@ -18,6 +18,13 @@ public class Sender {
         this.streamBridge = streamBridge;
     }
 
+    /**
+     * Sends a JSON message through the {@code receive-out-0} binding.
+     *
+     * @throws ResponseStatusException with HTTP 503 if the bridge rejects the send or raises
+     *     a {@link MessagingException}
+     * @throws RuntimeException if the bridge raises another runtime exception; it propagates unchanged
+     */
     public void send(MessageDTO messageDTO) {
         boolean sent;
         try {

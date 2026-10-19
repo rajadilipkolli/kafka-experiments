@@ -36,6 +36,7 @@ public class MessageRestController {
         sender.send(message);
     }
 
+    /** Returns an empty HTTP 503 response for the handled Kafka send and waiting failures. */
     @ExceptionHandler({
         ExecutionException.class,
         TimeoutException.class,

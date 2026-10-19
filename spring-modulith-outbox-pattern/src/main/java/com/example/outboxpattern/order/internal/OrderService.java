@@ -53,7 +53,14 @@ class OrderService {
         return new PagedResult<>(ordersPage, orderRecordList);
     }
 
-    /** Converts the requested page number to a nonnegative zero-based index and applies sorting. */
+    /**
+     * Converts the requested page number to a nonnegative zero-based index and applies sorting.
+     * Caps the requested page size at the configured maximum; only {@code ASC}, ignoring case,
+     * selects ascending order.
+     *
+     * @throws IllegalArgumentException if the resulting page size is not positive or the sort
+     *     property is null or empty
+     */
     private Pageable createPageable(FindOrdersQuery findOrdersQuery) {
         int pageNo = Math.max(findOrdersQuery.pageNo() - 1, 0);
         Sort sort = Sort.by(

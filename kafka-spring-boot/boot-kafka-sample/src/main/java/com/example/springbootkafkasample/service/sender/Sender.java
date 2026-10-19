@@ -27,6 +27,12 @@ public class Sender {
     private final KafkaTemplate<UUID, MessageDTO> template;
     private final long sendTimeoutMs;
 
+    /**
+     * Creates a sender with a bounded wait for each send result.
+     *
+     * @param template template used to publish messages
+     * @param sendTimeoutMs maximum wait for the send future, in milliseconds, after submission
+     */
     public Sender(
             KafkaTemplate<UUID, MessageDTO> template,
             @Value("${app.producer.send-timeout-ms:12000}") long sendTimeoutMs) {
@@ -34,6 +40,14 @@ public class Sender {
         this.sendTimeoutMs = sendTimeoutMs;
     }
 
+    /**
+     * Sends to the message's topic with a random UUID key and waits for the send result.
+     * A timeout stops waiting without canceling the send.
+     *
+     * @throws KafkaException if waiting is interrupted, times out, or fails with a non-runtime
+     *     cause; interruption also restores the interrupt flag
+     * @throws RuntimeException if submission fails or the send future fails with a runtime cause
+     */
     @AsyncPublisher(
             operation =
                     @AsyncOperation(

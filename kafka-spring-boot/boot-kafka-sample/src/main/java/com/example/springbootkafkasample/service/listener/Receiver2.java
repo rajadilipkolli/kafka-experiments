@@ -35,6 +35,11 @@ public class Receiver2 {
     // assert that a specific message was observed.
     private final Map<String, AtomicInteger> seenMessages;
 
+    /**
+     * Creates a listener with bounded tracking of distinct message text in insertion order.
+     *
+     * @param maxSeenMessages maximum retained distinct texts; nonpositive values retain none
+     */
     public Receiver2(@Value("${app.receiver2.max-seen-messages:10000}") int maxSeenMessages) {
         this.maxSeenMessages = maxSeenMessages;
         this.seenMessages = Collections.synchronizedMap(new LinkedHashMap<String, AtomicInteger>(16, 0.75f, false) {
@@ -61,6 +66,10 @@ public class Receiver2 {
         return this.seenMessages.containsKey(msg);
     }
 
+    /**
+     * Tracks receipt by message text, evicting the oldest distinct text when capacity is exceeded.
+     * Repeated text increments its count without changing its eviction order.
+     */
     @RetryableTopic(
             attempts = "2",
             backOff = @BackOff(delay = 1000, multiplier = 2.0),

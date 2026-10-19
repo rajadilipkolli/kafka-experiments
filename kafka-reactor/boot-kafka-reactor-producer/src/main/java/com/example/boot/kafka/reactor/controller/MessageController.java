@@ -27,6 +27,12 @@ public class MessageController {
         this.messageService = messageService;
     }
 
+    /**
+     * Publishes the message when subscribed and completes without a response body.
+     * Errors signaled by the service publisher become HTTP 503 response exceptions.
+     *
+     * @return completion of the send, or a {@link ResponseStatusException} error signal on failure
+     */
     @PostMapping
     public Mono<Void> sendMessage(@RequestBody @Valid MessageDTO messageDTO) {
         log.debug("sending messageDTO: {}", messageDTO);
@@ -37,6 +43,7 @@ public class MessageController {
         });
     }
 
+    /** Returns an HTTP 503 problem detail using the exception's reason. */
     @ExceptionHandler(ResponseStatusException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     ProblemDetail handleResponseStatusException(ResponseStatusException ex) {

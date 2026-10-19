@@ -35,8 +35,10 @@ public class ProducerResource {
     private static final Logger LOG = Logger.getLogger(ProducerResource.class);
 
     /**
-     * Accept a JSON payload and forward its raw string to the outgoing channel.
-     * Tests assert the exact JSON string was consumed.
+     * Forwards the raw JSON string to the outgoing channel and awaits acknowledgment.
+     * The configured send timeout bounds the response wait without canceling the original send.
+     *
+     * @return HTTP 202 after acknowledgment, or HTTP 503 on send failure, buffer overflow, or timeout
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -62,8 +64,11 @@ public class ProducerResource {
     }
 
     /**
-     * Typed endpoint that accepts a MessageDto as a POJO. It will be converted
-     * to JSON using Jackson and the resulting JSON string will be emitted.
+     * Serializes the message with Jackson and emits the JSON, awaiting acknowledgment.
+     * The configured send timeout bounds the response wait without canceling the original send.
+     *
+     * @return HTTP 202 after acknowledgment, HTTP 500 on a Jackson serialization error, or HTTP 503
+     *     on send failure, buffer overflow, or timeout
      */
     @POST
     @Path("/pojo")

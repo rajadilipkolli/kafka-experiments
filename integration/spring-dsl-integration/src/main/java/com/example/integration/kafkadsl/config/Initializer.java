@@ -62,6 +62,14 @@ class Initializer implements CommandLineRunner {
         }
     }
 
+    /**
+     * Registers an additional listener that enqueues records in the shared {@code fromKafka} channel.
+     * Uses the configured consumer group ID with an {@code x} suffix and waits up to five seconds
+     * for each enqueue. Retryable delivery failures are retried without an attempt limit at
+     * 100-millisecond intervals; offsets are acknowledged after enqueueing.
+     *
+     * @param topics topics for the additional listener
+     */
     public void addAnotherListenerForTopics(String... topics) {
         Map<String, Object> consumerProperties = kafkaProperties.buildConsumerProperties();
         // change the group id, so we don't revoke the other partitions.

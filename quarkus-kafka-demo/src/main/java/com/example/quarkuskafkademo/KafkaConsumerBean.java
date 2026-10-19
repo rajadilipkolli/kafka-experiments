@@ -15,6 +15,7 @@ public class KafkaConsumerBean {
     // Queue used by tests to assert received messages. Production can ignore it.
     private static BlockingQueue<String> RECEIVED = new LinkedBlockingQueue<>(DEFAULT_CAPACITY);
 
+    /** Retains the received message for polling, discarding the oldest message when full. */
     @Incoming("demo-in")
     public void receive(String message) {
         LOG.infof("Received: %s", message);
@@ -42,6 +43,7 @@ public class KafkaConsumerBean {
         }
     }
 
+    /** Returns the number of received messages currently retained for polling. */
     public static int getReceivedCount() {
         return RECEIVED.size();
     }

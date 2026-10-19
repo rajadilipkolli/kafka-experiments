@@ -38,8 +38,9 @@ public class ToUpperStringProcessor {
     }
 
     /**
-     * Initializes the ToUpperStringProcessor instance.
-     * This method logs the creation of a new ToUpperStringProcessor instance with its unique ID.
+     * Validates the configured retained-history capacity before processing begins.
+     *
+     * @throws IllegalArgumentException if the capacity is zero or negative
      */
     @PostConstruct
     public void init() {
@@ -50,10 +51,11 @@ public class ToUpperStringProcessor {
     }
 
     /**
-     * Processes and stores a string value in a bounded history queue.
-     * Evicts the oldest entry when full, then inserts the new value.
+     * Converts a string to uppercase using the default locale and stores it in bounded history.
+     * Evicts the oldest entry when full and increments the attempt count even if conversion fails.
      *
-     * @param value The string value to be processed.
+     * @param value the string value to process
+     * @throws NullPointerException if the value is null
      */
     public void processString(String value) {
         log.info("Instance {} processing new string {}.", this.id, value);
@@ -90,9 +92,10 @@ public class ToUpperStringProcessor {
     }
 
     /**
-     * Returns the total count of messages processed by this instance.
+     * Returns the total number of processing attempts, including entries evicted from history
+     * and calls that failed during conversion.
      *
-     * @return Total count of processed messages.
+     * @return the number of calls to {@link #processString(String)}
      */
     public long processedCount() {
         return this.processedCount.get();

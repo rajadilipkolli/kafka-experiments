@@ -19,6 +19,10 @@ public class KafkaErrorHandlingConfig {
         return (container, dest, group) -> container.setCommonErrorHandler(errorHandler);
     }
 
+    /**
+     * Creates an error handler with three retries one second apart for retryable failures,
+     * then delegates recovery to the dead-letter publisher.
+     */
     @Bean
     DefaultErrorHandler errorHandler(DeadLetterPublishingRecoverer deadLetterPublishingRecoverer) {
         return new DefaultErrorHandler(deadLetterPublishingRecoverer, new FixedBackOff(1000L, 3L));

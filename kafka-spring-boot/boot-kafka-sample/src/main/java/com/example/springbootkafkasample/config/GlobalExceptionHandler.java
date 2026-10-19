@@ -57,6 +57,7 @@ class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(400), "Invalid request.");
     }
 
+    /** Returns an HTTP 503 problem detail with the Kafka or timeout failure's message. */
     @ExceptionHandler({
         org.springframework.kafka.KafkaException.class,
         org.apache.kafka.common.KafkaException.class,

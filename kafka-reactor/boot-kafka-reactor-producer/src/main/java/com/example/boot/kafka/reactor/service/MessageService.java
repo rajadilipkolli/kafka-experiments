@@ -23,7 +23,12 @@ public class MessageService {
     private final KafkaSender<Integer, MessageDTO> sender;
     private final Duration sendTimeout;
 
-    /** Creates the message service with its reactive Kafka sender. */
+    /**
+     * Creates the message service with its reactive Kafka sender.
+     *
+     * @param sender sender used to publish messages
+     * @param sendTimeoutMs maximum duration of the subscribed send, in milliseconds
+     */
     public MessageService(
             KafkaSender<Integer, MessageDTO> sender,
             @Value("${app.producer.send-timeout-ms:12000}") long sendTimeoutMs) {
@@ -32,11 +37,13 @@ public class MessageService {
     }
 
     /**
-     * Sends a message asynchronously, assigning a random event ID only when one is absent.
+     * Publishes a message on subscription, assigning a random event ID only when one is absent.
      * The supplied event ID is preserved so callers can reuse it for repeated deliveries.
      *
      * @param messageDTO the message to publish
-     * @return a Mono that completes upon broker result or errors out on failure/timeout
+     * @return completion without a value after a successful send result, propagating sender or
+     *     result errors, or signaling {@link java.util.concurrent.TimeoutException} if the
+     *     configured duration expires
      */
     public Mono<Void> sendMessage(MessageDTO messageDTO) {
         MessageDTO toSend = messageDTO.eventId() == null

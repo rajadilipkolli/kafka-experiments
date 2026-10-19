@@ -32,6 +32,14 @@ public class Sender {
     private final ObservationRegistry observationRegistry;
     private final long sendTimeoutMs;
 
+    /**
+     * Creates a sender with tracing and a bounded wait for each send result.
+     *
+     * @param routingKafkaTemplate template used to route records to producers
+     * @param tracer tracer supplying the current span
+     * @param observationRegistry registry for send observations
+     * @param sendTimeoutMs maximum wait for the send future, in milliseconds, after submission
+     */
     public Sender(
             RoutingKafkaTemplate routingKafkaTemplate,
             Tracer tracer,
@@ -43,6 +51,14 @@ public class Sender {
         this.sendTimeoutMs = sendTimeoutMs;
     }
 
+    /**
+     * Publishes text to the first test topic with the supplied key and waits for the send result.
+     * A timeout stops waiting without canceling the send.
+     *
+     * @throws InterruptedException if waiting is interrupted; the interrupt flag is restored
+     * @throws ExecutionException if the send future fails or the configured wait expires
+     * @throws RuntimeException if tracing or send submission fails synchronously
+     */
     public void send(Integer key, String msg) throws InterruptedException, ExecutionException, RuntimeException {
         LOGGER.info("Sending key= {}, msg= {} to topic: {}", key, msg, TOPIC_TEST_1);
         try {
@@ -75,6 +91,14 @@ public class Sender {
         }
     }
 
+    /**
+     * Publishes a structured message to the second test topic using the current trace ID as its key
+     * and waits for the send result. A timeout stops waiting without canceling the send.
+     *
+     * @throws InterruptedException if waiting is interrupted; the interrupt flag is restored
+     * @throws ExecutionException if the send future fails or the configured wait expires
+     * @throws RuntimeException if tracing or send submission fails synchronously
+     */
     public void send(SimpleMessage simpleMessage) throws InterruptedException, ExecutionException, RuntimeException {
         try {
             CompletableFuture<SendResult<Object, Object>> future = Observation.createNotStarted(

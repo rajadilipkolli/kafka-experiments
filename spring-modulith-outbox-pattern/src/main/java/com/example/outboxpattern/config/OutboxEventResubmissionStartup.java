@@ -35,6 +35,13 @@ public class OutboxEventResubmissionStartup {
         this.publicationRepository = publicationRepository;
     }
 
+    /**
+     * Requests resubmission with the configured batch, in-flight, and minimum-age limits on startup
+     * and on the scheduled delay. Then selects stale published or processing publications, up to
+     * the smaller of the batch size and remaining resubmitted-event headroom. Staleness requires a
+     * publication date strictly before the minimum-age cutoff. Repository and resubmission failures
+     * propagate to the invoking event listener or scheduler.
+     */
     @EventListener(ApplicationReadyEvent.class)
     @Scheduled(
             initialDelayString = "${application.resubmission-min-age:5m}",
