@@ -24,8 +24,8 @@ public class CountRestController {
     }
 
     /**
-     * Copies the queryable page-count store into a map and closes the store iterator.
-     * Store lookup and read failures propagate to the caller.
+     * Copies the queryable page-count store into a map and closes the store iterator. Store lookup
+     * and read failures propagate to the caller.
      *
      * @return counts keyed by page for the entries available in the queried store
      */
