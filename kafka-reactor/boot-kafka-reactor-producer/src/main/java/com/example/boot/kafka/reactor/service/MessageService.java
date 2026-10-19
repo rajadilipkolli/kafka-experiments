@@ -3,13 +3,16 @@ package com.example.boot.kafka.reactor.service;
 import com.example.boot.kafka.reactor.entity.MessageDTO;
 import com.example.boot.kafka.reactor.util.AppConstants;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderRecord;
 
@@ -18,10 +21,14 @@ public class MessageService {
 
     private static final Logger log = LoggerFactory.getLogger(MessageService.class);
     private final KafkaSender<Integer, MessageDTO> sender;
+    private final Duration sendTimeout;
 
     /** Creates the message service with its reactive Kafka sender. */
-    public MessageService(KafkaSender<Integer, MessageDTO> sender) {
+    public MessageService(
+            KafkaSender<Integer, MessageDTO> sender,
+            @Value("${app.producer.send-timeout-ms:12000}") long sendTimeoutMs) {
         this.sender = sender;
+        this.sendTimeout = Duration.ofMillis(sendTimeoutMs);
     }
 
     /**
@@ -29,19 +36,22 @@ public class MessageService {
      * The supplied event ID is preserved so callers can reuse it for repeated deliveries.
      *
      * @param messageDTO the message to publish
+     * @return a Mono that completes upon broker result or errors out on failure/timeout
      */
-    public void sendMessage(MessageDTO messageDTO) {
-        if (messageDTO.eventId() == null) {
-            messageDTO = new MessageDTO(
-                    messageDTO.id(), messageDTO.text(), messageDTO.sentAt(), java.util.UUID.randomUUID());
-        }
+    public Mono<Void> sendMessage(MessageDTO messageDTO) {
+        MessageDTO toSend = messageDTO.eventId() == null
+                ? new MessageDTO(messageDTO.id(), messageDTO.text(), messageDTO.sentAt(), java.util.UUID.randomUUID())
+                : messageDTO;
         Integer key = new SecureRandom().nextInt(Integer.MAX_VALUE);
         Flux<SenderRecord<Integer, MessageDTO, Integer>> outboundFlux =
-                Flux.just(SenderRecord.create(new ProducerRecord<>(AppConstants.HELLO_TOPIC, key, messageDTO), key));
-        this.sender
+                Flux.just(SenderRecord.create(new ProducerRecord<>(AppConstants.HELLO_TOPIC, key, toSend), key));
+        return this.sender
                 .send(outboundFlux)
-                .doOnError(e -> log.error("Send failed", e))
-                .subscribe(r -> {
+                .next()
+                .flatMap(r -> {
+                    if (r.exception() != null) {
+                        return Mono.error(r.exception());
+                    }
                     RecordMetadata metadata = r.recordMetadata();
                     log.info(
                             "Message {} sent successfully, topic-partition={}-{} offset={} timestamp={}",
@@ -50,6 +60,9 @@ public class MessageService {
                             metadata.partition(),
                             metadata.offset(),
                             LocalDateTime.now());
-                });
+                    return Mono.<Void>empty();
+                })
+                .timeout(this.sendTimeout)
+                .doOnError(e -> log.error("Send failed", e));
     }
 }

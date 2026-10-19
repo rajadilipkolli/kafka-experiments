@@ -19,3 +19,14 @@ an existing deployment to this database.
 * Swagger UI: http://localhost:8085/swagger-ui.html
 * Actuator Endpoint: http://localhost:8085/actuator
 * Schema Registry : http://localhost:8081/subjects/persons-value/versions?normalize=false
+
+### Backpressure
+
+| Boundary | Mechanism | Configured Limits | Behavior on Overload |
+| :--- | :--- | :--- | :--- |
+| Kafka Broker -> Consumer | Poll-based pull model | Default Kafka poll batching | Consumer pulls only when ready; listener loop paces consumption |
+| Consumer -> PostgreSQL | Synchronous listener persistence | Single listener execution thread per partition | Slow DB operations block the listener thread, naturally delaying the next poll |
+
+#### Known Limitations
+- **Synchronous database work on listener thread**: Performing database operations synchronously on the Kafka listener thread means that database slowdowns directly increase the time between polls. If processing exceeds `max.poll.interval.ms`, the consumer will be evicted from the group.
+- Global request-rate limiting belongs to upstream infrastructure.

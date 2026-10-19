@@ -8,9 +8,13 @@ import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.tracing.Tracer;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.RoutingKafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.support.SendResult;
@@ -26,51 +30,84 @@ public class Sender {
     private final RoutingKafkaTemplate routingKafkaTemplate;
     private final Tracer tracer;
     private final ObservationRegistry observationRegistry;
+    private final long sendTimeoutMs;
 
-    public Sender(RoutingKafkaTemplate routingKafkaTemplate, Tracer tracer, ObservationRegistry observationRegistry) {
+    public Sender(
+            RoutingKafkaTemplate routingKafkaTemplate,
+            Tracer tracer,
+            ObservationRegistry observationRegistry,
+            @Value("${app.producer.send-timeout-ms:12000}") long sendTimeoutMs) {
         this.routingKafkaTemplate = routingKafkaTemplate;
         this.tracer = tracer;
         this.observationRegistry = observationRegistry;
+        this.sendTimeoutMs = sendTimeoutMs;
     }
 
     public void send(Integer key, String msg) throws InterruptedException, ExecutionException, RuntimeException {
         LOGGER.info("Sending key= {}, msg= {} to topic: {}", key, msg, TOPIC_TEST_1);
-        Observation.createNotStarted("kafka-producer", this.observationRegistry)
-                .observeChecked(() -> {
-                    LOGGER.info(
-                            "<TRACE:{}> from producer for topic :{} ",
-                            this.tracer.currentSpan().context().traceId(),
-                            TOPIC_TEST_2);
-                    CompletableFuture<SendResult<Object, Object>> future =
-                            routingKafkaTemplate.send(TOPIC_TEST_1, key, msg);
-                    return future.handle((result, throwable) -> {
-                        LOGGER.info("Result <{}>, throwable <{}>", result, throwable);
-                        return CompletableFuture.completedFuture(result);
+        try {
+            CompletableFuture<SendResult<Object, Object>> future = Observation.createNotStarted(
+                            "kafka-producer", this.observationRegistry)
+                    .observeChecked(() -> {
+                        LOGGER.info(
+                                "<TRACE:{}> from producer for topic :{} ",
+                                this.tracer.currentSpan().context().traceId(),
+                                TOPIC_TEST_2);
+                        CompletableFuture<SendResult<Object, Object>> sendFuture =
+                                routingKafkaTemplate.send(TOPIC_TEST_1, key, msg);
+                        return sendFuture.handle((result, throwable) -> {
+                            LOGGER.info("Result <{}>, throwable <{}>", result, throwable);
+                            if (throwable != null) {
+                                if (throwable instanceof RuntimeException re) {
+                                    throw re;
+                                }
+                                throw new CompletionException(throwable);
+                            }
+                            return result;
+                        });
                     });
-                })
-                .get();
+            future.get(this.sendTimeoutMs, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
+        } catch (TimeoutException e) {
+            throw new ExecutionException("Kafka send timed out", e);
+        }
     }
 
     public void send(SimpleMessage simpleMessage) throws InterruptedException, ExecutionException, RuntimeException {
-        Observation.createNotStarted("kafka-producer", this.observationRegistry)
-                .observeChecked(() -> {
-                    String traceId = this.tracer.currentSpan().context().traceId();
-                    LOGGER.info(
-                            "Sending simpleMessage= {} with key= {}, to topic: {}",
-                            simpleMessage,
-                            traceId,
-                            TOPIC_TEST_2);
-                    // Using MessageBuilder to create a message with headers and payload
-                    Message<SimpleMessage> message = MessageBuilder.withPayload(simpleMessage)
-                            .setHeader(KafkaHeaders.TOPIC, TOPIC_TEST_2)
-                            .setHeader(KafkaHeaders.KEY, traceId)
-                            .build();
-                    CompletableFuture<SendResult<Object, Object>> future = routingKafkaTemplate.send(message);
-                    return future.handle((result, throwable) -> {
-                        LOGGER.info("Result <{}>, throwable <{}>", result, throwable);
-                        return CompletableFuture.completedFuture(result);
+        try {
+            CompletableFuture<SendResult<Object, Object>> future = Observation.createNotStarted(
+                            "kafka-producer", this.observationRegistry)
+                    .observeChecked(() -> {
+                        String traceId = this.tracer.currentSpan().context().traceId();
+                        LOGGER.info(
+                                "Sending simpleMessage= {} with key= {}, to topic: {}",
+                                simpleMessage,
+                                traceId,
+                                TOPIC_TEST_2);
+                        Message<SimpleMessage> message = MessageBuilder.withPayload(simpleMessage)
+                                .setHeader(KafkaHeaders.TOPIC, TOPIC_TEST_2)
+                                .setHeader(KafkaHeaders.KEY, traceId)
+                                .build();
+                        CompletableFuture<SendResult<Object, Object>> sendFuture = routingKafkaTemplate.send(message);
+                        return sendFuture.handle((result, throwable) -> {
+                            LOGGER.info("Result <{}>, throwable <{}>", result, throwable);
+                            if (throwable != null) {
+                                if (throwable instanceof RuntimeException re) {
+                                    throw re;
+                                }
+                                throw new CompletionException(throwable);
+                            }
+                            return result;
+                        });
                     });
-                })
-                .get();
+            future.get(this.sendTimeoutMs, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
+        } catch (TimeoutException e) {
+            throw new ExecutionException("Kafka send timed out", e);
+        }
     }
 }

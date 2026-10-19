@@ -135,4 +135,37 @@ class BootKafkaReactorConsumerApplicationTests {
                         .containsExactlyInAnyOrder(eventId, distinctEventId))
                 .verifyComplete();
     }
+
+    /**
+     * Verifies that when a burst of records significantly exceeding max.poll.records (50) is published,
+     * the consumer processes all records and each record is persisted exactly once.
+     */
+    @Test
+    void shouldHandleBurstOfMessagesMoreThanMaxPollRecords() {
+        int burstCount = 120;
+        java.util.List<java.util.UUID> eventIds = new java.util.ArrayList<>();
+        java.util.List<SenderRecord<Integer, MessageDTO, Integer>> records = new java.util.ArrayList<>();
+
+        for (int i = 0; i < burstCount; i++) {
+            java.util.UUID eventId = java.util.UUID.randomUUID();
+            eventIds.add(eventId);
+            MessageDTO dto = new MessageDTO(null, "burst-" + i, LocalDateTime.now(), eventId);
+            records.add(SenderRecord.create(new ProducerRecord<>(AppConstants.HELLO_TOPIC, i, dto), i));
+        }
+
+        this.sender.send(Flux.fromIterable(records)).collectList().block();
+
+        org.awaitility.Awaitility.await()
+                .atMost(30, TimeUnit.SECONDS)
+                .pollInterval(500, TimeUnit.MILLISECONDS)
+                .untilAsserted(() -> {
+                    Long count = messageRepository.count().block();
+                    assertThat(count).isEqualTo((long) burstCount);
+                });
+
+        java.util.List<MessageDTO> persisted =
+                messageRepository.findAll().collectList().block();
+        assertThat(persisted).hasSize(burstCount);
+        assertThat(persisted).extracting(MessageDTO::eventId).containsExactlyInAnyOrderElementsOf(eventIds);
+    }
 }

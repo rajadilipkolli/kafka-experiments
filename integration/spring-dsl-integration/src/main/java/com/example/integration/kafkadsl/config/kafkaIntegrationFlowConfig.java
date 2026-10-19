@@ -2,19 +2,27 @@ package com.example.integration.kafkadsl.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.kafka.dsl.Kafka;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
+import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.util.backoff.FixedBackOff;
 
 @Configuration(proxyBeanMethods = false)
-class kafkaIntegrationFlowConfig {
+public class kafkaIntegrationFlowConfig {
 
     private final KafkaAppProperties kafkaAppProperties;
 
     kafkaIntegrationFlowConfig(KafkaAppProperties kafkaAppProperties) {
         this.kafkaAppProperties = kafkaAppProperties;
+    }
+
+    @Bean
+    public QueueChannel fromKafka() {
+        return new QueueChannel(this.kafkaAppProperties.queueCapacity());
     }
 
     /** Builds the outbound Kafka flow using the configured message key. */
@@ -29,11 +37,16 @@ class kafkaIntegrationFlowConfig {
      * Offsets are committed after enqueueing, before downstream queue processing.
      */
     @Bean
-    IntegrationFlow fromKafkaFlow(ConsumerFactory<?, ?> consumerFactory) {
+    IntegrationFlow fromKafkaFlow(ConsumerFactory<?, ?> consumerFactory, QueueChannel fromKafka) {
         // The offset commits on hand-off to the in-memory `fromKafka` queue channel.
         return IntegrationFlow.from(Kafka.messageDrivenChannelAdapter(consumerFactory, this.kafkaAppProperties.topic())
-                        .configureListenerContainer(c -> c.ackMode(AckMode.RECORD)))
-                .channel(c -> c.queue("fromKafka"))
+                        .sendTimeout(5000L)
+                        .configureListenerContainer(c -> {
+                            c.ackMode(AckMode.RECORD);
+                            c.errorHandler(
+                                    new DefaultErrorHandler(new FixedBackOff(100L, FixedBackOff.UNLIMITED_ATTEMPTS)));
+                        }))
+                .channel(fromKafka)
                 .get();
     }
 }

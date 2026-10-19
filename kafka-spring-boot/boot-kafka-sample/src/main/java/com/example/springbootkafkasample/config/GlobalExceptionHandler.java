@@ -57,5 +57,17 @@ class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(400), "Invalid request.");
     }
 
+    @ExceptionHandler({
+        org.springframework.kafka.KafkaException.class,
+        org.apache.kafka.common.KafkaException.class,
+        java.util.concurrent.TimeoutException.class
+    })
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    ProblemDetail handleKafkaException(Exception ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(503), ex.getMessage());
+        problemDetail.setTitle("Service Unavailable");
+        return problemDetail;
+    }
+
     record ApiValidationError(String object, String field, Object rejectedValue, String message) {}
 }

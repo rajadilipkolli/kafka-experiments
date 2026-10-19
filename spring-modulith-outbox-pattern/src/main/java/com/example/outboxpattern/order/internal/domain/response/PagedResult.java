@@ -12,7 +12,8 @@ public record PagedResult<T>(
         @JsonProperty("isFirst") boolean isFirst,
         @JsonProperty("isLast") boolean isLast,
         @JsonProperty("hasNext") boolean hasNext,
-        @JsonProperty("hasPrevious") boolean hasPrevious) {
+        @JsonProperty("hasPrevious") boolean hasPrevious,
+        int pageSize) {
     public <R> PagedResult(Page<R> page, List<T> data) {
         this(
                 data,
@@ -22,6 +23,7 @@ public record PagedResult<T>(
                 page.isFirst(),
                 page.isLast(),
                 page.hasNext(),
-                page.hasPrevious());
+                page.hasPrevious(),
+                page.getSize());
     }
 }

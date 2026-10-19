@@ -33,7 +33,9 @@ public class CountRestController {
         log.info(
                 "interactiveQueryService.getCurrentHostInfo() => {}",
                 interactiveQueryService.getCurrentHostInfo());
-        queryableStoreType.all().forEachRemaining(kv -> counts.put(kv.key, kv.value));
+        try (var iterator = queryableStoreType.all()) {
+            iterator.forEachRemaining(kv -> counts.put(kv.key, kv.value));
+        }
 
         return counts;
     }

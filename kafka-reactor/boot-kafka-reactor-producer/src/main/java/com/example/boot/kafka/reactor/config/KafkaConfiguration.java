@@ -28,11 +28,13 @@ class KafkaConfiguration {
     }
 
     /** Creates a reactive Kafka sender from the configured producer properties. */
-    @Bean
+    @Bean(destroyMethod = "close")
     KafkaSender<Integer, MessageDTO> reactiveKafkaSender(KafkaProperties properties) {
         log.info("Creating Sender");
         Map<String, Object> props = properties.buildProducerProperties();
-        SenderOptions<Integer, MessageDTO> senderOptions = SenderOptions.create(props);
+        SenderOptions<Integer, MessageDTO> senderOptions = SenderOptions.<Integer, MessageDTO>create(props)
+                .maxInFlight(1024)
+                .stopOnError(false);
         return KafkaSender.create(senderOptions);
     }
 }

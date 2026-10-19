@@ -4,11 +4,14 @@ import static com.example.springbootkafkasample.config.Initializer.TOPIC_TEST_2;
 
 import com.example.springbootkafkasample.dto.MessageDTO;
 import jakarta.validation.Valid;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.BackOff;
 import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -27,9 +30,20 @@ public class Receiver2 {
 
     private final CountDownLatch deadLetterLatch = new CountDownLatch(1);
 
-    // Keep a durable record of seen messages so tests can reliably
+    private final int maxSeenMessages;
+    // Keep a durable record of seen messages with bounded capacity so tests can reliably
     // assert that a specific message was observed.
-    private final ConcurrentHashMap<String, AtomicInteger> seenMessages = new ConcurrentHashMap<>();
+    private final Map<String, AtomicInteger> seenMessages;
+
+    public Receiver2(@Value("${app.receiver2.max-seen-messages:10000}") int maxSeenMessages) {
+        this.maxSeenMessages = maxSeenMessages;
+        this.seenMessages = Collections.synchronizedMap(new LinkedHashMap<String, AtomicInteger>(16, 0.75f, false) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<String, AtomicInteger> eldest) {
+                return size() > Receiver2.this.maxSeenMessages;
+            }
+        });
+    }
 
     public CountDownLatch getDeadLetterLatch() {
         return deadLetterLatch;
@@ -56,9 +70,11 @@ public class Receiver2 {
     public void listenTopic2(@Payload @Valid MessageDTO messageDTO, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
         logger.info("Received message : {} in topic :{}", messageDTO.toString(), topic);
         // record the processed message in the durable seenMessages map
-        this.seenMessages
-                .computeIfAbsent(messageDTO.msg(), k -> new AtomicInteger())
-                .incrementAndGet();
+        synchronized (this.seenMessages) {
+            this.seenMessages
+                    .computeIfAbsent(messageDTO.msg(), k -> new AtomicInteger())
+                    .incrementAndGet();
+        }
     }
 
     @DltHandler

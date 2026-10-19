@@ -8,6 +8,7 @@ import org.springframework.kafka.core.KafkaOperations;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.util.backoff.FixedBackOff;
 
 @Configuration(proxyBeanMethods = false)
 public class KafkaErrorHandlingConfig {
@@ -20,7 +21,7 @@ public class KafkaErrorHandlingConfig {
 
     @Bean
     DefaultErrorHandler errorHandler(DeadLetterPublishingRecoverer deadLetterPublishingRecoverer) {
-        return new DefaultErrorHandler(deadLetterPublishingRecoverer);
+        return new DefaultErrorHandler(deadLetterPublishingRecoverer, new FixedBackOff(1000L, 3L));
     }
 
     @Bean
