@@ -37,17 +37,15 @@ public class ToUpperStringProcessor {
         this.id = id;
     }
 
-    public ToUpperStringProcessor(String id, int historyCapacity) {
-        this.id = id;
-        this.historyCapacity = historyCapacity;
-    }
-
     /**
      * Initializes the ToUpperStringProcessor instance.
      * This method logs the creation of a new ToUpperStringProcessor instance with its unique ID.
      */
     @PostConstruct
     public void init() {
+        if (this.historyCapacity <= 0) {
+            throw new IllegalArgumentException("app.processor.history-capacity must be positive");
+        }
         log.info("Initializing new To Upper String Processor with id: {}, capacity: {}", this.id, this.historyCapacity);
     }
 

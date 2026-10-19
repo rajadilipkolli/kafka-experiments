@@ -8,8 +8,11 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
@@ -26,6 +29,9 @@ public class ProducerResource {
     @Inject
     ObjectMapper mapper;
 
+    @ConfigProperty(name = "app.producer.send-timeout", defaultValue = "10s")
+    Duration sendTimeout;
+
     private static final Logger LOG = Logger.getLogger(ProducerResource.class);
 
     /**
@@ -37,6 +43,9 @@ public class ProducerResource {
     public CompletionStage<Response> produce(String jsonPayload) {
         try {
             return emitter.send(jsonPayload)
+                    .toCompletableFuture()
+                    .copy()
+                    .orTimeout(sendTimeout.toMillis(), TimeUnit.MILLISECONDS)
                     .thenApply(v -> Response.accepted().build())
                     .exceptionally(t -> {
                         LOG.error("Failed to produce message", t);
@@ -71,6 +80,9 @@ public class ProducerResource {
 
         try {
             return emitter.send(json)
+                    .toCompletableFuture()
+                    .copy()
+                    .orTimeout(sendTimeout.toMillis(), TimeUnit.MILLISECONDS)
                     .thenApply(v -> Response.accepted().build())
                     .exceptionally(t -> {
                         LOG.error("Failed to produce message", t);

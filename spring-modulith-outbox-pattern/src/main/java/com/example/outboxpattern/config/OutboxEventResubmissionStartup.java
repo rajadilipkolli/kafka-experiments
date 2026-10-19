@@ -1,16 +1,21 @@
 package com.example.outboxpattern.config;
 
+import java.time.Instant;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.modulith.events.EventPublication.Status;
 import org.springframework.modulith.events.IncompleteEventPublications;
 import org.springframework.modulith.events.ResubmissionOptions;
+import org.springframework.modulith.events.core.EventPublicationRepository;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * Startup component that resubmits incomplete outbox publications with bounded batch,
- * in-flight, and age limits once the application is ready.
+ * Resubmits incomplete outbox publications on startup and periodically with bounded
+ * batch, in-flight, and age limits.
  */
 @Component
 public class OutboxEventResubmissionStartup {
@@ -19,15 +24,22 @@ public class OutboxEventResubmissionStartup {
 
     private final IncompleteEventPublications incompleteEventPublications;
     private final ApplicationProperties applicationProperties;
+    private final EventPublicationRepository publicationRepository;
 
     public OutboxEventResubmissionStartup(
-            IncompleteEventPublications incompleteEventPublications, ApplicationProperties applicationProperties) {
+            IncompleteEventPublications incompleteEventPublications,
+            ApplicationProperties applicationProperties,
+            EventPublicationRepository publicationRepository) {
         this.incompleteEventPublications = incompleteEventPublications;
         this.applicationProperties = applicationProperties;
+        this.publicationRepository = publicationRepository;
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    public void onApplicationReady() {
+    @Scheduled(
+            initialDelayString = "${application.resubmission-min-age:5m}",
+            fixedDelayString = "${application.resubmission-min-age:5m}")
+    public synchronized void onApplicationReady() {
         log.info(
                 "Resubmitting incomplete event publications with batchSize={}, maxInFlight={}, minAge={}",
                 applicationProperties.resubmissionBatchSize(),
@@ -40,5 +52,18 @@ public class OutboxEventResubmissionStartup {
                 .withMinAge(applicationProperties.resubmissionMinAge());
 
         incompleteEventPublications.resubmitIncompletePublications(options);
+
+        // The options overload only selects FAILED publications. Recover stale publications
+        // left PUBLISHED or PROCESSING as well, within the remaining in-flight headroom.
+        long headroom = options.getMaxInFlight() - publicationRepository.countByStatus(Status.RESUBMITTED);
+        if (headroom <= 0) {
+            return;
+        }
+        AtomicInteger remaining = new AtomicInteger((int) Math.min(options.getBatchSize(), headroom));
+        Instant cutoff = Instant.now().minus(options.getMinAge());
+        incompleteEventPublications.resubmitIncompletePublications(publication ->
+                (publication.getStatus() == Status.PUBLISHED || publication.getStatus() == Status.PROCESSING)
+                        && publication.getPublicationDate().isBefore(cutoff)
+                        && remaining.getAndDecrement() > 0);
     }
 }

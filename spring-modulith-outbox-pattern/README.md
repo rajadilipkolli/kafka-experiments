@@ -41,9 +41,9 @@ The event published is sent to Internal Application Listener(Publish) and Extena
 | :--- | :--- | :--- | :--- |
 | HTTP Request -> Order API | Request validation & page size clamping | `application.max-item-count=100`, `application.max-page-size=50` | Capped page size (`Math.min(requested, 50)`); requests with >100 items rejected with 400 Bad Request |
 | Transaction -> Outbox Log | Durable relational table storage | PostgreSQL `event_publication` table | Outbox acts as persistent durable backlog buffer; decouples HTTP transactions from Kafka broker availability |
-| Application Restart -> Event Replay | Bounded startup resubmission | `republish-outstanding-events-on-restart=false`, `resubmission-batch-size=100`, `resubmission-max-in-flight=50`, `resubmission-min-age=5m`, `task concurrency-limit=10` | Disables unbounded mass replay on boot; resubmits stalled incomplete events with bounded batches and bounded concurrency |
+| Application Startup / Schedule -> Event Replay | Bounded recurring resubmission | `republish-outstanding-events-on-restart=false`, `resubmission-batch-size=100`, `resubmission-max-in-flight=50`, `resubmission-min-age=5m`, `task concurrency-limit=10` | Disables unbounded mass replay on boot; resubmits stalled incomplete events with bounded batches and bounded concurrency |
 
 #### Known Limitations
-- **Durable backlog & archive growth**: Completed events are retained in `event_publication` with completion mode `archive`. Without a purge process, database table size grows indefinitely over time.
+- **Durable backlog & archive growth**: Completed publications are moved to `event_publication_archive` with completion mode `archive`. Without a purge process, database table size grows indefinitely over time.
 - **Collection-based stats and health scans**: Administrative endpoints (`findCompletedEvents()`) perform unpaginated list scans of the table, which degrades under heavy event history.
 - Global request-rate limiting belongs to the HTTP reverse proxy / gateway layer.
