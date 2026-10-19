@@ -18,7 +18,9 @@ import org.springframework.modulith.test.ApplicationModuleTest;
 import org.springframework.modulith.test.Scenario;
 import org.springframework.test.context.TestPropertySource;
 
-@ApplicationModuleTest(classes = {SQLContainerConfig.class})
+@ApplicationModuleTest(
+        classes = {SQLContainerConfig.class},
+        extraIncludes = "config")
 @Import(TestDataHelper.class)
 @TestPropertySource(properties = "spring.modulith.events.externalization.enabled=false")
 class OrderModuleIntTests {
