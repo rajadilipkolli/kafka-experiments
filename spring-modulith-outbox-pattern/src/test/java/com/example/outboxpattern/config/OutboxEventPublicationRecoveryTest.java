@@ -55,7 +55,7 @@ class OutboxEventPublicationRecoveryTest {
         UUID completed = publication("RESUBMITTED", OLD, OLD, OLD);
         UUID published = publication("PUBLISHED", OLD, null, null);
 
-        assertThat(recovery.recoverStaleResubmissions(CUTOFF)).isEqualTo(2);
+        assertThat(recovery.recoverStaleResubmissions(CUTOFF, 2)).isEqualTo(2);
 
         assertThat(status(stale)).isEqualTo("FAILED");
         assertThat(status(legacy)).isEqualTo("FAILED");
@@ -64,6 +64,45 @@ class OutboxEventPublicationRecoveryTest {
         assertThat(status(fresh)).isEqualTo("RESUBMITTED");
         assertThat(status(completed)).isEqualTo("RESUBMITTED");
         assertThat(status(published)).isEqualTo("PUBLISHED");
+    }
+
+    @Test
+    void recoversResubmissionsInOldestFirstBatches() {
+        UUID first = publication("RESUBMITTED", OLD, OLD.minusSeconds(1), null);
+        UUID second = publication("RESUBMITTED", OLD, null, null);
+        UUID third = publication("RESUBMITTED", OLD.minusSeconds(10), OLD.plusSeconds(1), null);
+
+        assertThat(recovery.recoverStaleResubmissions(CUTOFF, 2)).isEqualTo(2);
+        assertThat(status(first)).isEqualTo("FAILED");
+        assertThat(status(second)).isEqualTo("FAILED");
+        assertThat(status(third)).isEqualTo("RESUBMITTED");
+
+        assertThat(recovery.recoverStaleResubmissions(CUTOFF, 2)).isEqualTo(1);
+        assertThat(status(third)).isEqualTo("FAILED");
+        assertThat(recovery.recoverStaleResubmissions(CUTOFF, 2)).isZero();
+    }
+
+    @Test
+    void skipsResubmissionsLockedByAnotherWorker() throws Exception {
+        UUID locked = publication("RESUBMITTED", OLD, OLD.minusSeconds(1), null);
+        UUID available = publication("RESUBMITTED", OLD, OLD, null);
+
+        try (var connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+            try (var statement =
+                    connection.prepareStatement("SELECT id FROM event_publication WHERE id = ? FOR UPDATE")) {
+                statement.setObject(1, locked);
+                statement.executeQuery().close();
+
+                assertThat(recovery.recoverStaleResubmissions(CUTOFF, 1)).isEqualTo(1);
+                assertThat(status(locked)).isEqualTo("RESUBMITTED");
+                assertThat(status(available)).isEqualTo("FAILED");
+            } finally {
+                connection.rollback();
+            }
+        }
+        assertThat(recovery.recoverStaleResubmissions(CUTOFF, 1)).isEqualTo(1);
+        assertThat(status(locked)).isEqualTo("FAILED");
     }
 
     @Test

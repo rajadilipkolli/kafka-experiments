@@ -15,17 +15,24 @@ class OutboxEventPublicationRecovery {
         this.jdbcClient = jdbcClient;
     }
 
-    int recoverStaleResubmissions(Instant cutoff) {
+    int recoverStaleResubmissions(Instant cutoff, int limit) {
         return jdbcClient
                 .sql(
                         """
                         UPDATE event_publication
                         SET status = 'FAILED'
-                        WHERE status = 'RESUBMITTED'
-                          AND completion_date IS NULL
-                          AND COALESCE(last_resubmission_date, publication_date) < :cutoff
+                        WHERE id IN (
+                            SELECT id FROM event_publication
+                            WHERE status = 'RESUBMITTED'
+                              AND completion_date IS NULL
+                              AND COALESCE(last_resubmission_date, publication_date) < :cutoff
+                            ORDER BY COALESCE(last_resubmission_date, publication_date), id
+                            LIMIT :limit
+                            FOR UPDATE SKIP LOCKED
+                        )
                         """)
                 .param("cutoff", Timestamp.from(cutoff))
+                .param("limit", limit)
                 .update();
     }
 

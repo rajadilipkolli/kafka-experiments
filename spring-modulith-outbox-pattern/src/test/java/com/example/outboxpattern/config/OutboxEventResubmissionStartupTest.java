@@ -3,6 +3,7 @@ package com.example.outboxpattern.config;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -72,7 +73,7 @@ class OutboxEventResubmissionStartupTest {
         ArgumentCaptor<Instant> cutoff = ArgumentCaptor.forClass(Instant.class);
         ArgumentCaptor<ResubmissionOptions> options = ArgumentCaptor.forClass(ResubmissionOptions.class);
         var order = inOrder(recovery, publications, repository);
-        order.verify(recovery).recoverStaleResubmissions(cutoff.capture());
+        order.verify(recovery).recoverStaleResubmissions(cutoff.capture(), eq(75));
         order.verify(publications).resubmitIncompletePublications(any(ResubmissionOptions.class));
         order.verify(repository).countByStatus(Status.RESUBMITTED);
         order.verify(recovery).recoverStalePublications(cutoff.getValue(), 2);
@@ -92,7 +93,7 @@ class OutboxEventResubmissionStartupTest {
         when(repository.countByStatus(Status.RESUBMITTED)).thenReturn(25);
         new OutboxEventResubmissionStartup(publications, properties(), repository, recovery).onApplicationReady();
 
-        verify(recovery).recoverStaleResubmissions(any(Instant.class));
+        verify(recovery).recoverStaleResubmissions(any(Instant.class), eq(75));
         verify(publications).resubmitIncompletePublications(any(ResubmissionOptions.class));
         verify(recovery, never()).recoverStalePublications(any(Instant.class), anyInt());
     }
@@ -104,7 +105,7 @@ class OutboxEventResubmissionStartupTest {
         OutboxEventPublicationRecovery recovery = mock(OutboxEventPublicationRecovery.class);
         AtomicInteger inFlight = new AtomicInteger(25);
         when(repository.countByStatus(Status.RESUBMITTED)).thenAnswer(invocation -> inFlight.get());
-        when(recovery.recoverStaleResubmissions(any(Instant.class))).thenAnswer(invocation -> {
+        when(recovery.recoverStaleResubmissions(any(Instant.class), eq(75))).thenAnswer(invocation -> {
             inFlight.set(24);
             return 1;
         });
@@ -132,7 +133,8 @@ class OutboxEventResubmissionStartupTest {
         new OutboxEventResubmissionStartup(publications, properties, mock(EventPublicationRepository.class), recovery)
                 .onApplicationReady();
 
-        verify(recovery).recoverStalePublications(any(Instant.class), org.mockito.ArgumentMatchers.eq(5));
+        verify(recovery).recoverStaleResubmissions(any(Instant.class), eq(5));
+        verify(recovery).recoverStalePublications(any(Instant.class), eq(5));
         verify(publications).resubmitIncompletePublications(any(ResubmissionOptions.class));
     }
 

@@ -39,8 +39,9 @@ public class OutboxEventResubmissionStartup {
 
     /**
      * Requests resubmission with the configured batch, in-flight, and minimum-age limits on startup
-     * and on the scheduled delay. First recovers resubmitted publications whose last attempt (or
-     * original publication date if absent) is strictly before the minimum-age cutoff. Then recovers
+     * and on the scheduled delay. First recovers at most one batch of resubmitted publications whose
+     * last attempt (or original publication date if absent) is strictly before the minimum-age cutoff.
+     * Then recovers
      * published or processing publications with a publication date strictly before the cutoff,
      * selecting at most the smaller of the batch size and remaining headroom in the database.
      * Repository and resubmission failures
@@ -63,7 +64,7 @@ public class OutboxEventResubmissionStartup {
                 .withMinAge(applicationProperties.resubmissionMinAge());
 
         Instant cutoff = Instant.now().minus(options.getMinAge());
-        publicationRecovery.recoverStaleResubmissions(cutoff);
+        publicationRecovery.recoverStaleResubmissions(cutoff, options.getBatchSize());
         incompleteEventPublications.resubmitIncompletePublications(options);
 
         // The options overload only selects FAILED publications. Recover stale publications
