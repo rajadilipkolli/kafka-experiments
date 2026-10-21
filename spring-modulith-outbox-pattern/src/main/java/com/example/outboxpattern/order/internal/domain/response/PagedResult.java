@@ -12,7 +12,15 @@ public record PagedResult<T>(
         @JsonProperty("isFirst") boolean isFirst,
         @JsonProperty("isLast") boolean isLast,
         @JsonProperty("hasNext") boolean hasNext,
-        @JsonProperty("hasPrevious") boolean hasPrevious) {
+        @JsonProperty("hasPrevious") boolean hasPrevious,
+        int pageSize) {
+    /**
+     * Combines the supplied data with page metadata, converting the page number to one-based form.
+     * The reported page size preserves the page capacity even when fewer elements are present.
+     *
+     * @param page source of pagination metadata
+     * @param data response data to retain without copying
+     */
     public <R> PagedResult(Page<R> page, List<T> data) {
         this(
                 data,
@@ -22,6 +30,7 @@ public record PagedResult<T>(
                 page.isFirst(),
                 page.isLast(),
                 page.hasNext(),
-                page.hasPrevious());
+                page.hasPrevious(),
+                page.getSize());
     }
 }

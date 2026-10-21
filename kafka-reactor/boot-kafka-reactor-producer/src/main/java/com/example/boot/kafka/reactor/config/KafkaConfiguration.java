@@ -27,12 +27,17 @@ class KafkaConfiguration {
         return TopicBuilder.name(AppConstants.HELLO_TOPIC).partitions(3).build();
     }
 
-    /** Creates a reactive Kafka sender from the configured producer properties. */
-    @Bean
+    /**
+     * Creates a reactive Kafka sender with at most 1,024 in-flight records per send subscription.
+     * Individual send failures do not stop the remaining sends; the sender closes on bean destruction.
+     */
+    @Bean(destroyMethod = "close")
     KafkaSender<Integer, MessageDTO> reactiveKafkaSender(KafkaProperties properties) {
         log.info("Creating Sender");
         Map<String, Object> props = properties.buildProducerProperties();
-        SenderOptions<Integer, MessageDTO> senderOptions = SenderOptions.create(props);
+        SenderOptions<Integer, MessageDTO> senderOptions = SenderOptions.<Integer, MessageDTO>create(props)
+                .maxInFlight(1024)
+                .stopOnError(false);
         return KafkaSender.create(senderOptions);
     }
 }

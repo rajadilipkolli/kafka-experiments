@@ -20,11 +20,16 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 @SpringBootTest(
         classes = {ProducerConfig.class, ContainerConfig.class},
-        properties = {"spring.kafka.producer.acks=all", "spring.kafka.producer.properties.enable.idempotence=true"})
+        properties = {
+            "spring.kafka.producer.acks=all",
+            "spring.kafka.producer.properties.enable.idempotence=true",
+            "app.processor.history-capacity=50"
+        })
 class AppListenerTest {
 
     private static final int NUM_MESSAGES = 1000;
     private static final int PARTITION_KEY_DIVISOR = 10;
+    private static final int TEST_CAPACITY = 50;
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -48,14 +53,14 @@ class AppListenerTest {
 
     /**
      * Asserts specific behaviors of the StringProcessor instances.
-     * Verifies that there are exactly three toUpperStringProcessor instances, each with a non-empty queue,
-     * and that the data in the queues of these three processors are distinct.
+     * Verifies that there are exactly three toUpperStringProcessor instances, each with a non-empty queue
+     * bounded by the configured capacity, and that the data in the queues of these three processors are distinct.
      */
     private void assertStringProcessorsBehaviors() {
         await().untilAsserted(() -> assertThat(toUpperStringProcessors).hasSize(3));
-        assertThat(toUpperStringProcessors.get(0).queueSize()).isPositive();
-        assertThat(toUpperStringProcessors.get(1).queueSize()).isPositive();
-        assertThat(toUpperStringProcessors.get(2).queueSize()).isPositive();
+        for (ToUpperStringProcessor processor : toUpperStringProcessors) {
+            assertThat(processor.queueSize()).isPositive().isLessThanOrEqualTo(TEST_CAPACITY);
+        }
         Set<String> distinctQueuedData = toUpperStringProcessors.get(0).distinctQueuedData();
         distinctQueuedData.addAll(toUpperStringProcessors.get(2).distinctQueuedData());
         assertThat(toUpperStringProcessors.get(1).distinctQueuedData()).doesNotContainAnyElementsOf(distinctQueuedData);
@@ -75,11 +80,17 @@ class AppListenerTest {
     }
 
     /**
-     * Asserts that all sent messages are processed within a specific time frame.
+     * Asserts that all sent messages are produced successfully and eventually consumed across all processors.
      *
      * @param futures an array of CompletableFuture objects representing the result of each send operation.
      */
     private void assertAllMessagesProcessed(CompletableFuture<?>[] futures) {
         assertThat(CompletableFuture.allOf(futures)).succeedsWithin(Duration.ofSeconds(10));
+        await().atMost(Duration.ofSeconds(30)).untilAsserted(() -> {
+            long totalProcessed = toUpperStringProcessors.stream()
+                    .mapToLong(ToUpperStringProcessor::processedCount)
+                    .sum();
+            assertThat(totalProcessed).isEqualTo(NUM_MESSAGES);
+        });
     }
 }

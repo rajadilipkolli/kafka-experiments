@@ -38,7 +38,7 @@ This repository contains practical examples organized by integration patterns an
 |--------------------------|-------------------------------------------------------------------|----------------------------------------|-------------------------------------------------------------------------------------------|
 | **📝 Schema Management** | [Kafka Avro](./kafka-avro/README.md)                              | Schema evolution with Apache Avro      | • Backward/Forward compatibility<br>• Schema Registry integration<br>• Version management |
 | **🔧 Configuration**     | [DSL Integration](./integration/spring-dsl-integration/ReadMe.md) | Domain-specific language configuration | • Fluent API configuration<br>• Type-safe setup                                           |
-| **⚛️ Reactive**          | [Kafka Reactor](./kafka-reactor/README.md)                        | Non-blocking reactive streams          | • Project Reactor integration<br>• Backpressure handling<br>• Async processing            |
+| **⚛️ Reactive**          | [Kafka Reactor](./kafka-reactor/README.md)                        | Non-blocking reactive streams          | • Project Reactor integration<br>• Bounded in-flight & poll batching<br>• Async processing |
 | **☕ Core Java**          | [Java Samples](./kafka-sample/README.md)                          | Plain Java and Spring examples         | • Pure Java clients<br>• Spring Framework integration                                     |
 | **🌱 Spring Boot**       | [Spring Boot Examples](./kafka-spring-boot/README.md)             | Production-ready Spring Boot apps      | • Auto-configuration<br>• Error handling<br>• Listener management                         |
 | **☁️ Cloud Native**      | [Spring Cloud](./kafka-spring-cloud-sample/README.md)             | Cloud-native microservices             | • Spring Cloud Stream<br>• Binder abstraction<br>• Batch processing                       |
@@ -111,8 +111,33 @@ graph TB
 - **Schema Evolution**: Backward and forward compatible message formats
 - **Error Handling**: Dead letter queues and retry mechanisms
 - **Batch Processing**: High-throughput batch message consumption
-- **Reactive Streams**: Non-blocking, backpressure-aware processing
+- **Reactive Streams**: Non-blocking processing with bounded poll records and timed producer waiting
 - **Transactional Outbox**: Ensuring data consistency across services
+
+## 🛑 Backpressure
+
+Backpressure across this repository bounds in-memory resource consumption and surfaces downstream broker slowdowns or queue saturation directly to callers:
+- **HTTP Latency**: Synchronous producer endpoints now wait for broker acknowledgment up to a bounded timeout (`app.producer.send-timeout-ms`); HTTP latency now directly includes the broker roundtrip. Buffer saturation or broker wait timeouts return HTTP 503 Service Unavailable.
+- **Rate Limiting**: Global request-rate limiting belongs to the HTTP reverse proxy, API gateway, or infrastructure layer.
+- **Consumer Pacing**: Consumer paths replace unbounded collections with bounded history structures (evicting oldest entries on capacity overflow), enforce explicit `max.poll.records` and `max.poll.interval.ms`, and close state-store iterators.
+
+### Module-to-Mechanism Matrix
+
+| Module | Primary Boundary | Backpressure / Flow Control Mechanism | Configured Limits | Overload / Failure Behavior |
+| :--- | :--- | :--- | :--- | :--- |
+| [Camel Integration](./integration/camel-boot-integration/README.md#backpressure) | Timer -> Kafka | Periodic timer generation pacing | Period = 1000ms | Paces emission rate to 1 msg/sec |
+| [Spring DSL Integration](./integration/spring-dsl-integration/ReadMe.md#backpressure) | Kafka -> QueueChannel | Bounded `QueueChannel` with adapter `sendTimeout` | Capacity = 50, `sendTimeout=5000ms`, `max.poll.records=10` | Delivery retry via `DefaultErrorHandler` |
+| [Kafka Avro](./kafka-avro/README.md#backpressure) | HTTP -> Kafka / Listener -> DB | Timed `send()` wait & synchronous DB persistence | `sendTimeout=12000ms`, `max.block.ms=5000` | 503 Service Unavailable on timeout/error |
+| [Kafka Reactor](./kafka-reactor/README.md#backpressure) | WebFlux -> Kafka / Kafka -> DB | Reactive `Mono` wait & bounded pull demand | `sendTimeout=12000ms`, `maxInFlight=1024`, `max-poll-records=50` | 503 ProblemDetail on timeout/error |
+| [Kafka Sample (Java)](./kafka-sample/java/README.md#backpressure) | Producer / Consumer | Synchronous `.get()` & single poll loop | Poll timeout = 100ms | Pulls on completion; tracks cumulative counts |
+| [Kafka Sample (Spring)](./kafka-sample/spring/README.md#backpressure) | Producer -> Broker | Explicit buffer settings & fixed sender pacing | Buffer memory, periodic delay | Throttles send rate to match broker ingestion |
+| [Concurrent Consumer](./kafka-spring-boot/boot-concurrent-kafka-consumer/ReadMe.md#backpressure) | Consumer -> Processor | Bounded history with drop-oldest eviction | Capacity = 100, `max.poll.records=50`, concurrency = 3 | Drops oldest on capacity full; counts with `AtomicLong` |
+| [Boot Kafka Sample](./kafka-spring-boot/boot-kafka-sample/README.md#backpressure) | HTTP -> Producer / Consumer Map | Timed wait with 503 & bounded `LinkedHashMap` | `sendTimeout=12000ms`, `max-seen-messages=10000` | 503 ProblemDetail on send failure; evicts oldest |
+| [Multiple Producers/Consumers](./kafka-spring-boot/boot-multiple-producers-consumers/README.md#backpressure) | HTTP -> Producer | Timed wait with failure propagation | `sendTimeout=12000ms`, `max.block.ms=5000` | Propagates error, restores interrupt, maps to 503 |
+| [Cloud Stream Sample](./kafka-spring-cloud-sample/README.md#backpressure) | HTTP -> Producer / Consumer | `StreamBridge` sync send & bounded poll batching | `producer.sync=true`, `max.poll.records=500`, `FixedBackOff(1s, 3)` | 503 on send failure; bounded batching |
+| [Kafka Streams](./kafka-streams/README.md#backpressure) | Supplier / Processor / Query | Supplier poller delay, RocksDB cache, closed iterators | `fixed-delay=1000ms`, threads = 2, cache = 10MB | Paced generation, deterministic iterator disposal |
+| [Quarkus Kafka Demo](./quarkus-kafka-demo/README.md#backpressure) | HTTP -> Emitter / Consumer Deque | `@OnOverflow(BUFFER)` & bounded `RECEIVED` deque | Buffer = 1000, `max-inflight=1024`, `max.poll.records=50` | 202 on completion; 503 on overflow/nack/error |
+| [Outbox Pattern](./spring-modulith-outbox-pattern/README.md#backpressure) | HTTP API / Startup Replay | Page clamping, item count `@Size`, bounded resubmission | Page size = 50, item limit = 100, batch = 100, concurrency = 10 | Rejects oversized items with 400; clamps page size |
 
 ## 🛠️ Development Features
 

@@ -166,3 +166,16 @@ For successful schema evolution in Avro:
 4. **Field Names**: Cannot be changed once defined
 
 This demonstration shows how Kafka with Avro and Schema Registry provides a robust foundation for evolving data contracts in distributed systems.
+
+### Backpressure
+
+| Boundary                 | Mechanism                                     | Configured Limits                                                                      | Behavior on Overload                                                                   |
+|:-------------------------|:----------------------------------------------|:---------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------|
+| HTTP Client -> Producer  | Synchronous wait on `CompletableFuture` send  | `app.producer.send-timeout-ms=12000`, `max.block.ms=5000`, `delivery.timeout.ms=10000` | Buffer full or send timeout throws `ResponseStatusException` (503 Service Unavailable) |
+| Producer -> Kafka Broker | Bounded Kafka client memory buffer            | `buffer.memory=33554432`, `max.block.ms=5000`                                          | Blocks calling HTTP thread up to 5s before shedding load with 503                      |
+| Consumer -> Database     | Synchronous DB persistence on listener thread | Default thread concurrency, JPA transaction                                            | Slow DB operations block listener thread, pacing poll frequency                        |
+
+#### Known Limitations
+- **Synchronous listener thread execution**: The Avro consumer performs synchronous database operations on the listener thread, meaning database latency directly impacts Kafka consumer poll heartbeat intervals.
+- HTTP latency now includes the broker acknowledgment duration.
+- Global request-rate limiting belongs to the HTTP reverse proxy / API gateway layer.

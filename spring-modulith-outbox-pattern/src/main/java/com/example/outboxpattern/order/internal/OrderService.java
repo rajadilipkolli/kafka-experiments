@@ -1,5 +1,6 @@
 package com.example.outboxpattern.order.internal;
 
+import com.example.outboxpattern.config.ApplicationProperties;
 import com.example.outboxpattern.config.Loggable;
 import com.example.outboxpattern.order.OrderRecord;
 import com.example.outboxpattern.order.internal.domain.query.FindOrdersQuery;
@@ -25,12 +26,18 @@ class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final ApplicationEventPublisher events;
+    private final ApplicationProperties applicationProperties;
 
     /** Creates the order service with persistence, mapping, and event-publication dependencies. */
-    OrderService(OrderRepository orderRepository, OrderMapper orderMapper, ApplicationEventPublisher events) {
+    OrderService(
+            OrderRepository orderRepository,
+            OrderMapper orderMapper,
+            ApplicationEventPublisher events,
+            ApplicationProperties applicationProperties) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.events = events;
+        this.applicationProperties = applicationProperties;
     }
 
     /** Returns a page of mapped orders using the requested pagination and sorting. */
@@ -46,14 +53,22 @@ class OrderService {
         return new PagedResult<>(ordersPage, orderRecordList);
     }
 
-    /** Converts the requested page number to a nonnegative zero-based index and applies sorting. */
+    /**
+     * Converts the requested page number to a nonnegative zero-based index and applies sorting.
+     * Caps the requested page size at the configured maximum; only {@code ASC}, ignoring case,
+     * selects ascending order.
+     *
+     * @throws IllegalArgumentException if the resulting page size is not positive or the sort
+     *     property is null or empty
+     */
     private Pageable createPageable(FindOrdersQuery findOrdersQuery) {
         int pageNo = Math.max(findOrdersQuery.pageNo() - 1, 0);
         Sort sort = Sort.by(
                 findOrdersQuery.sortDir().equalsIgnoreCase(Sort.Direction.ASC.name())
                         ? Sort.Order.asc(findOrdersQuery.sortBy())
                         : Sort.Order.desc(findOrdersQuery.sortBy()));
-        return PageRequest.of(pageNo, findOrdersQuery.pageSize(), sort);
+        int pageSize = Math.min(findOrdersQuery.pageSize(), applicationProperties.maxPageSize());
+        return PageRequest.of(pageNo, pageSize, sort);
     }
 
     /** Returns the mapped order when the identifier exists, or an empty result otherwise. */

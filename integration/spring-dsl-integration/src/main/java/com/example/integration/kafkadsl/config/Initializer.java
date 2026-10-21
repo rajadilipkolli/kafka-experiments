@@ -10,8 +10,11 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
 import org.springframework.integration.kafka.dsl.Kafka;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties.AckMode;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
+import org.springframework.util.backoff.FixedBackOff;
 
 @Component
 class Initializer implements CommandLineRunner {
@@ -59,13 +62,27 @@ class Initializer implements CommandLineRunner {
         }
     }
 
+    /**
+     * Registers an additional listener that enqueues records in the shared {@code fromKafka} channel.
+     * Uses the configured consumer group ID with an {@code x} suffix and waits up to five seconds
+     * for each enqueue. Retryable delivery failures are retried without an attempt limit at
+     * 100-millisecond intervals; offsets are acknowledged after enqueueing.
+     *
+     * @param topics topics for the additional listener
+     */
     public void addAnotherListenerForTopics(String... topics) {
         Map<String, Object> consumerProperties = kafkaProperties.buildConsumerProperties();
         // change the group id, so we don't revoke the other partitions.
         consumerProperties.put(
                 ConsumerConfig.GROUP_ID_CONFIG, consumerProperties.get(ConsumerConfig.GROUP_ID_CONFIG) + "x");
         IntegrationFlow flow = IntegrationFlow.from(Kafka.messageDrivenChannelAdapter(
-                        new DefaultKafkaConsumerFactory<String, String>(consumerProperties), topics))
+                                new DefaultKafkaConsumerFactory<String, String>(consumerProperties), topics)
+                        .sendTimeout(5000L)
+                        .configureListenerContainer(c -> {
+                            c.ackMode(AckMode.RECORD);
+                            c.errorHandler(
+                                    new DefaultErrorHandler(new FixedBackOff(100L, FixedBackOff.UNLIMITED_ATTEMPTS)));
+                        }))
                 .channel("fromKafka")
                 .get();
         this.flowContext.registration(flow).register();

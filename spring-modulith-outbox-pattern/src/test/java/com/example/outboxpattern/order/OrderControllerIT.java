@@ -70,6 +70,17 @@ class OrderControllerIT extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.hasPrevious", is(false)));
     }
 
+    @Test
+    void shouldClampOversizedPageRequestToMaxPageSize() throws Exception {
+        this.mockMvc
+                .perform(get("/api/orders").param("pageSize", "1000"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_JSON_VALUE)))
+                .andExpect(jsonPath("$.pageSize", is(50)))
+                .andExpect(jsonPath("$.data.size()", is(orderList.size())))
+                .andExpect(jsonPath("$.totalElements", is(3)));
+    }
+
     @Nested
     @DisplayName("find methods")
     class Find {
@@ -175,6 +186,28 @@ class OrderControllerIT extends AbstractIntegrationTest {
                     .andExpect(jsonPath("$.violations[0].field", is("itemsList")))
                     .andExpect(jsonPath("$.violations[0].message", is("ItemsList must not be empty")))
                     .andReturn();
+        }
+
+        @Test
+        void shouldReturn400WhenCreateNewOrderWithTooManyItems() throws Exception {
+            List<OrderItemRequest> tooManyItems = new ArrayList<>();
+            for (int i = 0; i < 101; i++) {
+                tooManyItems.add(new OrderItemRequest("Product-" + i, BigDecimal.TEN, 1));
+            }
+            OrderRequest orderRequest = new OrderRequest(null, tooManyItems);
+
+            mockMvc.perform(post("/api/orders")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(jsonMapper.writeValueAsString(orderRequest)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(header().string(HttpHeaders.CONTENT_TYPE, is(MediaType.APPLICATION_PROBLEM_JSON_VALUE)))
+                    .andExpect(
+                            jsonPath("$.type", is("https://api.spring-modulith-outbox-pattern.com/errors/validation")))
+                    .andExpect(jsonPath("$.title", is("Constraint Violation")))
+                    .andExpect(jsonPath("$.status", is(400)))
+                    .andExpect(jsonPath("$.violations", hasSize(1)))
+                    .andExpect(jsonPath("$.violations[0].field", is("itemsList")))
+                    .andExpect(jsonPath("$.violations[0].message", is("ItemsList must not exceed 100 items")));
         }
     }
 

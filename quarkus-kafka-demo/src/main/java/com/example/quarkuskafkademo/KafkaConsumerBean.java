@@ -11,13 +11,20 @@ import org.jboss.logging.Logger;
 public class KafkaConsumerBean {
 
     private static final Logger LOG = Logger.getLogger(KafkaConsumerBean.class);
+    public static final int DEFAULT_CAPACITY = 1000;
     // Queue used by tests to assert received messages. Production can ignore it.
-    private static final BlockingQueue<String> RECEIVED = new LinkedBlockingQueue<>();
+    private static BlockingQueue<String> RECEIVED = new LinkedBlockingQueue<>(DEFAULT_CAPACITY);
 
+    /** Retains the received message for polling, discarding the oldest message when full. */
     @Incoming("demo-in")
     public void receive(String message) {
         LOG.infof("Received: %s", message);
-        RECEIVED.offer(message);
+        synchronized (RECEIVED) {
+            if (!RECEIVED.offer(message)) {
+                RECEIVED.poll();
+                RECEIVED.offer(message);
+            }
+        }
     }
 
     /**
@@ -34,5 +41,14 @@ public class KafkaConsumerBean {
             Thread.currentThread().interrupt();
             return null;
         }
+    }
+
+    /** Returns the number of received messages currently retained for polling. */
+    public static int getReceivedCount() {
+        return RECEIVED.size();
+    }
+
+    public static void setCapacityForTesting(int capacity) {
+        RECEIVED = new LinkedBlockingQueue<>(capacity);
     }
 }

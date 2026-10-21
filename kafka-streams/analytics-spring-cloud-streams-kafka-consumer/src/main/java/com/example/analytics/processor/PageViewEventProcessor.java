@@ -17,8 +17,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class PageViewEventProcessor {
 
+    /**
+     * Returns a topology function that counts events per page when duration is strictly greater
+     * than 10. Counts are cumulative, without a time window, and materialized in the page-count
+     * store.
+     */
     @Bean
-    Function<KStream<String, PageViewEvent>, KStream<String, Long>> processInput() {
+    public Function<KStream<String, PageViewEvent>, KStream<String, Long>> processInput() {
 
         return eventKStream ->
                 eventKStream

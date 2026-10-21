@@ -40,4 +40,16 @@ docker exec -it analytics-spring-cloud-streams-kafka_kafka1_1 kafka-topics --boo
  ### Important links
  - Actuator Consumer - http://localhost:18081/actuator
  - Swagger Consumer - http://localhost:18081/swagger-ui.html
+
+### Backpressure
+
+| Boundary | Mechanism | Configured Limits | Behavior on Overload |
+| :--- | :--- | :--- | :--- |
+| Event Supplier -> Kafka Topic | Poller fixed-delay pacing | `poller.fixed-delay=1000ms` | Generates events periodically; bounds outbound event flood |
+| Kafka Streams Processing | RocksDB state store cache & stream thread allocation | `num.stream.threads=2`, `statestore.cache.max.bytes=10485760` (10MB) | Bounds thread parallelism and memory allocated to buffering changelog state before flushing to RocksDB/changelog |
+| Interactive Query -> State Store | Closed iterator lifecycle | Try-with-resources on `ReadOnlyKeyValueStore.all()` | Prevents native memory and file handle leaks in RocksDB |
+
+#### Known Limitations
+- **Cumulative state growth**: The materialized count store (`PAGE_COUNT_MV`) retains cumulative counts per distinct key indefinitely without windowing or TTL. The state store size grows monotonically with distinct key cardinality.
+- Global request-rate limiting belongs to upstream infrastructure.
  

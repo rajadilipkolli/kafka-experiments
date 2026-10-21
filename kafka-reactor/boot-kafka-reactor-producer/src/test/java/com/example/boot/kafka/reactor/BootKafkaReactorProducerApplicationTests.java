@@ -69,4 +69,39 @@ class BootKafkaReactorProducerApplicationTests {
 
         StepVerifier.create(flux).expectNextCount(1).thenCancel().verify();
     }
+
+    @Test
+    void concurrentPostBurst() {
+        int burstCount = 10;
+        Flux.range(0, burstCount)
+                .flatMap(i -> {
+                    String body =
+                            """
+                            {
+                                "id": %d,
+                                "text": "burst-%d",
+                                "sentAt": "2023-06-15T18:49:38.813Z"
+                            }
+                            """
+                                    .formatted(i, i);
+                    return webTestClient
+                            .post()
+                            .uri("/messages")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .bodyValue(body)
+                            .exchange()
+                            .expectStatus()
+                            .isOk()
+                            .returnResult(Void.class)
+                            .getResponseBody();
+                })
+                .blockLast(java.time.Duration.ofSeconds(15));
+
+        Flux<MessageDTO> flux = receiver.receive().map(record -> {
+            record.receiverOffset().acknowledge();
+            return record.value();
+        });
+
+        StepVerifier.create(flux).expectNextCount(burstCount).thenCancel().verify(java.time.Duration.ofSeconds(15));
+    }
 }

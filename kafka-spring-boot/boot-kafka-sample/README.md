@@ -67,3 +67,14 @@ curl -X POST http://localhost:8080/listeners \
 
 ### URLS
 * KafkaUI : http://localhost:8080/springwolf/asyncapi-ui.html
+
+### Backpressure
+
+| Boundary | Mechanism | Configured Limits | Behavior on Overload |
+| :--- | :--- | :--- | :--- |
+| HTTP Controller -> `Sender` | Timed future wait with ProblemDetail mapping | `app.producer.send-timeout-ms=12000`, `buffer.memory=33554432`, `max.block.ms=5000` | Waits up to 12s; Kafka send errors, timeouts, and buffer saturation map to 503 ProblemDetail (blank message DLT path returns 200) |
+| Kafka Broker -> `Receiver2` | Bounded insertion-ordered tracking map | `app.receiver2.max-seen-messages=10000` | Synchronized `LinkedHashMap` overriding `removeEldestEntry` evicts oldest messages when size exceeds limit |
+
+#### Known Limitations
+- HTTP request latency now directly includes the broker acknowledgment latency.
+- Global request-rate limiting belongs to the HTTP reverse proxy / gateway layer.

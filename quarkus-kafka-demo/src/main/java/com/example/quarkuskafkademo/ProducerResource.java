@@ -8,8 +8,14 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 import org.jboss.logging.Logger;
 
 @Path("/produce")
@@ -17,39 +23,83 @@ public class ProducerResource {
 
     @Inject
     @Channel("demo-out")
+    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1000)
     Emitter<String> emitter;
 
     @Inject
     ObjectMapper mapper;
 
+    @ConfigProperty(name = "app.producer.send-timeout", defaultValue = "10s")
+    Duration sendTimeout;
+
     private static final Logger LOG = Logger.getLogger(ProducerResource.class);
 
     /**
-     * Accept a JSON payload and forward its raw string to the outgoing channel.
-     * Tests assert the exact JSON string was consumed.
+     * Forwards the raw JSON string to the outgoing channel and awaits acknowledgment.
+     * The configured send timeout bounds the response wait without canceling the original send.
+     *
+     * @return HTTP 202 after acknowledgment, or HTTP 503 on send failure, buffer overflow, or timeout
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response produce(String jsonPayload) {
-        emitter.send(jsonPayload);
-        return Response.accepted().build();
+    public CompletionStage<Response> produce(String jsonPayload) {
+        try {
+            return emitter.send(jsonPayload)
+                    .toCompletableFuture()
+                    .copy()
+                    .orTimeout(sendTimeout.toMillis(), TimeUnit.MILLISECONDS)
+                    .thenApply(v -> Response.accepted().build())
+                    .exceptionally(t -> {
+                        LOG.error("Failed to produce message", t);
+                        return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+                                .entity("Service unavailable: Kafka producer failure")
+                                .build();
+                    });
+        } catch (Exception e) {
+            LOG.error("Synchronous overflow or failure producing message", e);
+            return CompletableFuture.completedFuture(Response.status(Response.Status.SERVICE_UNAVAILABLE)
+                    .entity("Service unavailable: Kafka producer failure")
+                    .build());
+        }
     }
 
     /**
-     * Typed endpoint that accepts a MessageDto as a POJO. It will be converted
-     * to JSON using Jackson and the resulting JSON string will be emitted.
+     * Serializes the message with Jackson and emits the JSON, awaiting acknowledgment.
+     * The configured send timeout bounds the response wait without canceling the original send.
+     *
+     * @return HTTP 202 after acknowledgment, HTTP 500 on a Jackson serialization error, or HTTP 503
+     *     on send failure, buffer overflow, or timeout
      */
     @POST
     @Path("/pojo")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response producePojo(MessageDto dto) {
+    public CompletionStage<Response> producePojo(MessageDto dto) {
+        String json;
         try {
-            String json = mapper.writeValueAsString(dto);
-            emitter.send(json);
-            return Response.accepted().build();
+            json = mapper.writeValueAsString(dto);
         } catch (JsonProcessingException e) {
             LOG.error("Failed to serialize MessageDto", e);
-            return Response.serverError().entity("failed to serialize message").build();
+            return CompletableFuture.completedFuture(
+                    Response.serverError().entity("failed to serialize message").build());
+        }
+
+        try {
+            return emitter.send(json)
+                    .toCompletableFuture()
+                    .copy()
+                    .orTimeout(sendTimeout.toMillis(), TimeUnit.MILLISECONDS)
+                    .thenApply(v -> Response.accepted().build())
+                    .exceptionally(t -> {
+                        LOG.error("Failed to produce message", t);
+                        return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+                                .entity("Service unavailable: Kafka producer failure")
+                                .build();
+                    });
+        } catch (Exception e) {
+            LOG.error("Synchronous overflow or failure producing message", e);
+            return CompletableFuture.completedFuture(Response.status(Response.Status.SERVICE_UNAVAILABLE)
+                    .entity("Service unavailable: Kafka producer failure")
+                    .build());
         }
     }
 }

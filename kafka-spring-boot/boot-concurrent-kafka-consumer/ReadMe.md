@@ -121,3 +121,14 @@ You can also run the application using Maven as follows:
 
 ### Useful Links
 * Actuator Endpoint: http://localhost:8080/actuator
+
+### Backpressure
+
+| Boundary | Mechanism | Configured Limits | Behavior on Overload |
+| :--- | :--- | :--- | :--- |
+| Kafka Broker -> Consumer Listener | Bounded poll batching & thread concurrency | `spring.kafka.consumer.max-poll-records=50`, `max.poll.interval.ms=300000`, `spring.kafka.listener.concurrency=3` | Fetches at most 50 records per poll per consumer thread; stays within poll interval |
+| Listener Thread -> `ToUpperStringProcessor` | Bounded memory deque with drop-oldest eviction and atomic counter | `app.processor.history-capacity=100` (configurable) | Non-blocking eviction of oldest entry upon reaching capacity; retains bounded history while tracking lifetime total via `AtomicLong` |
+
+#### Known Limitations
+- The bounded queue retains only the most recent N processed entries; history beyond the configured capacity is evicted to prevent unbounded heap growth.
+- Global request-rate limiting belongs to infrastructure layers.

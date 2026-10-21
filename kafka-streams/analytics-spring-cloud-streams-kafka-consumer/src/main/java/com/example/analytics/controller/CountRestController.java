@@ -23,6 +23,12 @@ public class CountRestController {
         this.interactiveQueryService = interactiveQueryService;
     }
 
+    /**
+     * Copies the queryable page-count store into a map and closes the store iterator. Store lookup
+     * and read failures propagate to the caller.
+     *
+     * @return counts keyed by page for the entries available in the queried store
+     */
     @GetMapping("/api/page-counts")
     public Map<String, Long> counts() {
         Map<String, Long> counts = new HashMap<>();
@@ -33,7 +39,9 @@ public class CountRestController {
         log.info(
                 "interactiveQueryService.getCurrentHostInfo() => {}",
                 interactiveQueryService.getCurrentHostInfo());
-        queryableStoreType.all().forEachRemaining(kv -> counts.put(kv.key, kv.value));
+        try (var iterator = queryableStoreType.all()) {
+            iterator.forEachRemaining(kv -> counts.put(kv.key, kv.value));
+        }
 
         return counts;
     }
