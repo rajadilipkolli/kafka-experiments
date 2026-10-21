@@ -39,8 +39,8 @@ class OutboxEventPublicationRecovery {
                             SELECT id FROM event_publication
                             WHERE status IN ('PUBLISHED', 'PROCESSING')
                               AND completion_date IS NULL
-                              AND publication_date < :cutoff
-                            ORDER BY publication_date, id
+                              AND COALESCE(last_resubmission_date, publication_date) < :cutoff
+                            ORDER BY COALESCE(last_resubmission_date, publication_date), id
                             LIMIT :limit
                             FOR UPDATE SKIP LOCKED
                         )
