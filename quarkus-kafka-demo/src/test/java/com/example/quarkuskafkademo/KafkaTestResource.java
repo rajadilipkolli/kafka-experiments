@@ -15,7 +15,7 @@ public class KafkaTestResource implements QuarkusTestResourceLifecycleManager {
      */
     @Override
     public Map<String, String> start() {
-        kafka = new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.1"));
+        kafka = new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.2"));
         kafka.start();
 
         Map<String, String> config = new HashMap<>();

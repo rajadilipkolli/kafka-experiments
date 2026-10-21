@@ -14,7 +14,7 @@ public class ContainerConfiguration {
     @ServiceConnection
     @Bean
     KafkaContainer kafkaContainer() {
-        return new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.1"));
+        return new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.2"));
     }
 
     /** Registers the test broker bootstrap address in the Spring Kafka configuration. */
