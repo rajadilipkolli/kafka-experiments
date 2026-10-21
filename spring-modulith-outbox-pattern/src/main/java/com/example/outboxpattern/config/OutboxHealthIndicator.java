@@ -1,32 +1,27 @@
 package com.example.outboxpattern.config;
 
-import java.time.Duration;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthIndicator;
-import org.springframework.modulith.events.core.EventPublicationRegistry;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OutboxHealthIndicator implements HealthIndicator {
 
-    private final EventPublicationRegistry registry;
+    private final OutboxStatsService statsService;
 
-    public OutboxHealthIndicator(EventPublicationRegistry registry) {
-        this.registry = registry;
+    public OutboxHealthIndicator(OutboxStatsService statsService) {
+        this.statsService = statsService;
     }
 
     @Override
     public Health health() {
-        long incompletePublications = registry.findIncompletePublications().size();
+        OutboxStats stats = statsService.getStats();
 
-        long failedPublications = registry.findIncompletePublicationsOlderThan(Duration.ofMinutes(10))
-                .size();
         Health.Builder builder = Health.up()
-                .withDetail("pendingPublications", incompletePublications)
-                .withDetail("failedPublications", failedPublications);
+                .withDetail("pendingPublications", stats.pendingCount())
+                .withDetail("failedPublications", stats.failedCount());
 
-        // If there are too many failed publications, mark the health as DOWN
-        if (failedPublications > 50) {
+        if (stats.failedCount() > 50) {
             return builder.down()
                     .withDetail("error", "Too many failed publications")
                     .build();

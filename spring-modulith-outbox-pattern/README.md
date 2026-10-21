@@ -33,17 +33,16 @@ You can also run the application using Maven as follows:
 * Actuator Endpoint: http://localhost:8080/actuator
 
 ### Notes
-The event published is sent to Internal Application Listener(Publish) and Extenal Application(Kafka)
+The event published is sent to Internal Application Listener(Publish) and External Application(Kafka) via Namastack Outbox.
 
 ### Backpressure
 
-| Boundary | Mechanism | Configured Limits | Behavior on Overload |
-| :--- | :--- | :--- | :--- |
-| HTTP Request -> Order API | Request validation & page size clamping | `application.max-item-count=100`, `application.max-page-size=50` | Capped page size (`Math.min(requested, 50)`); requests with >100 items rejected with 400 Bad Request |
-| Transaction -> Outbox Log | Durable relational table storage | PostgreSQL `event_publication` table | Outbox acts as persistent durable backlog buffer; decouples HTTP transactions from Kafka broker availability |
-| Application Startup / Schedule -> Event Replay | Bounded recurring resubmission | `republish-outstanding-events-on-restart=false`, `resubmission-batch-size=100`, `resubmission-max-in-flight=50`, `resubmission-min-age=5m`, `task concurrency-limit=10` | Disables unbounded mass replay on boot; resubmits stalled incomplete events with bounded batches and bounded concurrency |
+| Boundary                          | Mechanism                               | Configured Limits                                                                           | Behavior on Overload                                                                                                                                                                     |
+|:----------------------------------|:----------------------------------------|:--------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| HTTP Request -> Order API         | Request validation & page size clamping | `application.max-item-count=100`, `application.max-page-size=50`                            | Capped page size (`Math.min(requested, 50)`); requests with >100 items rejected with 400 Bad Request                                                                                     |
+| Transaction -> Outbox Log         | Distributed outbox table storage        | PostgreSQL `outbox_record` table via Namastack Outbox (`spring-modulith-starter-namastack`) | Outbox acts as persistent durable backlog buffer; decouples HTTP transactions from Kafka broker availability                                                                             |
+| Outbox Dispatcher -> Kafka Broker | Partition-based polling & retry         | `spring.modulith.events.externalization.mode=outbox`                                        | Partition-based distributed coordination (256 partitions) with heartbeat lease timeouts. Automatic failover and retry on downstream broker issues without manual reconciliation scripts. |
 
 #### Known Limitations
-- **Durable backlog & archive growth**: Completed publications are moved to `event_publication_archive` with completion mode `archive`. Without a purge process, database table size grows indefinitely over time.
-- **Collection-based stats and health scans**: Administrative endpoints (`findCompletedEvents()`) perform unpaginated list scans of the table, which degrades under heavy event history.
+- **Outbox table retention**: Completed events remain in `outbox_record` with status `COMPLETED`. A periodic purge or TTL should clean up historical completed entries in production.
 - Global request-rate limiting belongs to the HTTP reverse proxy / gateway layer.
