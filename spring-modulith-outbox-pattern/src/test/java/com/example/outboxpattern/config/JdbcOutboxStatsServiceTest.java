@@ -22,7 +22,7 @@ class JdbcOutboxStatsServiceTest {
 
         JdbcClient.StatementSpec failedSpec = mock(JdbcClient.StatementSpec.class);
         JdbcClient.MappedQuerySpec<Long> failedQuery = mock(JdbcClient.MappedQuerySpec.class);
-        when(jdbcClient.sql(JdbcOutboxStatsService.FAILED_LAST_DAY_QUERY)).thenReturn(failedSpec);
+        when(jdbcClient.sql(JdbcOutboxStatsService.FAILED_QUERY)).thenReturn(failedSpec);
         when(failedSpec.query(Long.class)).thenReturn(failedQuery);
         when(failedQuery.single()).thenReturn(7L);
 

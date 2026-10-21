@@ -33,7 +33,7 @@ You can also run the application using Maven as follows:
 * Actuator Endpoint: http://localhost:8080/actuator
 
 ### Notes
-The event published is sent to Internal Application Listener(Publish) and External Application(Kafka) via Namastack Outbox.
+Namastack Outbox handles event externalization to external applications such as Kafka. Internal application listeners receive events through the normal application event path.
 
 ### Backpressure
 

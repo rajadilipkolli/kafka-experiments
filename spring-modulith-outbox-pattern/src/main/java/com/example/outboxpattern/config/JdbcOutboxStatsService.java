@@ -7,8 +7,7 @@ import org.springframework.stereotype.Service;
 class JdbcOutboxStatsService implements OutboxStatsService {
 
     static final String PENDING_QUERY = "SELECT count(*) FROM outbox_record WHERE status = 'NEW'";
-    static final String FAILED_LAST_DAY_QUERY =
-            "SELECT count(*) FROM outbox_record WHERE status = 'FAILED' AND created_at >= NOW() - INTERVAL '1 day'";
+    static final String FAILED_QUERY = "SELECT count(*) FROM outbox_record WHERE status = 'FAILED'";
 
     private final JdbcClient jdbcClient;
 
@@ -19,7 +18,7 @@ class JdbcOutboxStatsService implements OutboxStatsService {
     @Override
     public OutboxStats getStats() {
         long pending = jdbcClient.sql(PENDING_QUERY).query(Long.class).single();
-        long failed = jdbcClient.sql(FAILED_LAST_DAY_QUERY).query(Long.class).single();
+        long failed = jdbcClient.sql(FAILED_QUERY).query(Long.class).single();
 
         return new OutboxStats(pending, failed);
     }
