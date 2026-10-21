@@ -9,10 +9,17 @@ public class OutboxHealthIndicator implements HealthIndicator {
 
     private final OutboxStatsService statsService;
 
+    /** Creates a health indicator backed by the supplied outbox statistics service. */
     public OutboxHealthIndicator(OutboxStatsService statsService) {
         this.statsService = statsService;
     }
 
+    /**
+     * Reports {@code DOWN} when more than 50 unresolved failed records exist, regardless of age,
+     * and {@code UP} otherwise. Statistics retrieval failures propagate to the caller.
+     *
+     * @return health with {@code pendingPublications} and {@code failedPublications} counts
+     */
     @Override
     public Health health() {
         OutboxStats stats = statsService.getStats();

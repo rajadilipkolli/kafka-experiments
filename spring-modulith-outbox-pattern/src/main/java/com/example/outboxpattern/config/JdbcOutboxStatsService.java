@@ -11,10 +11,17 @@ class JdbcOutboxStatsService implements OutboxStatsService {
 
     private final JdbcClient jdbcClient;
 
+    /** Creates a service that reads outbox counts using the supplied database client. */
     JdbcOutboxStatsService(JdbcClient jdbcClient) {
         this.jdbcClient = jdbcClient;
     }
 
+    /**
+     * Returns counts of {@code NEW} records as pending and all {@code FAILED} records as failed,
+     * regardless of age. The counts are queried separately.
+     *
+     * @throws org.springframework.dao.DataAccessException if either count query fails
+     */
     @Override
     public OutboxStats getStats() {
         long pending = jdbcClient.sql(PENDING_QUERY).query(Long.class).single();
