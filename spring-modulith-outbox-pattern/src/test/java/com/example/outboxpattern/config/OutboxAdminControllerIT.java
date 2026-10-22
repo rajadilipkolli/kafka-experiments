@@ -17,15 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
 class OutboxAdminControllerIT extends AbstractIntegrationTest {
-
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
 
     @Test
     void shouldReturnCorrectStatsAfterPublishingEvents() throws Exception {
