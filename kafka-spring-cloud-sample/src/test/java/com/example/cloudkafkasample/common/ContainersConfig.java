@@ -15,7 +15,7 @@ public class ContainersConfig {
     @Bean
     @ServiceConnection
     KafkaContainer kafkaContainer() {
-        return new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.2")).withReuse(true);
+        return new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.4.0")).withReuse(true);
     }
 
     /** Registers the test broker address for the Spring Cloud Stream Kafka binder. */
