@@ -1,0 +1,45 @@
+# Set default behavior for all text files (normalize to LF in git repository)
+* text=auto
+
+# Code, configuration, markup and docs: always LF line endings
+*.java text eol=lf
+*.xml text eol=lf
+*.properties text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.sql text eol=lf
+*.avsc text eol=lf
+*.adoc text eol=lf
+*.puml text eol=lf
+*.txt text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+
+# Executable scripts and wrappers
+*.sh text eol=lf
+mvnw text eol=lf
+gradlew text eol=lf
+
+# Windows command / batch scripts must retain CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Git and project configuration
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.editorconfig text eol=lf
+
+# Binary files
+*.jar binary
+*.war binary
+*.class binary
+*.dat binary
+*.gz binary
+*.gif binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
