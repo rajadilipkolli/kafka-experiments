@@ -14,7 +14,7 @@ public class ContainerConfig {
     @ServiceConnection
     KafkaContainer kafkaContainer() {
         KafkaContainer kafkaContainer =
-                new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.3.2"));
+                new KafkaContainer(DockerImageName.parse("apache/kafka-native").withTag("4.4.0"));
         kafkaContainer.addEnv("KAFKA_NUM_PARTITIONS", "32");
         return kafkaContainer;
     }
