@@ -19,7 +19,9 @@ class JdbcOutboxStatsServiceIT extends AbstractIntegrationTest {
 
     @Test
     void agedFailuresAffectHealthUntilResolved() {
-        jdbcClient.sql("""
+        jdbcClient
+                .sql(
+                        """
                         INSERT INTO outbox_record (
                             id, status, record_key, record_type, payload, created_at, failure_count, next_retry_at, partition_no, handler_id
                         )
@@ -35,15 +37,19 @@ class JdbcOutboxStatsServiceIT extends AbstractIntegrationTest {
                             0,
                             'handler'
                         FROM generate_series(1, 51) AS i
-                        """).update();
-        jdbcClient.sql("""
+                        """)
+                .update();
+        jdbcClient
+                .sql(
+                        """
                         INSERT INTO outbox_record (
                             id, status, record_key, record_type, payload, created_at, failure_count, next_retry_at, partition_no, handler_id
                         )
                         VALUES
                             ('new-1', 'NEW', 'key-new', 'order', '{}', NOW(), 0, NOW(), 0, 'handler'),
                             ('completed-1', 'COMPLETED', 'key-completed', 'order', '{}', NOW(), 0, NOW(), 0, 'handler')
-                        """).update();
+                        """)
+                .update();
 
         JdbcOutboxStatsService service = new JdbcOutboxStatsService(jdbcClient);
         OutboxHealthIndicator indicator = new OutboxHealthIndicator(service);
