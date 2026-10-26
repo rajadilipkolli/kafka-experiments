@@ -13,7 +13,7 @@ services:
       - person-data:/var/lib/postgresql
 
   kafka:
-    image: confluentinc/cp-kafka:8.3.2
+    image: confluentinc/cp-kafka:8.4.0
     hostname: broker
     container_name: broker
     ports:
@@ -40,7 +40,7 @@ services:
       CLUSTER_ID: '4L6g3nShT-eMCtK--X86sw'
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:8.3.2
+    image: confluentinc/cp-schema-registry:8.4.0
     hostname: schema-registry
     container_name: schema-registry
     depends_on:
