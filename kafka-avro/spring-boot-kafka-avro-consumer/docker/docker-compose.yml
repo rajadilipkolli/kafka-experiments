@@ -13,7 +13,7 @@ services:
       - person-data:/var/lib/postgresql
 
   kafka:
-    image: confluentinc/cp-kafka:8.4.0
+    image: confluentinc/cp-kafka:8.4.1
     hostname: broker
     container_name: broker
     ports:
