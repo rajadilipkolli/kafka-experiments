@@ -27,11 +27,11 @@ class OrderRequestValidationTest {
     @ValueSource(booleans = {false, true})
     void configuredLimitRejectsOversizedCreateAndUpdate(boolean update) throws Exception {
         mockMvc.perform((update ? put("/api/orders/1") : post("/api/orders"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"itemsList\":[{}, {}, {}]}"))
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.violations[0].field").value("itemsList"))
-            .andExpect(jsonPath("$.violations[0].message").value("ItemsList must not exceed 2 items"));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"itemsList\":[{}, {}, {}]}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.violations[0].field").value("itemsList"))
+                .andExpect(jsonPath("$.violations[0].message").value("ItemsList must not exceed 2 items"));
         verifyNoInteractions(orderService);
     }
 
@@ -39,10 +39,10 @@ class OrderRequestValidationTest {
     @ValueSource(booleans = {false, true})
     void emptyItemsAreStillRejected(boolean update) throws Exception {
         mockMvc.perform((update ? put("/api/orders/1") : post("/api/orders"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"itemsList\":[]}"))
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.violations[0].message").value("ItemsList must not be empty"));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"itemsList\":[]}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.violations[0].message").value("ItemsList must not be empty"));
         verifyNoInteractions(orderService);
     }
 }
