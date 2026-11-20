@@ -7,4 +7,5 @@ import java.math.BigDecimal;
 public record OrderItemRequest(
         @NotBlank(message = "Product cannot be blank") String productCode,
         BigDecimal productPrice,
+
         @Positive(message = "quantity cant be 0 or negative") Integer quantity) {}

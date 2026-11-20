@@ -1,5 +1,6 @@
 package com.example.outboxpattern.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Comparator;
@@ -22,11 +23,13 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ProblemDetail onException(MethodArgumentNotValidException methodArgumentNotValidException) {
+    ProblemDetail onException(
+            MethodArgumentNotValidException methodArgumentNotValidException, HttpServletRequest request) {
         ProblemDetail problemDetail =
                 ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(400), "Invalid request content.");
         problemDetail.setTitle("Constraint Violation");
         problemDetail.setType(URI.create("https://api.spring-modulith-outbox-pattern.com/errors/validation"));
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         problemDetail.setProperty("errorCategory", "Validation");
         problemDetail.setProperty("timestamp", Instant.now());
         List<ApiValidationError> validationErrorsList = methodArgumentNotValidException.getAllErrors().stream()
@@ -45,12 +48,13 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    ProblemDetail onException(Exception exception) {
+    ProblemDetail onException(Exception exception, HttpServletRequest request) {
         if (exception instanceof ResourceNotFoundException resourceNotFoundException) {
             ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                     resourceNotFoundException.getHttpStatus(), resourceNotFoundException.getMessage());
             problemDetail.setTitle("Order Not Found");
             problemDetail.setType(URI.create("https://api.spring-modulith-outbox-pattern.com/errors/not-found"));
+            problemDetail.setInstance(URI.create(request.getRequestURI()));
             problemDetail.setProperty("errorCategory", "Generic");
             problemDetail.setProperty("timestamp", Instant.now());
             return problemDetail;

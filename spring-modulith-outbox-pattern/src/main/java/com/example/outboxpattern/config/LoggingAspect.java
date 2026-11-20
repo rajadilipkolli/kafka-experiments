@@ -25,8 +25,7 @@ class LoggingAspect {
         this.env = env;
     }
 
-    @Pointcut(
-            """
+    @Pointcut("""
             within(@org.springframework.stereotype.Repository *)\
              || within(@org.springframework.stereotype.Service *)\
              || within(@org.springframework.web.bind.annotation.RestController *)\
@@ -35,8 +34,7 @@ class LoggingAspect {
         // pointcut definition
     }
 
-    @Pointcut(
-            """
+    @Pointcut("""
                 @within(com.example.outboxpattern.config.Loggable)
                 || @annotation(com.example.outboxpattern.config.Loggable)
             """)
@@ -48,19 +46,19 @@ class LoggingAspect {
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
         if (env.acceptsProfiles(Profiles.of(AppConstants.PROFILE_NOT_PROD))) {
             log.error(
-                    "Exception in {}.{}() with cause = '{}' and exception = '{}'",
-                    joinPoint.getSignature().getDeclaringTypeName(),
-                    joinPoint.getSignature().getName(),
-                    e.getCause() == null ? "NULL" : e.getCause(),
-                    e.getMessage(),
-                    e);
+                "Exception in {}.{}() with cause = '{}' and exception = '{}'",
+                joinPoint.getSignature().getDeclaringTypeName(),
+                joinPoint.getSignature().getName(),
+                e.getCause() == null ? "NULL" : e.getCause(),
+                e.getMessage(),
+                e);
 
         } else {
             log.error(
-                    "Exception in {}.{}() with cause = {}",
-                    joinPoint.getSignature().getDeclaringTypeName(),
-                    joinPoint.getSignature().getName(),
-                    e.getCause() == null ? "NULL" : e.getCause());
+                "Exception in {}.{}() with cause = {}",
+                joinPoint.getSignature().getDeclaringTypeName(),
+                joinPoint.getSignature().getName(),
+                e.getCause() == null ? "NULL" : e.getCause());
         }
     }
 
@@ -68,19 +66,19 @@ class LoggingAspect {
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         if (log.isDebugEnabled()) {
             log.debug(
-                    "Enter: {}.{}()",
-                    joinPoint.getSignature().getDeclaringTypeName(),
-                    joinPoint.getSignature().getName());
+                "Enter: {}.{}()",
+                joinPoint.getSignature().getDeclaringTypeName(),
+                joinPoint.getSignature().getName());
         }
         long start = System.currentTimeMillis();
         Object result = joinPoint.proceed();
         long end = System.currentTimeMillis();
         if (log.isDebugEnabled()) {
             log.debug(
-                    "Exit: {}.{}(). Time taken: {} millis",
-                    joinPoint.getSignature().getDeclaringTypeName(),
-                    joinPoint.getSignature().getName(),
-                    end - start);
+                "Exit: {}.{}(). Time taken: {} millis",
+                joinPoint.getSignature().getDeclaringTypeName(),
+                joinPoint.getSignature().getName(),
+                end - start);
         }
         return result;
     }
