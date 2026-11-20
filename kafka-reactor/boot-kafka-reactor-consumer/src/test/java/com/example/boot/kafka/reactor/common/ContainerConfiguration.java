@@ -15,7 +15,7 @@ public class ContainerConfiguration {
     @Bean
     @ServiceConnection
     PostgreSQLContainer postgresContainer() {
-        return new PostgreSQLContainer(DockerImageName.parse("postgres").withTag("18.6-alpine"));
+        return new PostgreSQLContainer(DockerImageName.parse("postgres").withTag("19.0-alpine"));
     }
 
     /** Creates the Kafka broker container used by the integration tests. */
