@@ -4,6 +4,7 @@ import static com.example.springbootkafkasample.config.Initializer.TOPIC_TEST_1;
 import static com.example.springbootkafkasample.config.Initializer.TOPIC_TEST_2;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -52,6 +53,19 @@ class KafkaSampleApplicationTests {
                         messageListenerContainer, embeddedKafkaBroker.getPartitionsPerTopic());
             }
         }
+    }
+
+    @Test
+    void generatesOpenApiAndAsyncApiDocumentation() throws Exception {
+        this.mockMvc
+                .perform(get("/v3/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.paths['/messages'].post").exists());
+        this.mockMvc
+                .perform(get("/springwolf/docs").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.channels.test_1.messages['com.example.springbootkafkasample.dto.MessageDTO']")
+                        .exists());
     }
 
     @Test

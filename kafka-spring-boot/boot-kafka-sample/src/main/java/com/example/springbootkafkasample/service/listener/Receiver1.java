@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,8 @@ public class Receiver1 {
             groupId = "foo",
             errorHandler = "validationErrorHandler")
     @SendTo(TOPIC_TEST_2)
-    public MessageDTO listen(@Header(KafkaHeaders.RECEIVED_KEY) UUID key, ConsumerRecord<String, MessageDTO> cr) {
+    public MessageDTO listen(
+            @Header(KafkaHeaders.RECEIVED_KEY) UUID key, @Payload ConsumerRecord<String, MessageDTO> cr) {
         logger.info("Received message : {} with Key :{} in topic :{}", cr.toString(), key, cr.topic());
         return cr.value();
     }

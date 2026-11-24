@@ -18,7 +18,8 @@
         <java.version>25</java.version>
         <spotless.version>3.12.0</spotless.version>
         <springdoc-openapi.version>3.2.1</springdoc-openapi.version>
-        <springwolf.version>2.9.0</springwolf.version>
+        <!-- Use the Swagger Core 3 compatible snapshot until Springwolf publishes a stable release. -->
+        <springwolf.version>2.10.0-SNAPSHOT</springwolf.version>
     </properties>
 
     <dependencies>
@@ -179,6 +180,16 @@
     </build>
  
     <repositories>
+        <repository>
+            <id>sonatype-central-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
         <repository>
             <id>spring-milestones</id>
             <name>Spring Milestones</name>
