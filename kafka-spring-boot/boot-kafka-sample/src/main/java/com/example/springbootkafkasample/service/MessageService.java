@@ -22,7 +22,7 @@ import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("kafkaMessageService")
 public class MessageService {
 
     private final KafkaAdmin kafkaAdmin;
