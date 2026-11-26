@@ -4,9 +4,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -15,6 +12,7 @@ import io.restassured.http.ContentType;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 @QuarkusTest
 @QuarkusTestResource(KafkaTestResource.class)
@@ -24,14 +22,13 @@ public class ProducerConsumerIT {
     URI produceUri;
 
     @Test
-    public void testProduceAndConsumePojo()
-            throws JsonMappingException, JsonProcessingException, IllegalArgumentException {
-        MessageDto dto = new MessageDto("hello-test-containers", 123);
+    public void testProduceAndConsumePojo() {
+        String json = "{\"message\":\"hello-test-containers\",\"id\":123}";
 
         RestAssured.given()
                 .baseUri(produceUri.toString() + "/pojo")
                 .contentType(ContentType.JSON)
-                .body(dto)
+                .body(json)
                 .when()
                 .post()
                 .then()
@@ -42,7 +39,7 @@ public class ProducerConsumerIT {
         assertThat("Expected a message to be consumed", received, notNullValue());
 
         // Compare JSON semantically
-        ObjectMapper om = new ObjectMapper();
-        assertThat(om.readTree(received), equalTo(om.valueToTree(dto)));
+        JsonMapper mapper = new JsonMapper();
+        assertThat(mapper.readTree(received), equalTo(mapper.readTree(json)));
     }
 }
