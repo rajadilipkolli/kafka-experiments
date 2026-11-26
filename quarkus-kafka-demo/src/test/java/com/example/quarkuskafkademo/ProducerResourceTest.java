@@ -3,8 +3,6 @@ package com.example.quarkuskafkademo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.core.Response;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
@@ -14,6 +12,8 @@ import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.exc.StreamWriteException;
+import tools.jackson.databind.json.JsonMapper;
 
 public class ProducerResourceTest {
 
@@ -22,7 +22,7 @@ public class ProducerResourceTest {
     @BeforeEach
     void setUp() {
         producerResource = new ProducerResource();
-        producerResource.mapper = new ObjectMapper();
+        producerResource.mapper = new JsonMapper();
         producerResource.sendTimeout = Duration.ofSeconds(10);
     }
 
@@ -156,10 +156,10 @@ public class ProducerResourceTest {
     void testProducePojoSerializationFailureReturns500() throws Exception {
         TestEmitter emitter = new TestEmitter();
         producerResource.emitter = emitter;
-        producerResource.mapper = new ObjectMapper() {
+        producerResource.mapper = new JsonMapper() {
             @Override
-            public String writeValueAsString(Object value) throws JsonProcessingException {
-                throw new com.fasterxml.jackson.core.JsonParseException(null, "Serialization error");
+            public String writeValueAsString(Object value) {
+                throw new StreamWriteException(null, "Serialization error");
             }
         };
 

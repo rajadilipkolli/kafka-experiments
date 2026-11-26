@@ -1,7 +1,5 @@
 package com.example.quarkuskafkademo;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -17,6 +15,8 @@ import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 import org.jboss.logging.Logger;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Path("/produce")
 public class ProducerResource {
@@ -27,7 +27,7 @@ public class ProducerResource {
     Emitter<String> emitter;
 
     @Inject
-    ObjectMapper mapper;
+    JsonMapper mapper;
 
     @ConfigProperty(name = "app.producer.send-timeout", defaultValue = "10s")
     Duration sendTimeout;
@@ -77,7 +77,7 @@ public class ProducerResource {
         String json;
         try {
             json = mapper.writeValueAsString(dto);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOG.error("Failed to serialize MessageDto", e);
             return CompletableFuture.completedFuture(
                     Response.serverError().entity("failed to serialize message").build());
